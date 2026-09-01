@@ -1,4 +1,3 @@
-# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
 [package]
 name = "vajra-tauri-app"
 version.workspace = true
@@ -7,4 +6,21 @@ authors.workspace = true
 license.workspace = true
 
 [dependencies]
+tauri = { version = "1.5", features = ["api-all"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tokio = { version = "1.38", features = ["full"] }
+chrono = { workspace = true }
+uuid = { workspace = true }
+sha2 = { workspace = true }
+
 vajra-core = { path = "../vajra-core" }
+vajra-device = { path = "../vajra-device" }
+vajra-carve = { path = "../vajra-carve" }
+vajra-erase = { path = "../vajra-erase" }
+vajra-case-db = { path = "../vajra-case-db" }
+vajra-audit = { path = "../vajra-audit" }
+vajra-custody = { path = "../vajra-custody" }
+vajra-acquire = { path = "../vajra-acquire" }
+vajra-image = { path = "../vajra-image" }
+
