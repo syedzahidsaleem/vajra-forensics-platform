@@ -1,6 +1,7 @@
 //! Tier 2: Signature-Based Carving with Garfinkel Structural Validation (§26.1, §26.2).
 
 pub mod jpeg;
+pub mod ole2;
 pub mod pdf;
 pub mod png;
 pub mod signature_db;
@@ -9,6 +10,7 @@ pub mod validator;
 pub mod zip;
 
 pub use jpeg::JpegValidator;
+pub use ole2::Ole2Validator;
 pub use pdf::PdfValidator;
 pub use png::PngValidator;
 pub use signature_db::{FileSignature, SignatureDb};
@@ -39,6 +41,7 @@ impl Default for ValidatorRegistry {
                 ("pdf".to_string(), Arc::new(PdfValidator)),
                 ("zip".to_string(), Arc::new(ZipValidator)),
                 ("sqlite".to_string(), Arc::new(SqliteValidator)),
+                ("ole2".to_string(), Arc::new(Ole2Validator)),
             ],
         }
     }

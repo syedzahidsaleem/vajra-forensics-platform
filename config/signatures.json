@@ -33,5 +33,12 @@
     "footer": null,
     "max_size_bytes": 209715200,
     "validator_id": "sqlite"
+  },
+  {
+    "file_type": "ole2",
+    "header": [208, 207, 17, 224, 161, 177, 26, 225],
+    "footer": null,
+    "max_size_bytes": 104857600,
+    "validator_id": "ole2"
   }
 ]
