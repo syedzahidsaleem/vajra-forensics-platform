@@ -2,9 +2,11 @@
 
 use crate::cipher::{af_merge, Aes128XtsCipher, Aes256XtsCipher, SectorCipher};
 use crate::error::CryptoVolError;
-use aes::cipher::{BlockDecrypt, KeyInit};
+use aes::cipher::KeyInit;
 use aes::{Aes128, Aes256};
 use argon2::{Algorithm, Argon2, Params, Version};
+use base64::prelude::BASE64_STANDARD;
+use base64::Engine;
 use pbkdf2::pbkdf2_hmac;
 use serde::Deserialize;
 use sha2::Sha256;
@@ -13,6 +15,14 @@ use vajra_core::traits::ReadOnlyBlockSource;
 use zeroize::Zeroize;
 
 pub const LUKS2_MAGIC: &[u8; 6] = b"LUKS\xba\xbe";
+
+fn decode_base64_or_hex(s: &str) -> Vec<u8> {
+    hex::decode(s.trim())
+        .or_else(|_| hex::decode(s.replace('-', "")))
+        .or_else(|_| BASE64_STANDARD.decode(s.trim()))
+        .unwrap_or_else(|_| s.as_bytes().to_vec())
+}
+
 
 #[derive(Debug, Deserialize)]
 pub struct Luks2JsonRoot {
@@ -138,10 +148,7 @@ impl Luks2Header {
                 continue;
             }
 
-            let salt_bytes = hex::decode(&slot.kdf.salt)
-                .or_else(|_| hex::decode(slot.kdf.salt.replace('-', "")))
-                .unwrap_or_else(|_| slot.kdf.salt.as_bytes().to_vec());
-
+            let salt_bytes = decode_base64_or_hex(&slot.kdf.salt);
             let mut derived_key = vec![0u8; slot.key_size];
 
             if slot.kdf.kdf_type == "argon2id" {
@@ -171,24 +178,27 @@ impl Luks2Header {
             let raw_material = source.read_blocks(area_lba, sectors_to_read as u32)?;
             let mut encrypted_material = raw_material[..area_size_bytes.min(raw_material.len())].to_vec();
 
-            // Decrypt key material
+            // Decrypt key material with AES-XTS (standard LUKS2)
             if derived_key.len() == 64 {
-                if let Ok(cipher) = Aes256::new_from_slice(&derived_key[..32]) {
-                    for block in encrypted_material.chunks_exact_mut(16) {
-                        let mut b = *aes::Block::from_slice(block);
-                        cipher.decrypt_block(&mut b);
-                        block.copy_from_slice(&b);
-                    }
+                let c1 = Aes256::new_from_slice(&derived_key[0..32]).unwrap();
+                let c2 = Aes256::new_from_slice(&derived_key[32..64]).unwrap();
+                let xts = xts_mode::Xts128::new(c1, c2);
+                for (sector_idx, chunk) in encrypted_material.chunks_exact_mut(512).enumerate() {
+                    let mut tweak = [0u8; 16];
+                    tweak[0..8].copy_from_slice(&(sector_idx as u64).to_le_bytes());
+                    xts.decrypt_area(chunk, 512, 0, |_| tweak);
                 }
             } else if derived_key.len() == 32 {
-                if let Ok(cipher) = Aes128::new_from_slice(&derived_key[..16]) {
-                    for block in encrypted_material.chunks_exact_mut(16) {
-                        let mut b = *aes::Block::from_slice(block);
-                        cipher.decrypt_block(&mut b);
-                        block.copy_from_slice(&b);
-                    }
+                let c1 = Aes128::new_from_slice(&derived_key[0..16]).unwrap();
+                let c2 = Aes128::new_from_slice(&derived_key[16..32]).unwrap();
+                let xts = xts_mode::Xts128::new(c1, c2);
+                for (sector_idx, chunk) in encrypted_material.chunks_exact_mut(512).enumerate() {
+                    let mut tweak = [0u8; 16];
+                    tweak[0..8].copy_from_slice(&(sector_idx as u64).to_le_bytes());
+                    xts.decrypt_area(chunk, 512, 0, |_| tweak);
                 }
             }
+
 
             // Merge AF stripes
             let mut master_key = vec![0u8; slot.key_size];
@@ -208,8 +218,8 @@ impl Luks2Header {
             // Match against digests
             let matching_digest = self.json.digests.values().find(|d| d.keyslots.contains(slot_name));
             if let Some(digest) = matching_digest {
-                let d_salt = hex::decode(&digest.salt).unwrap_or_else(|_| digest.salt.as_bytes().to_vec());
-                let expected_digest = hex::decode(&digest.digest).unwrap_or_default();
+                let d_salt = decode_base64_or_hex(&digest.salt);
+                let expected_digest = decode_base64_or_hex(&digest.digest);
                 let iters = digest.iterations.unwrap_or(1000);
 
                 let mut cand_digest = vec![0u8; expected_digest.len().max(32)];
@@ -228,6 +238,8 @@ impl Luks2Header {
                     return Ok((cipher, payload_offset_sectors));
                 }
             }
+
+
 
             master_key.zeroize();
             derived_key.zeroize();

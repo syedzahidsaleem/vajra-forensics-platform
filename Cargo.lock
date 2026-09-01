@@ -1599,6 +1599,7 @@ version = "0.1.0"
 dependencies = [
  "aes",
  "argon2",
+ "base64",
  "cbc",
  "cipher",
  "hex",

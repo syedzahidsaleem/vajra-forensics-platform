@@ -3,7 +3,7 @@
 //! Verifies lawful unlock, wrong-credential hard failure, and composability
 //! across LUKS1, LUKS2, BitLocker, and RAID-backed encrypted volumes.
 
-use aes::cipher::{BlockEncrypt, KeyInit};
+use aes::cipher::KeyInit;
 use aes::Aes256;
 use pbkdf2::pbkdf2_hmac;
 use sha1::Sha1;
@@ -163,13 +163,15 @@ fn test_luks1_unlock_success_and_wrong_passphrase_failure() {
     let mut derived_slot_key = vec![0u8; 64];
     pbkdf2_hmac::<Sha1>(correct_passphrase.as_bytes(), &slot_salt, slot_iters, &mut derived_slot_key);
 
-    // Encrypt split material with derived slot key (AES-ECB)
-    let slot_cipher = Aes256::new_from_slice(&derived_slot_key[..32]).unwrap();
+    // Encrypt split material with derived slot key (AES-XTS)
+    let c1 = Aes256::new_from_slice(&derived_slot_key[0..32]).unwrap();
+    let c2 = Aes256::new_from_slice(&derived_slot_key[32..64]).unwrap();
+    let xts = Xts128::new(c1, c2);
     let mut encrypted_material = split_material.clone();
-    for block in encrypted_material.chunks_exact_mut(16) {
-        let mut b = *aes::Block::from_slice(block);
-        slot_cipher.encrypt_block(&mut b);
-        block.copy_from_slice(&b);
+    for (sector_idx, chunk) in encrypted_material.chunks_exact_mut(512).enumerate() {
+        let mut tweak = [0u8; 16];
+        tweak[0..8].copy_from_slice(&(sector_idx as u64).to_le_bytes());
+        xts.encrypt_area(chunk, 512, 0, |_| tweak);
     }
 
     // Write encrypted material to LBA 2 (byte 1024)
@@ -432,12 +434,14 @@ fn test_luks2_argon2id_unlock_and_wrong_passphrase_failure() {
     let mut derived_slot_key = vec![0u8; 64];
     pbkdf2_hmac::<Sha256>(correct_passphrase.as_bytes(), &salt_bytes, slot_iters, &mut derived_slot_key);
 
-    let slot_cipher = Aes256::new_from_slice(&derived_slot_key[..32]).unwrap();
+    let c1 = Aes256::new_from_slice(&derived_slot_key[0..32]).unwrap();
+    let c2 = Aes256::new_from_slice(&derived_slot_key[32..64]).unwrap();
+    let xts = Xts128::new(c1, c2);
     let mut encrypted_material = split_material.clone();
-    for block in encrypted_material.chunks_exact_mut(16) {
-        let mut b = *aes::Block::from_slice(block);
-        slot_cipher.encrypt_block(&mut b);
-        block.copy_from_slice(&b);
+    for (sector_idx, chunk) in encrypted_material.chunks_exact_mut(512).enumerate() {
+        let mut tweak = [0u8; 16];
+        tweak[0..8].copy_from_slice(&(sector_idx as u64).to_le_bytes());
+        xts.encrypt_area(chunk, 512, 0, |_| tweak);
     }
 
     let area_offset_bytes = 32768usize; // LBA 64
@@ -515,4 +519,29 @@ fn test_luks2_argon2id_unlock_and_wrong_passphrase_failure() {
         "Decrypted LUKS2 volume payload must match ground truth exactly"
     );
 }
+
+#[test]
+fn test_real_luks1_unlock() {
+    let manifest_dir = env!("CARGO_MANIFEST_DIR");
+    let fixture_path = std::path::Path::new(manifest_dir).join("../../test_fixtures/luks1_real.raw");
+    if !fixture_path.exists() {
+        println!("Skipping: fixture '{}' not found", fixture_path.display());
+        return;
+    }
+
+    let file_data = std::fs::read(&fixture_path).unwrap();
+    let mock = MockBlockSource::new(file_data, 512, "REAL-LUKS1");
+    match auto_unlock(mock, "VajraRealLuks1Pass!") {
+        Ok(vol) => {
+            println!("SUCCESS: Unlocked real cryptsetup LUKS1 volume: {} (cipher: {})", vol.format_name(), vol.cipher_name());
+            assert_eq!(vol.format_name(), "LUKS");
+        }
+        Err(e) => {
+            panic!("FAILED to unlock real cryptsetup LUKS1 volume: {:?}", e);
+        }
+    }
+}
+
+
+
 

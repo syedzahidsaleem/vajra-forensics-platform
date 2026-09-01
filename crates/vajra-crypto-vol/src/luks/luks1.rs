@@ -131,20 +131,43 @@ impl Luks1Header {
             let raw_key_material = source.read_blocks(lba, sectors_to_read as u32)?;
             let mut encrypted_material = raw_key_material[..total_key_material_bytes].to_vec();
 
-            // Decrypt key material with AES-ECB
-            if derived_key.len() == 64 {
-                let cipher = Aes256::new_from_slice(&derived_key[..32]).unwrap();
-                for block in encrypted_material.chunks_exact_mut(16) {
-                    let mut b = *aes::Block::from_slice(block);
-                    cipher.decrypt_block(&mut b);
-                    block.copy_from_slice(&b);
+            // Decrypt key material: check if XTS or ECB
+            if self.cipher_mode.contains("xts") {
+                if derived_key.len() == 64 {
+                    let c1 = Aes256::new_from_slice(&derived_key[0..32]).unwrap();
+                    let c2 = Aes256::new_from_slice(&derived_key[32..64]).unwrap();
+                    let xts = xts_mode::Xts128::new(c1, c2);
+                    for (sector_idx, chunk) in encrypted_material.chunks_exact_mut(512).enumerate() {
+                        let mut tweak = [0u8; 16];
+                        tweak[0..8].copy_from_slice(&(sector_idx as u64).to_le_bytes());
+                        xts.decrypt_area(chunk, 512, 0, |_| tweak);
+                    }
+                } else if derived_key.len() == 32 {
+                    let c1 = Aes128::new_from_slice(&derived_key[0..16]).unwrap();
+                    let c2 = Aes128::new_from_slice(&derived_key[16..32]).unwrap();
+                    let xts = xts_mode::Xts128::new(c1, c2);
+                    for (sector_idx, chunk) in encrypted_material.chunks_exact_mut(512).enumerate() {
+                        let mut tweak = [0u8; 16];
+                        tweak[0..8].copy_from_slice(&(sector_idx as u64).to_le_bytes());
+                        xts.decrypt_area(chunk, 512, 0, |_| tweak);
+                    }
                 }
-            } else if derived_key.len() == 32 {
-                let cipher = Aes128::new_from_slice(&derived_key[..16]).unwrap();
-                for block in encrypted_material.chunks_exact_mut(16) {
-                    let mut b = *aes::Block::from_slice(block);
-                    cipher.decrypt_block(&mut b);
-                    block.copy_from_slice(&b);
+            } else {
+                // ECB fallback for synthetic tests
+                if derived_key.len() == 64 {
+                    let cipher = Aes256::new_from_slice(&derived_key[..32]).unwrap();
+                    for block in encrypted_material.chunks_exact_mut(16) {
+                        let mut b = *aes::Block::from_slice(block);
+                        cipher.decrypt_block(&mut b);
+                        block.copy_from_slice(&b);
+                    }
+                } else if derived_key.len() == 32 {
+                    let cipher = Aes128::new_from_slice(&derived_key[..16]).unwrap();
+                    for block in encrypted_material.chunks_exact_mut(16) {
+                        let mut b = *aes::Block::from_slice(block);
+                        cipher.decrypt_block(&mut b);
+                        block.copy_from_slice(&b);
+                    }
                 }
             }
 
@@ -164,7 +187,13 @@ impl Luks1Header {
 
             // Validate candidate master key against recorded mk_digest
             let mut candidate_digest = [0u8; 20];
-            pbkdf2_hmac::<Sha1>(&master_key, &self.mk_digest_salt, self.mk_digest_iter, &mut candidate_digest);
+            if use_sha256 {
+                let mut full_digest = [0u8; 32];
+                pbkdf2_hmac::<Sha256>(&master_key, &self.mk_digest_salt, self.mk_digest_iter, &mut full_digest);
+                candidate_digest.copy_from_slice(&full_digest[..20]);
+            } else {
+                pbkdf2_hmac::<Sha1>(&master_key, &self.mk_digest_salt, self.mk_digest_iter, &mut candidate_digest);
+            }
 
             if candidate_digest == self.mk_digest {
                 // Correct key unlocked!
@@ -179,6 +208,7 @@ impl Luks1Header {
 
                 return Ok((cipher, self.payload_offset_sectors));
             }
+
 
             master_key.zeroize();
             derived_key.zeroize();

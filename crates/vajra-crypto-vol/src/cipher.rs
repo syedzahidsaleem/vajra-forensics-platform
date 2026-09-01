@@ -201,27 +201,25 @@ pub fn af_split(key: &[u8], stripes: usize, use_sha256: bool) -> Vec<u8> {
         }
 
         let mut hash_buf = vec![0u8; key_bytes];
-        let mut offset = 0;
-        let mut block_num: u32 = 0;
-        while offset < key_bytes {
-            let take = (key_bytes - offset).min(if use_sha256 { 32 } else { 20 });
+        let hash_len = if use_sha256 { 32 } else { 20 };
+        let num_blocks = (key_bytes + hash_len - 1) / hash_len;
+
+        for block_num in 0..num_blocks {
+            let iv = ((i * num_blocks + block_num) as u32).to_be_bytes();
+            let take = (key_bytes - block_num * hash_len).min(hash_len);
             if use_sha256 {
                 let mut hasher = Sha256::new();
-                hasher.update((i as u32).to_be_bytes());
-                hasher.update(block_num.to_be_bytes());
+                hasher.update(&iv);
                 hasher.update(&buf);
                 let digest = hasher.finalize();
-                hash_buf[offset..offset + take].copy_from_slice(&digest[..take]);
+                hash_buf[block_num * hash_len..block_num * hash_len + take].copy_from_slice(&digest[..take]);
             } else {
                 let mut hasher = Sha1::new();
-                hasher.update((i as u32).to_be_bytes());
-                hasher.update(block_num.to_be_bytes());
+                hasher.update(&iv);
                 hasher.update(&buf);
                 let digest = hasher.finalize();
-                hash_buf[offset..offset + take].copy_from_slice(&digest[..take]);
+                hash_buf[block_num * hash_len..block_num * hash_len + take].copy_from_slice(&digest[..take]);
             }
-            offset += take;
-            block_num += 1;
         }
         buf.copy_from_slice(&hash_buf);
     }
@@ -235,7 +233,6 @@ pub fn af_split(key: &[u8], stripes: usize, use_sha256: bool) -> Vec<u8> {
 }
 
 /// Anti-Forensic Splitter inverse (AFMerge) for LUKS1/LUKS2.
-
 pub fn af_merge(
     split_data: &[u8],
     key_bytes: usize,
@@ -256,6 +253,8 @@ pub fn af_merge(
 
     let mut buf = vec![0u8; key_bytes];
     let mut hash_buf = vec![0u8; key_bytes];
+    let hash_len = if use_sha256 { 32 } else { 20 };
+    let num_blocks = (key_bytes + hash_len - 1) / hash_len;
 
     for i in 0..stripes {
         let src = &split_data[i * key_bytes..(i + 1) * key_bytes];
@@ -264,27 +263,22 @@ pub fn af_merge(
         }
 
         if i + 1 < stripes {
-            let mut offset = 0;
-            let mut block_num: u32 = 0;
-            while offset < key_bytes {
-                let take = (key_bytes - offset).min(if use_sha256 { 32 } else { 20 });
+            for block_num in 0..num_blocks {
+                let iv = ((i * num_blocks + block_num) as u32).to_be_bytes();
+                let take = (key_bytes - block_num * hash_len).min(hash_len);
                 if use_sha256 {
                     let mut hasher = Sha256::new();
-                    hasher.update((i as u32).to_be_bytes());
-                    hasher.update(block_num.to_be_bytes());
+                    hasher.update(&iv);
                     hasher.update(&buf);
                     let digest = hasher.finalize();
-                    hash_buf[offset..offset + take].copy_from_slice(&digest[..take]);
+                    hash_buf[block_num * hash_len..block_num * hash_len + take].copy_from_slice(&digest[..take]);
                 } else {
                     let mut hasher = Sha1::new();
-                    hasher.update((i as u32).to_be_bytes());
-                    hasher.update(block_num.to_be_bytes());
+                    hasher.update(&iv);
                     hasher.update(&buf);
                     let digest = hasher.finalize();
-                    hash_buf[offset..offset + take].copy_from_slice(&digest[..take]);
+                    hash_buf[block_num * hash_len..block_num * hash_len + take].copy_from_slice(&digest[..take]);
                 }
-                offset += take;
-                block_num += 1;
             }
             buf.copy_from_slice(&hash_buf);
         }
@@ -296,3 +290,4 @@ pub fn af_merge(
 
     Ok(())
 }
+
