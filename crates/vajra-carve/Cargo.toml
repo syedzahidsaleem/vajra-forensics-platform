@@ -1,0 +1,26 @@
+[package]
+name = "vajra-carve"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Vajra Tier 1/2/3 Recovery & File Carving Engine (§25–§32)"
+
+[dependencies]
+vajra-core = { path = "../vajra-core" }
+vajra-fs-fat = { path = "../vajra-fs-fat" }
+vajra-fs-ext4 = { path = "../vajra-fs-ext4" }
+vajra-fs-ntfs = { path = "../vajra-fs-ntfs" }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+chrono = { workspace = true }
+crc32fast = { workspace = true }
+flate2 = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.10"
+vajra-image = { path = "../vajra-image" }

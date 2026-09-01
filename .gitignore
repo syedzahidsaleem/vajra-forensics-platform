@@ -1,0 +1,38 @@
+# Build artifacts
+/target
+target/
+*.pdb
+*.exe
+**/*.rs.bk
+
+# Reference and temporary artifacts
+/reference
+reference/
+
+# Database files and test vaults
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Python bytecode and caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Development test outputs and demo reports
+reports_demo/
+test_demo/
+win_anchor.json
+*.raw
+*.img
+*.vjr
+
+# IDE & OS files
+.idea/
+.vscode/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,0 +1,10 @@
+# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
+[package]
+name = "vajra-raid"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+vajra-core = { path = "../vajra-core" }

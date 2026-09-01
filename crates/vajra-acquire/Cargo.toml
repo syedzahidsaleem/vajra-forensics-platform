@@ -1,0 +1,31 @@
+[package]
+name = "vajra-acquire"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Evidence acquisition, imaging orchestration, bad-sector recovery, and integrity hashing for Vajra (§19, §20)"
+
+[dependencies]
+vajra-core = { path = "../vajra-core" }
+vajra-image = { path = "../vajra-image" }
+vajra-case-db = { path = "../vajra-case-db" }
+vajra-audit = { path = "../vajra-audit" }
+vajra-custody = { path = "../vajra-custody" }
+thiserror = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = ["Win32_Storage_FileSystem"] }
+
+[dev-dependencies]
+tempfile = "3.10"

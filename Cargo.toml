@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/vajra-core",
+    "crates/vajra-device",
+    "crates/vajra-raid",
+    "crates/vajra-crypto-vol",
+    "crates/vajra-image",
+    "crates/vajra-fs-ntfs",
+    "crates/vajra-fs-ext4",
+    "crates/vajra-fs-apfs",
+    "crates/vajra-fs-fat",
+    "crates/vajra-acquire",
+    "crates/vajra-erase",
+    "crates/vajra-file-erase",
+    "crates/vajra-carve",
+    "crates/vajra-ml",
+    "crates/vajra-audit",
+    "crates/vajra-custody",
+    "crates/vajra-case-db",
+    "crates/vajra-verify",
+    "crates/vajra-tauri-app",
+    "crates/vajra-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Vajra Project Team"]
+license = "Apache-2.0"
+
+[workspace.dependencies]
+thiserror = "2.0"
+sha2 = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
+hex = "0.4"
+chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
+uuid = { version = "1.10", features = ["v4", "serde"] }
+argon2 = "0.5"
+zeroize = { version = "1.8", features = ["derive"] }
+crc32fast = "1.4"
+flate2 = "1.0"
+rcgen = "0.13"
+ed25519-dalek = { version = "2.1", features = ["rand_core"] }
+rand = "0.8"
+ureq = "2.10"

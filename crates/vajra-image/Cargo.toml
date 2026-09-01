@@ -1,0 +1,20 @@
+# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
+[package]
+name = "vajra-image"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+vajra-core = { path = "../vajra-core" }
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+hex = { workspace = true }
+sha2 = { workspace = true }
+ewf = { version = "0.4.10", default-features = false }
+
+[dev-dependencies]
+tempfile = "3.10"

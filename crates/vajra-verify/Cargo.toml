@@ -1,0 +1,26 @@
+[package]
+name = "vajra-verify"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Independent forensic report and digital signature verification tool (§42)"
+
+[[bin]]
+name = "vajra-verify"
+path = "src/main.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+ed25519-dalek = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+rcgen = { workspace = true }
+
+[dev-dependencies]
+rand = { workspace = true }
+tempfile = "3.10"

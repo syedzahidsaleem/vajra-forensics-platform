@@ -1,0 +1,112 @@
+{
+  "model_type": "GradientBoostingClassifier",
+  "n_estimators": 60,
+  "max_depth": 4,
+  "n_features": 280,
+  "classes": [
+    "jpeg",
+    "png",
+    "pdf",
+    "zip",
+    "sqlite",
+    "unknown"
+  ],
+  "metrics": {
+    "macro_precision": 0.9963768115942028,
+    "macro_recall": 0.9962962962962963,
+    "macro_f1": 0.9962958389924682,
+    "test_sample_count": 540
+  },
+  "top_features": [
+    {
+      "rank": 1,
+      "index": 276,
+      "name": "bigram_variance",
+      "importance": 0.16476585133245966
+    },
+    {
+      "rank": 2,
+      "index": 17,
+      "name": "byte_freq_11",
+      "importance": 0.11801628615253208
+    },
+    {
+      "rank": 3,
+      "index": 76,
+      "name": "byte_freq_4c",
+      "importance": 0.10549273758385756
+    },
+    {
+      "rank": 4,
+      "index": 75,
+      "name": "byte_freq_4b",
+      "importance": 0.104966141872412
+    },
+    {
+      "rank": 5,
+      "index": 256,
+      "name": "entropy_chunk_0",
+      "importance": 0.08544115799669945
+    },
+    {
+      "rank": 6,
+      "index": 60,
+      "name": "byte_freq_3c",
+      "importance": 0.08417918847620996
+    },
+    {
+      "rank": 7,
+      "index": 20,
+      "name": "byte_freq_14",
+      "importance": 0.06267020569668766
+    },
+    {
+      "rank": 8,
+      "index": 0,
+      "name": "byte_freq_00",
+      "importance": 0.05165068272203529
+    },
+    {
+      "rank": 9,
+      "index": 48,
+      "name": "byte_freq_30",
+      "importance": 0.038768561174834036
+    },
+    {
+      "rank": 10,
+      "index": 273,
+      "name": "bigram_top10_concentration",
+      "importance": 0.03625258513417386
+    },
+    {
+      "rank": 11,
+      "index": 279,
+      "name": "chi_square_uniformity",
+      "importance": 0.029229620240762023
+    },
+    {
+      "rank": 12,
+      "index": 1,
+      "name": "byte_freq_01",
+      "importance": 0.028220112586514506
+    },
+    {
+      "rank": 13,
+      "index": 32,
+      "name": "byte_freq_20",
+      "importance": 0.017751848492765065
+    },
+    {
+      "rank": 14,
+      "index": 47,
+      "name": "byte_freq_2f",
+      "importance": 0.008526657453767383
+    },
+    {
+      "rank": 15,
+      "index": 84,
+      "name": "byte_freq_54",
+      "importance": 0.0078107755042484215
+    }
+  ]
+}
