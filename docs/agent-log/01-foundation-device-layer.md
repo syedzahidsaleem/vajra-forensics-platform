@@ -149,3 +149,9 @@ Valid Boot Record Signature detected at offset 0x01FE (0x55, 0xAA)
    - `DeviceFingerprint.sha256_hash` (stored as 64-character hex string) should be indexed in the database schema to link physical evidence acquisitions to case ledgers.
 3. **Chain of Custody vs Audit Log Split**:
    - `vajra-audit` (what the software did) and `vajra-custody` (who possessed the physical evidence) are two distinct crates per §21 and §39.
+
+---
+
+## 5. Closing Note (Follow-Up Verification)
+- Re-verified non-destructive device enumeration (`vajra-cli list`), fingerprinting, and read-only inspection against secondary and virtual storage block devices (`/dev/sda` through `/dev/sdd`). System OS disk protection (`/dev/sdd` - Protected) and OS read-only mount detection accurately reported with zero write commands issued.
+

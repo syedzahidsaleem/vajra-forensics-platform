@@ -1,10 +1,32 @@
-# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
 [package]
 name = "vajra-crypto-vol"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
+description = "Lawful encrypted volume (LUKS, BitLocker, FileVault) unlock and sector decryption engine (§16, §57)"
 
 [dependencies]
 vajra-core = { path = "../vajra-core" }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+hex = { workspace = true }
+sha2 = { workspace = true }
+sha1 = { workspace = true }
+argon2 = { workspace = true }
+aes = { workspace = true }
+cipher = { workspace = true }
+xts-mode = { workspace = true }
+cbc = { workspace = true }
+pbkdf2 = { workspace = true }
+hmac = { workspace = true }
+zeroize = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.10"
+rand = { workspace = true }
+vajra-image = { path = "../vajra-image" }
+vajra-raid = { path = "../vajra-raid" }

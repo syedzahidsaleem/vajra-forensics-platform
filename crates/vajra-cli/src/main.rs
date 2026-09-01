@@ -30,8 +30,13 @@ use vajra_erase::{
     MockWritableDevice, SanitizationCertificate, SanitizationDecisionEngine,
 };
 use vajra_file_erase::erase_local_file_destructive;
+use vajra_crypto_vol::auto_unlock;
 use vajra_image::{E01ImageReader, ForensicImageReader, RawImageReader, RawImageWriter};
 use vajra_ml::{extract_features, FileTypeClassifier, MlEntropyAnalyzer};
+use vajra_raid::{
+    detect_mdadm_superblock, layout::ParityLayout, layout::RaidGeometry, layout::RaidLevel,
+    RaidArray,
+};
 use vajra_verify::verify_report_file;
 use std::sync::Arc;
 
@@ -97,8 +102,16 @@ REPORTING & INDEPENDENT VERIFIER COMMANDS (§41, §42):
   report list <CASE_ID>                List all generated reports recorded for a case
   report verify <REPORT.vjr> [--evidence PATH]
                                        Independently verify report integrity via vajra-verify
+
+ADVANCED STORAGE PROVIDERS (§15, §16, §57):
+  raid detect <MEMBERS...>             Detect mdadm RAID superblocks across member devices
+  raid inspect <MEMBERS...> [--level 0|5|6] [--chunk KB] [--degraded IDX...]
+                                       Reconstruct and inspect virtual RAID array
+  crypto-vol unlock <SOURCE> [--password PW] [--recovery-key KEY]
+                                       Lawful LUKS / BitLocker unlock and plaintext inspect
 \n");
 }
+
 
 
 
@@ -593,6 +606,54 @@ fn main() {
                 }
                 other => {
                     eprintln!("Unknown report subcommand: '{}'", other);
+                    process::exit(1);
+                }
+            }
+        }
+
+        // --- Advanced Storage Providers (§15, §16, §57) ---
+        "raid" => {
+            if filtered_args.len() < 2 {
+                eprintln!("Error: 'raid' requires a subcommand (detect, inspect).");
+                process::exit(1);
+            }
+            match filtered_args[1].as_str() {
+                "detect" => {
+                    if filtered_args.len() < 3 {
+                        eprintln!("Usage: vajra-cli raid detect <MEMBER_PATHS...>");
+                        process::exit(1);
+                    }
+                    cmd_raid_detect(&filtered_args[2..]);
+                }
+                "inspect" | "mount" => {
+                    if filtered_args.len() < 3 {
+                        eprintln!("Usage: vajra-cli raid inspect <MEMBERS...> [--level <0|5|6>] [--chunk <KB>] [--degraded <IDX...>]");
+                        process::exit(1);
+                    }
+                    cmd_raid_inspect(&filtered_args[2..]);
+                }
+                other => {
+                    eprintln!("Unknown raid subcommand: '{}'", other);
+                    process::exit(1);
+                }
+            }
+        }
+
+        "crypto-vol" => {
+            if filtered_args.len() < 2 {
+                eprintln!("Error: 'crypto-vol' requires a subcommand (unlock).");
+                process::exit(1);
+            }
+            match filtered_args[1].as_str() {
+                "unlock" => {
+                    if filtered_args.len() < 3 {
+                        eprintln!("Usage: vajra-cli crypto-vol unlock <DEVICE_OR_IMAGE> [--password <PW>] [--recovery-key <KEY>]");
+                        process::exit(1);
+                    }
+                    cmd_crypto_unlock(&filtered_args[2..]);
+                }
+                other => {
+                    eprintln!("Unknown crypto-vol subcommand: '{}'", other);
                     process::exit(1);
                 }
             }
@@ -2588,4 +2649,289 @@ fn cmd_report_verify(report_path_str: &str, evidence_path_str: Option<&str>) {
         }
     }
 }
+
+// =============================================================================
+// CLI Handlers: Advanced Storage Providers (§15, §16, §57)
+// =============================================================================
+
+fn open_source_box(path: &str) -> Result<Box<dyn ReadOnlyBlockSource>, String> {
+    let p = std::path::Path::new(path);
+    if p.exists() && p.is_file() {
+        if path.to_lowercase().ends_with(".e01") || path.to_lowercase().ends_with(".ex01") {
+            let reader = E01ImageReader::open(path).map_err(|e| format!("Failed opening E01 image: {}", e))?;
+            Ok(Box::new(reader))
+        } else {
+            let reader = RawImageReader::open(path, None).map_err(|e| format!("Failed opening RAW image: {}", e))?;
+            Ok(Box::new(reader))
+        }
+    } else {
+        let drive = PhysicalDrive::open_readonly(path).map_err(|e| format!("Failed opening physical drive: {}", e))?;
+        Ok(Box::new(drive))
+    }
+}
+
+fn cmd_raid_detect(member_paths: &[String]) {
+    println!("================================================================================");
+    println!("                VAJRA RAID ARRAY METADATA DETECTION (§15, §16)");
+    println!("================================================================================");
+    println!("Scanning {} member devices/images for RAID superblocks...\n", member_paths.len());
+
+    let mut detected_count = 0;
+    for (i, path) in member_paths.iter().enumerate() {
+        print!("  [{}] {}: ", i, path);
+        match open_source_box(path) {
+            Ok(mut source) => {
+                match detect_mdadm_superblock(source.as_mut()) {
+                    Ok(sb) => {
+                        detected_count += 1;
+                        println!("[DETECTED]");
+                        println!("      Format:           Linux software RAID (mdadm v1.{})", sb.minor_version);
+                        println!("      Array Name:       {}", if sb.set_name.is_empty() { "(unnamed)" } else { &sb.set_name });
+                        println!("      Array UUID:       {}", hex::encode(sb.set_uuid));
+                        println!("      RAID Level:       {}", sb.level);
+                        println!("      Parity Layout:    {:?}", sb.layout);
+                        println!("      Active Members:   {}", sb.raid_disks);
+                        println!("      Member Dev Slot:  #{}", sb.dev_number);
+                        println!("      Chunk Size:       {} KiB ({} sectors)", (sb.chunk_size_sectors * 512) / 1024, sb.chunk_size_sectors);
+                        println!("      Data Offset:      LBA {} ({} bytes)", sb.data_offset_sectors, sb.data_offset_sectors * 512);
+                    }
+                    Err(_) => {
+                        println!("[No RAID superblock detected]");
+                    }
+                }
+            }
+            Err(e) => {
+                println!("[ERROR: {}]", e);
+            }
+        }
+    }
+
+    println!("--------------------------------------------------------------------------------");
+    println!("Total RAID superblocks detected: {} of {}", detected_count, member_paths.len());
+    println!("================================================================================");
+}
+
+fn cmd_raid_inspect(args: &[String]) {
+    let mut member_paths = Vec::new();
+    let mut level_str = None;
+    let mut chunk_kb = 64u32;
+    let mut degraded_indices: Vec<usize> = Vec::new();
+
+    let mut i = 0;
+    while i < args.len() {
+        if args[i] == "--level" && i + 1 < args.len() {
+            level_str = Some(args[i + 1].as_str());
+            i += 2;
+        } else if args[i] == "--chunk" && i + 1 < args.len() {
+            chunk_kb = args[i + 1].parse().unwrap_or(64);
+            i += 2;
+        } else if args[i] == "--degraded" && i + 1 < args.len() {
+            for part in args[i + 1].split(',') {
+                if let Ok(idx) = part.parse::<usize>() {
+                    degraded_indices.push(idx);
+                }
+            }
+            i += 2;
+        } else if !args[i].starts_with("--") {
+            member_paths.push(args[i].clone());
+            i += 1;
+        } else {
+            i += 1;
+        }
+    }
+
+    if member_paths.is_empty() {
+        eprintln!("Usage: vajra-cli raid inspect <MEMBERS...> [--level <0|5|6>] [--chunk <KB>] [--degraded <IDX...>]");
+        process::exit(1);
+    }
+
+    println!("================================================================================");
+    println!("             VAJRA VIRTUAL RAID ARRAY RECONSTRUCTION (§15, §16)");
+    println!("================================================================================");
+
+    let mut raid_array = if let Some(lvl) = level_str {
+        let level = match lvl {
+            "0" | "raid0" => RaidLevel::Raid0,
+            "5" | "raid5" => RaidLevel::Raid5,
+            "6" | "raid6" => RaidLevel::Raid6,
+            other => {
+                eprintln!("[-] Unsupported RAID level: {}", other);
+                process::exit(1);
+            }
+        };
+
+        let mut sources: Vec<Option<Box<dyn ReadOnlyBlockSource>>> = Vec::new();
+        let mut sector_size = 512u32;
+        let mut member_cap = 0u64;
+
+        for (idx, path) in member_paths.iter().enumerate() {
+            if degraded_indices.contains(&idx) || path == "NONE" || path == "MISSING" {
+                sources.push(None);
+            } else {
+                match open_source_box(path) {
+                    Ok(s) => {
+                        sector_size = s.block_size();
+                        member_cap = s.total_blocks();
+                        sources.push(Some(s));
+                    }
+                    Err(e) => {
+                        eprintln!("[-] Error opening member '{}': {}", path, e);
+                        process::exit(1);
+                    }
+                }
+            }
+        }
+
+        let geom = RaidGeometry::new(
+            level,
+            ParityLayout::LeftSymmetric,
+            sources.len(),
+            chunk_kb * 1024,
+            sector_size,
+            0,
+            member_cap,
+        ).unwrap_or_else(|e| {
+            eprintln!("[-] Geometry error: {}", e);
+            process::exit(1);
+        });
+
+        RaidArray::new(geom, sources).unwrap_or_else(|e| {
+            eprintln!("[-] Array assembly error: {}", e);
+            process::exit(1);
+        })
+    } else {
+        // Auto-detect
+        let mut sources = Vec::new();
+        for path in &member_paths {
+            match open_source_box(path) {
+                Ok(s) => sources.push(s),
+                Err(e) => {
+                    eprintln!("[-] Error opening member '{}': {}", path, e);
+                    process::exit(1);
+                }
+            }
+        }
+        RaidArray::auto_detect(sources).unwrap_or_else(|e| {
+            eprintln!("[-] Auto-detection failed: {}. Try specifying --level <0|5|6>", e);
+            process::exit(1);
+        })
+    };
+
+    println!("  RAID Level:             {}", raid_array.geometry().level);
+    println!("  Member Disks:           {}", raid_array.geometry().num_members);
+    println!("  Chunk Size:             {} KiB", raid_array.geometry().chunk_size_bytes / 1024);
+    println!("  Total Logical Sectors:  {} sectors", raid_array.total_blocks());
+    println!("  Total Capacity:         {:.2} MiB ({} bytes)",
+        (raid_array.total_blocks() * 512) as f64 / (1024.0 * 1024.0),
+        raid_array.total_blocks() * 512
+    );
+    println!("  Array Health Status:    {}",
+        if raid_array.is_degraded() {
+            format!("[DEGRADED - Reconstructing missing member(s): {:?} on-the-fly]", raid_array.missing_member_indices())
+        } else {
+            "[INTACT - All members healthy]".to_string()
+        }
+    );
+    println!("  Virtual Fingerprint:    {}", raid_array.device_fingerprint().sha256_hash);
+    println!("--------------------------------------------------------------------------------");
+    println!("  READING RECONSTRUCTED VIRTUAL ARRAY (LBA 0..1):");
+
+    match raid_array.read_blocks(0, 1) {
+        Ok(lba0) => {
+            println!("\n  [LBA 0 First 64 Bytes]:");
+            print_hex_dump(&lba0[..64.min(lba0.len())]);
+            println!("\n[+] Read-only block access through RaidArray verified successfully.");
+        }
+        Err(e) => {
+            eprintln!("[-] Failed reading LBA 0: {}", e);
+            process::exit(1);
+        }
+    }
+    println!("================================================================================");
+}
+
+fn cmd_crypto_unlock(args: &[String]) {
+    let mut source_path = None;
+    let mut credential = None;
+
+    let mut i = 0;
+    while i < args.len() {
+        if args[i] == "--password" && i + 1 < args.len() {
+            credential = Some(args[i + 1].clone());
+            i += 2;
+        } else if args[i] == "--recovery-key" && i + 1 < args.len() {
+            credential = Some(args[i + 1].clone());
+            i += 2;
+        } else if !args[i].starts_with("--") {
+            source_path = Some(args[i].clone());
+            i += 1;
+        } else {
+            i += 1;
+        }
+    }
+
+    let src = match source_path {
+        Some(s) => s,
+        None => {
+            eprintln!("Usage: vajra-cli crypto-vol unlock <DEVICE_OR_IMAGE> [--password <PW>] [--recovery-key <KEY>]");
+            process::exit(1);
+        }
+    };
+
+    let cred = match credential {
+        Some(c) => c,
+        None => {
+            eprintln!("[-] Error: Either --password or --recovery-key must be provided for lawful volume unlock (§57).");
+            process::exit(1);
+        }
+    };
+
+    println!("================================================================================");
+    println!("         VAJRA LAWFUL ENCRYPTED VOLUME UNLOCK & INSPECTION (§16, §57)");
+    println!("================================================================================");
+    println!("  Target Source:          {}", src);
+
+    let source = match open_source_box(&src) {
+        Ok(s) => s,
+        Err(e) => {
+            eprintln!("[-] Error opening source: {}", e);
+            process::exit(1);
+        }
+    };
+
+    match auto_unlock(source, &cred) {
+        Ok(mut volume) => {
+            println!("  Unlock Status:          [AUTHENTICATION SUCCESS - LAWFUL UNLOCK]");
+            println!("  Encrypted Format:       {}", volume.format_name());
+            println!("  Sector Cipher:          {}", volume.cipher_name());
+            println!("  Payload Offset:         LBA {} ({} bytes)", volume.payload_offset_sectors(), volume.payload_offset_sectors() * 512);
+            println!("  Decrypted Capacity:     {:.2} MiB ({} bytes)",
+                (volume.total_blocks() * 512) as f64 / (1024.0 * 1024.0),
+                volume.total_blocks() * 512
+            );
+            println!("  Virtual Fingerprint:    {}", volume.device_fingerprint().sha256_hash);
+            println!("--------------------------------------------------------------------------------");
+            println!("  READING DECRYPTED VIRTUAL VOLUME (LBA 0..1):");
+
+            match volume.read_blocks(0, 1) {
+                Ok(lba0) => {
+                    println!("\n  [Decrypted LBA 0 First 64 Bytes]:");
+                    print_hex_dump(&lba0[..64.min(lba0.len())]);
+                    println!("\n[+] Read-only plaintext access through EncryptedVolume verified successfully.");
+                }
+                Err(e) => {
+                    eprintln!("[-] Error reading decrypted sector: {}", e);
+                    process::exit(1);
+                }
+            }
+            println!("================================================================================");
+        }
+        Err(e) => {
+            eprintln!("\n[-] Unlock Failed: {}", e);
+            println!("================================================================================");
+            process::exit(1);
+        }
+    }
+}
+
 
