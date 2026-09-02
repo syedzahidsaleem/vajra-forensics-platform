@@ -4,7 +4,7 @@
 //!
 //! Implements:
 //! - **Tier 1**: Thin orchestration wrapping `vajra-fs-ntfs`, `vajra-fs-ext4`, and `vajra-fs-fat` (§25).
-//! - **Tier 2**: Extensible signature database + Garfinkel (DFRWS 2007) fast structural validators for JPEG, PNG, PDF, ZIP/DOCX, SQLite, and legacy OLE2/CFB (DOC/XLS/PPT) (§26).
+//! - **Tier 2**: Extensible signature database + Garfinkel (DFRWS 2007) fast structural validators for JPEG, PNG, PDF, ZIP/DOCX, SQLite, legacy OLE2/CFB (DOC/XLS/PPT), and MP4/MOV ISO-BMFF (§26).
 //! - **Tier 3**: Bifragment Gap Carving (BGC) with empirical gap-size search order (`8, 16, 32, 4, 64, 24, 40` sectors) (§27).
 //! - **Confidence Scoring**: 6-signal composite weighted formula with named tunable constants (§29).
 //! - **Provenance**: Canonical `RecoveredArtifact` data model capturing complete forensic provenance (§31).
@@ -30,9 +30,9 @@ pub use error::CarveError;
 pub use pipeline::{PipelineOptions, RecoveryPipeline};
 pub use tier1::{recover_tier1, AllocatedBlockMap};
 pub use tier2::{
-    carve_tier2, FileSignature, JpegValidator, Ole2Validator, PdfValidator, PngValidator,
-    SignatureDb, SqliteValidator, StructuralValidator, ValidationResult, ValidatorFlags,
-    ValidatorRegistry, ZipValidator,
+    carve_tier2, FileSignature, JpegValidator, Mp4Validator, Ole2Validator, PdfValidator,
+    PngValidator, SignatureDb, SqliteValidator, StructuralValidator, ValidationResult,
+    ValidatorFlags, ValidatorRegistry, ZipValidator,
 };
 pub use tier3::{
     bifragment_gap_carve, carve_tier3, DEFAULT_MAX_SEARCH_RADIUS, EMPIRICAL_GAP_SEARCH_ORDER,
@@ -714,15 +714,27 @@ mod tests {
 
     #[test]
     fn test_existing_signature_database_still_parses_and_is_unchanged() {
-        // The shipped database must still load, and every entry in it must resolve to
-        // offset 0 — i.e. introducing the field changed no existing format's behaviour.
+        // The shipped database must still load, and every format that predates the
+        // header_offset field must still resolve to offset 0 — i.e. introducing the
+        // field changed no existing format's behaviour.
+        //
+        // Scoped to the six offset-0 formats by name rather than asserting over every
+        // entry, because the database now also carries the deliberately offset-4 'mp4'
+        // signature. The property under test is "pre-existing formats are untouched",
+        // not "no signature anywhere uses an offset".
+        const OFFSET_ZERO_FORMATS: [&str; 6] = ["jpeg", "png", "pdf", "zip", "sqlite", "ole2"];
+
         let db = SignatureDb::standard_forensic_signatures();
         assert!(
             !db.signatures.is_empty(),
             "The signature database must load and be non-empty"
         );
 
-        for sig in &db.signatures {
+        for sig in db
+            .signatures
+            .iter()
+            .filter(|s| OFFSET_ZERO_FORMATS.contains(&s.file_type.as_str()))
+        {
             assert_eq!(
                 sig.header_offset, None,
                 "Existing signature '{}' must not have acquired a header_offset",
@@ -809,6 +821,509 @@ mod tests {
             "An offset-less signature must not serialize a header_offset key, got: {}",
             serialized
         );
+    }
+
+    // --- 4c. MP4 / MOV ISO-BMFF Validator Tests (§26.2, §28) ---
+
+    /// Builds one ISO-BMFF box with a standard 32-bit size header.
+    fn mp4_box(box_type: &[u8; 4], payload: &[u8]) -> Vec<u8> {
+        let total = 8 + payload.len();
+        let mut b = Vec::with_capacity(total);
+        b.extend_from_slice(&(total as u32).to_be_bytes());
+        b.extend_from_slice(box_type);
+        b.extend_from_slice(payload);
+        b
+    }
+
+    /// Builds one ISO-BMFF box using the 64-bit extended size form (size32 == 1).
+    fn mp4_box_ext(box_type: &[u8; 4], payload: &[u8]) -> Vec<u8> {
+        let total = 16 + payload.len();
+        let mut b = Vec::with_capacity(total);
+        b.extend_from_slice(&1u32.to_be_bytes()); // size32 == 1 -> extended
+        b.extend_from_slice(box_type);
+        b.extend_from_slice(&(total as u64).to_be_bytes());
+        b.extend_from_slice(payload);
+        b
+    }
+
+    /// Builds an `ftyp` payload: major_brand + minor_version + compatible brands.
+    fn ftyp_payload(major: &[u8; 4], compatible: &[&[u8; 4]]) -> Vec<u8> {
+        let mut p = Vec::new();
+        p.extend_from_slice(major);
+        p.extend_from_slice(&512u32.to_be_bytes()); // minor_version
+        for c in compatible {
+            p.extend_from_slice(*c);
+        }
+        p
+    }
+
+    /// A minimal but structurally complete MP4: ftyp + moov + mdat.
+    fn build_valid_mp4(major: &[u8; 4], compatible: &[&[u8; 4]]) -> Vec<u8> {
+        let mut f = Vec::new();
+        f.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(major, compatible)));
+        f.extend_from_slice(&mp4_box(b"moov", &[0xAA; 40]));
+        f.extend_from_slice(&mp4_box(b"mdat", &[0x5A; 64]));
+        f
+    }
+
+    #[test]
+    fn test_mp4_validator_accepts_minimal_valid_file() {
+        let v = Mp4Validator;
+        let mp4 = build_valid_mp4(b"isom", &[b"isom", b"mp42"]);
+
+        let res = v.validate(&mp4);
+        assert!(
+            res.is_ok(),
+            "ftyp + moov + mdat must yield V_OK, got: {}",
+            res
+        );
+        match res {
+            ValidationResult::Ok { object_length } => assert_eq!(
+                object_length,
+                Some(mp4.len() as u64),
+                "object_length must be the exact sum of the top-level box sizes"
+            ),
+            other => panic!("expected V_OK, got {}", other),
+        }
+
+        // appended_data_ignored: sector padding after the object must not change the
+        // reported length, and must not prevent recognition.
+        let mut padded = mp4.clone();
+        padded.extend_from_slice(&[0u8; 512]);
+        match v.validate(&padded) {
+            ValidationResult::Ok { object_length } => assert_eq!(
+                object_length,
+                Some(mp4.len() as u64),
+                "Zero padding after the last box must not extend the object length"
+            ),
+            other => panic!("padded MP4 must still yield V_OK, got {}", other),
+        }
+    }
+
+    #[test]
+    fn test_mp4_validator_flags_and_type() {
+        let flags = Mp4Validator.flags();
+        assert!(
+            flags.err_is_prefix,
+            "The box tree is walked front-to-back, so an error is a prefix property"
+        );
+        assert!(
+            flags.appended_data_ignored,
+            "The box chain gives an exact extent, so trailing bytes are ignored"
+        );
+        assert!(
+            !flags.no_zblocks,
+            "free/skip padding boxes make all-zero blocks legitimate in ISO-BMFF"
+        );
+        assert_eq!(Mp4Validator.file_type(), "mp4");
+    }
+
+    #[test]
+    fn test_mp4_validator_accepts_quicktime_compatible_brand() {
+        // A modern QuickTime/MOV file carrying an ISO-BMFF ftyp with brand 'qt  '.
+        let v = Mp4Validator;
+        let mov = build_valid_mp4(b"qt  ", &[b"qt  "]);
+        assert!(
+            v.validate(&mov).is_ok(),
+            "A QuickTime-brand ISO-BMFF object must validate like any other brand"
+        );
+        assert!(vajra_carve_mp4_is_quicktime(b"qt  "));
+        assert!(!vajra_carve_mp4_is_quicktime(b"isom"));
+
+        // Structural validity must NOT depend on the known-brand list: an unheard-of
+        // brand that is otherwise well formed is still a valid object.
+        let exotic = build_valid_mp4(b"Zz9 ", &[b"Zz9 "]);
+        assert!(
+            v.validate(&exotic).is_ok(),
+            "An unknown but well-formed brand must not be rejected"
+        );
+        assert!(!crate::tier2::mp4::is_known_brand(b"Zz9 "));
+    }
+
+    // Local aliases so the test body reads clearly.
+    fn vajra_carve_mp4_is_quicktime(b: &[u8]) -> bool {
+        crate::tier2::mp4::is_quicktime_brand(b)
+    }
+
+    #[test]
+    fn test_mp4_signature_detects_ftyp_at_offset_four_through_real_matcher() {
+        // Exercises the REAL signature matcher against the REAL shipped database.
+        let db = SignatureDb::standard_forensic_signatures();
+        let sig = db
+            .signatures
+            .iter()
+            .find(|s| s.file_type == "mp4")
+            .expect("signatures.json must contain an 'mp4' entry");
+
+        assert_eq!(sig.header, b"ftyp".to_vec(), "magic must be ASCII 'ftyp'");
+        assert_eq!(sig.header_offset, Some(4), "ftyp begins at byte 4");
+        assert_eq!(sig.validator_id, "mp4");
+
+        let mp4 = build_valid_mp4(b"isom", &[b"isom"]);
+        assert!(
+            sig.matches_header(&mp4),
+            "The shipped mp4 signature must detect ftyp at offset 4"
+        );
+
+        // And the registered validator must accept what the signature matched.
+        let registry = ValidatorRegistry::default();
+        let v = registry
+            .get("mp4")
+            .expect("ValidatorRegistry must expose the 'mp4' validator id");
+        assert_eq!(v.file_type(), "mp4");
+        assert!(v.validate(&mp4).is_ok());
+    }
+
+    #[test]
+    fn test_mp4_signature_does_not_match_ftyp_in_the_wrong_place() {
+        let db = SignatureDb::standard_forensic_signatures();
+        let sig = db.signatures.iter().find(|s| s.file_type == "mp4").unwrap();
+
+        // 'ftyp' at byte 0 — the classic false positive an offset-unaware matcher takes.
+        assert!(!sig.matches_header(b"ftypisomAAAAAAAA"));
+        // 'ftyp' deeper in the buffer, e.g. inside unrelated data.
+        assert!(!sig.matches_header(b"AAAAAAAAftypisom"));
+        assert!(!sig.matches_header(b"AAAftypisomAAAA"));
+        // Plain text that merely contains the word.
+        assert!(!sig.matches_header(b"see the ftyp box for details"));
+    }
+
+    #[test]
+    fn test_mp4_existing_offset_zero_signatures_are_unaffected() {
+        // Regression: adding the offset-4 mp4 entry must not perturb any existing format.
+        let db = SignatureDb::standard_forensic_signatures();
+
+        for file_type in ["jpeg", "png", "pdf", "zip", "sqlite", "ole2"] {
+            let sig = db
+                .signatures
+                .iter()
+                .find(|s| s.file_type == file_type)
+                .unwrap_or_else(|| panic!("'{}' must still be present", file_type));
+            assert_eq!(
+                sig.header_offset, None,
+                "'{}' must still have no header_offset",
+                file_type
+            );
+            assert_eq!(sig.resolved_header_offset(), 0);
+
+            let mut candidate = sig.header.clone();
+            candidate.extend_from_slice(&[0u8; 32]);
+            assert!(
+                sig.matches_header(&candidate),
+                "'{}' must still match at byte 0",
+                file_type
+            );
+        }
+
+        // The mp4 signature must not shadow or be shadowed by any other entry: no other
+        // signature may match a well-formed MP4's first sector.
+        let mp4 = build_valid_mp4(b"isom", &[b"isom"]);
+        let matching: Vec<&str> = db
+            .signatures
+            .iter()
+            .filter(|s| s.matches_header(&mp4))
+            .map(|s| s.file_type.as_str())
+            .collect();
+        assert_eq!(
+            matching,
+            vec!["mp4"],
+            "Exactly one signature must claim an MP4 candidate (no duplicate carving hits)"
+        );
+    }
+
+    #[test]
+    fn test_mp4_truncated_and_oversized_boxes_yield_eof() {
+        let v = Mp4Validator;
+        let mp4 = build_valid_mp4(b"isom", &[b"isom"]);
+
+        // 1. A declared box larger than the available data -> V_EOF.
+        //    (ftyp + moov complete, mdat declares 64 KiB but only 16 bytes follow.)
+        let mut oversized = Vec::new();
+        oversized.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        oversized.extend_from_slice(&mp4_box(b"moov", &[0xAA; 32]));
+        oversized.extend_from_slice(&65536u32.to_be_bytes());
+        oversized.extend_from_slice(b"mdat");
+        oversized.extend_from_slice(&[0x5A; 16]);
+        let res = v.validate(&oversized);
+        assert!(
+            res.is_eof(),
+            "A declared box extending past the data must yield V_EOF, got: {}",
+            res
+        );
+
+        // Critically: it must NOT be reported complete just because moov was seen.
+        assert!(
+            !res.is_ok(),
+            "A truncated recording must never be reported as a complete object"
+        );
+
+        // 2. Truncated ordinary box header (fewer than 8 bytes remain after a box).
+        let mut short_header = mp4.clone();
+        short_header.extend_from_slice(&[0x00, 0x00, 0x00]);
+        assert!(
+            v.validate(&short_header).is_ok(),
+            "A complete object followed by 3 stray bytes ends at the object boundary"
+        );
+
+        // 3. Mid-file truncation of the whole candidate.
+        for cut in [8usize, 16, 24, mp4.len() - 1] {
+            let res = v.validate(&mp4[..cut]);
+            assert!(
+                res.is_eof(),
+                "MP4 truncated to {} bytes must yield V_EOF, got: {}",
+                cut,
+                res
+            );
+        }
+
+        // 4. ftyp alone, with no moov/mdat/moof, is structurally sound but incomplete.
+        let ftyp_only = mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"]));
+        let res = v.validate(&ftyp_only);
+        assert!(
+            res.is_eof(),
+            "ftyp with no media box must yield V_EOF (more data could complete it), got: {}",
+            res
+        );
+    }
+
+    #[test]
+    fn test_mp4_box_size_below_header_length_yields_err() {
+        let v = Mp4Validator;
+
+        // First box declares size 4 — impossible, the header alone is 8 bytes.
+        let mut bad = Vec::new();
+        bad.extend_from_slice(&4u32.to_be_bytes());
+        bad.extend_from_slice(b"ftyp");
+        bad.extend_from_slice(&[0u8; 32]);
+        let res = v.validate(&bad);
+        assert!(
+            res.is_err(),
+            "A box size below its 8-byte header must yield V_ERR, got: {}",
+            res
+        );
+
+        // Every impossible size 2..=7 in the first box must be rejected.
+        for size in 2u32..=7 {
+            let mut b = Vec::new();
+            b.extend_from_slice(&size.to_be_bytes());
+            b.extend_from_slice(b"ftyp");
+            b.extend_from_slice(&[0u8; 32]);
+            assert!(
+                v.validate(&b).is_err(),
+                "First box declaring size {} must yield V_ERR",
+                size
+            );
+        }
+    }
+
+    #[test]
+    fn test_mp4_extended_64bit_size_box() {
+        let v = Mp4Validator;
+
+        // 1. Valid extended-size mdat.
+        let mut ext = Vec::new();
+        ext.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        ext.extend_from_slice(&mp4_box(b"moov", &[0xAA; 24]));
+        ext.extend_from_slice(&mp4_box_ext(b"mdat", &[0x5A; 48]));
+        let res = v.validate(&ext);
+        assert!(
+            res.is_ok(),
+            "A valid 64-bit extended-size box must yield V_OK, got: {}",
+            res
+        );
+        match res {
+            ValidationResult::Ok { object_length } => {
+                assert_eq!(object_length, Some(ext.len() as u64))
+            }
+            other => panic!("expected V_OK, got {}", other),
+        }
+
+        // 2. Truncated 64-bit size field: size32 == 1 but fewer than 16 header bytes.
+        let mut truncated = Vec::new();
+        truncated.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        truncated.extend_from_slice(&1u32.to_be_bytes());
+        truncated.extend_from_slice(b"mdat");
+        truncated.extend_from_slice(&[0x00, 0x00, 0x00, 0x00]); // only 4 of 8 size bytes
+        let res = v.validate(&truncated);
+        assert!(
+            res.is_eof(),
+            "A truncated 64-bit size field must yield V_EOF, got: {}",
+            res
+        );
+
+        // 3. Extended size smaller than its own 16-byte header is impossible.
+        let mut impossible = Vec::new();
+        impossible.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        impossible.extend_from_slice(&1u32.to_be_bytes());
+        impossible.extend_from_slice(b"mdat");
+        impossible.extend_from_slice(&8u64.to_be_bytes()); // < 16
+        impossible.extend_from_slice(&[0u8; 32]);
+        assert!(
+            v.validate(&impossible).is_err(),
+            "A 64-bit size below the 16-byte extended header must yield V_ERR"
+        );
+    }
+
+    #[test]
+    fn test_mp4_malformed_ftyp_payload_yields_err() {
+        let v = Mp4Validator;
+
+        // 1. ftyp payload too small for major_brand + minor_version.
+        let tiny = mp4_box(b"ftyp", &[0x69, 0x73, 0x6F, 0x6D]); // 4 bytes only
+        assert!(
+            v.validate(&tiny).is_err(),
+            "ftyp payload below 8 bytes must yield V_ERR"
+        );
+
+        // 2. Compatible-brands region not a multiple of 4.
+        let mut ragged_payload = ftyp_payload(b"isom", &[b"isom"]);
+        ragged_payload.extend_from_slice(&[0x41, 0x42]); // 2 stray bytes
+        let mut ragged = mp4_box(b"ftyp", &ragged_payload);
+        ragged.extend_from_slice(&mp4_box(b"mdat", &[0u8; 16]));
+        assert!(
+            v.validate(&ragged).is_err(),
+            "A compatible-brands region that is not a multiple of 4 must yield V_ERR"
+        );
+
+        // 3. Non-printable major brand.
+        let mut binary_payload = Vec::new();
+        binary_payload.extend_from_slice(&[0x00, 0x01, 0x02, 0x03]);
+        binary_payload.extend_from_slice(&0u32.to_be_bytes());
+        let bad_brand = mp4_box(b"ftyp", &binary_payload);
+        assert!(
+            v.validate(&bad_brand).is_err(),
+            "A non-printable major_brand must yield V_ERR"
+        );
+
+        // 4. First box is well formed but is not ftyp.
+        let mut not_ftyp = Vec::new();
+        not_ftyp.extend_from_slice(&mp4_box(b"moov", &[0u8; 32]));
+        not_ftyp.extend_from_slice(&mp4_box(b"mdat", &[0u8; 16]));
+        assert!(
+            v.validate(&not_ftyp).is_err(),
+            "A first box that is not ftyp must yield V_ERR"
+        );
+    }
+
+    #[test]
+    fn test_mp4_unknown_top_level_box_is_skipped_safely() {
+        let v = Mp4Validator;
+
+        // 'uuid' and a wholly invented 'zZz9' box sit between the known ones. Both must
+        // be skipped by their declared size rather than rejected.
+        let mut f = Vec::new();
+        f.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        f.extend_from_slice(&mp4_box(b"free", &[0u8; 24]));
+        f.extend_from_slice(&mp4_box(b"uuid", &[0x11; 32]));
+        f.extend_from_slice(&mp4_box(b"zZz9", &[0x22; 16]));
+        f.extend_from_slice(&mp4_box(b"wide", &[0u8; 8]));
+        f.extend_from_slice(&mp4_box(b"moov", &[0xAA; 40]));
+        f.extend_from_slice(&mp4_box(b"skip", &[0u8; 16]));
+        f.extend_from_slice(&mp4_box(b"mdat", &[0x5A; 64]));
+
+        let res = v.validate(&f);
+        assert!(
+            res.is_ok(),
+            "Unknown but well-formed top-level boxes must be skipped, got: {}",
+            res
+        );
+        match res {
+            ValidationResult::Ok { object_length } => {
+                assert_eq!(
+                    object_length,
+                    Some(f.len() as u64),
+                    "Skipped boxes still count toward the object length"
+                )
+            }
+            other => panic!("expected V_OK, got {}", other),
+        }
+
+        // Recognition helper reports the documented set, but it does not gate validity.
+        for t in [
+            b"ftyp", b"moov", b"mdat", b"moof", b"free", b"skip", b"wide",
+        ] {
+            assert!(crate::tier2::mp4::is_recognised_top_level_box(t));
+        }
+        assert!(!crate::tier2::mp4::is_recognised_top_level_box(b"zZz9"));
+    }
+
+    #[test]
+    fn test_mp4_validator_is_panic_free_on_tiny_and_hostile_input() {
+        let v = Mp4Validator;
+
+        // Tiny inputs must not panic.
+        for len in [0usize, 1, 2, 3, 4, 5, 6, 7] {
+            let data = vec![0x00u8; len];
+            let res = v.validate(&data);
+            assert!(
+                res.is_eof(),
+                "{}-byte input must yield V_EOF without panicking, got: {}",
+                len,
+                res
+            );
+        }
+
+        // All-zero buffer: the type tag is 00 00 00 00, which is not a plausible box.
+        assert!(v.validate(&[0u8; 512]).is_err());
+
+        // 0xFF-filled buffer: enormous declared size, non-ftyp type.
+        assert!(!v.validate(&[0xFFu8; 512]).is_ok());
+
+        // A size field of u32::MAX in the first box must not overflow or panic.
+        let mut huge = Vec::new();
+        huge.extend_from_slice(&u32::MAX.to_be_bytes());
+        huge.extend_from_slice(b"ftyp");
+        huge.extend_from_slice(&[0u8; 32]);
+        assert!(v.validate(&huge).is_eof());
+
+        // A 64-bit size of u64::MAX must be caught by the overflow check, not panic.
+        let mut overflow = Vec::new();
+        overflow.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        overflow.extend_from_slice(&1u32.to_be_bytes());
+        overflow.extend_from_slice(b"mdat");
+        overflow.extend_from_slice(&u64::MAX.to_be_bytes());
+        overflow.extend_from_slice(&[0u8; 16]);
+        let res = v.validate(&overflow);
+        assert!(!res.is_ok(), "A u64::MAX box size must never validate");
+    }
+
+    #[test]
+    fn test_mp4_one_megabyte_tier2_window_limitation_is_real() {
+        // Documents the known limitation reported alongside this work: Tier 2 hands a
+        // validator at most 2048 sectors (1 MiB). A real MP4 whose mdat is larger than
+        // the window has that mdat declared but not present, so the validator correctly
+        // returns V_EOF — and Tier 2 only produces an artifact from V_OK. Large MP4s are
+        // therefore detected but not recovered until the window limit is addressed.
+        let v = Mp4Validator;
+        const WINDOW: usize = 2048 * 512; // 1 MiB, matching carve_tier2's cap
+
+        let mut header = Vec::new();
+        header.extend_from_slice(&mp4_box(b"ftyp", &ftyp_payload(b"isom", &[b"isom"])));
+        header.extend_from_slice(&mp4_box(b"moov", &[0xAA; 256]));
+        // mdat declaring 8 MiB of media — bigger than the window.
+        let mdat_total: u32 = 8 * 1024 * 1024;
+        header.extend_from_slice(&mdat_total.to_be_bytes());
+        header.extend_from_slice(b"mdat");
+
+        let mut window = header.clone();
+        window.resize(WINDOW, 0x5A); // the slice Tier 2 would actually supply
+
+        let res = v.validate(&window);
+        assert!(
+            res.is_eof(),
+            "An MP4 whose mdat exceeds the 1 MiB Tier-2 window must yield V_EOF, got: {}",
+            res
+        );
+        assert!(
+            !res.is_ok(),
+            "It must NOT be reported complete — that would carve a truncated recording"
+        );
+
+        // The same file wholly inside the window validates fine, proving the limit is
+        // the window and not the validator.
+        let small = build_valid_mp4(b"isom", &[b"isom"]);
+        assert!(small.len() < WINDOW);
+        assert!(v.validate(&small).is_ok());
     }
 
     #[test]

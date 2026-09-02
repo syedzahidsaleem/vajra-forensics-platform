@@ -40,5 +40,13 @@
     "footer": null,
     "max_size_bytes": 104857600,
     "validator_id": "ole2"
+  },
+  {
+    "file_type": "mp4",
+    "header": [102, 116, 121, 112],
+    "footer": null,
+    "max_size_bytes": 1073741824,
+    "validator_id": "mp4",
+    "header_offset": 4
   }
 ]
