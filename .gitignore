@@ -36,3 +36,10 @@ win_anchor.json
 *.log
 .DS_Store
 Thumbs.db
+
+# Node & Frontend Build
+node_modules/
+dist/
+*.timestamp-*.mjs
+.vite-temp/
+
