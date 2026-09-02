@@ -581,6 +581,236 @@ mod tests {
         assert!(v.validate(&ole2).is_ok());
     }
 
+    // --- 4b. Signature Header-Offset Plumbing Tests (§26.1) ---
+    //
+    // Shared plumbing that lets a signature declare that its identifying magic begins
+    // at a non-zero byte offset within the candidate. The motivating case is ISO-BMFF
+    // (MP4/MOV), whose `ftyp` magic starts at byte 4 after a 4-byte big-endian box
+    // size. No MP4 validator exists yet — these tests cover the matching layer only.
+
+    /// Builds a signature with no `header_offset`, i.e. the pre-existing shape that
+    /// every entry in `config/signatures.json` had before the field was introduced.
+    fn legacy_signature(file_type: &str, header: Vec<u8>) -> FileSignature {
+        FileSignature {
+            file_type: file_type.to_string(),
+            header,
+            footer: None,
+            max_size_bytes: 1024,
+            validator_id: file_type.to_string(),
+            header_offset: None,
+        }
+    }
+
+    #[test]
+    fn test_signature_without_header_offset_still_matches_at_byte_zero() {
+        // Backward compatibility: absent offset must behave exactly as offset 0 did.
+        let png = legacy_signature("png", vec![0x89, 0x50, 0x4E, 0x47]);
+        assert_eq!(png.resolved_header_offset(), 0);
+
+        let data = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+        assert!(
+            png.matches_header(&data),
+            "A signature with no header_offset must match its magic at byte 0"
+        );
+
+        // And must still reject a candidate that does not begin with the magic.
+        assert!(
+            !png.matches_header(&[0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10]),
+            "A signature with no header_offset must not match unrelated data"
+        );
+
+        // Equivalence with the previous `starts_with` test, across a spread of inputs.
+        for candidate in [
+            &[][..],
+            &[0x89][..],
+            &[0x89, 0x50, 0x4E][..],
+            &[0x89, 0x50, 0x4E, 0x47][..],
+            &[0x89, 0x50, 0x4E, 0x47, 0x00, 0x00][..],
+            &[0x00, 0x89, 0x50, 0x4E, 0x47][..],
+        ] {
+            assert_eq!(
+                png.matches_header(candidate),
+                candidate.starts_with(&png.header),
+                "matches_header must be identical to starts_with for an offset-less signature (input {:02X?})",
+                candidate
+            );
+        }
+    }
+
+    #[test]
+    fn test_signature_with_header_offset_matches_at_that_offset() {
+        // ISO-BMFF shape: 4-byte big-endian box size, then the 'ftyp' magic at byte 4.
+        let mut mp4 = legacy_signature("mp4", b"ftyp".to_vec());
+        mp4.header_offset = Some(4);
+        assert_eq!(mp4.resolved_header_offset(), 4);
+
+        let mut candidate = Vec::new();
+        candidate.extend_from_slice(&32u32.to_be_bytes()); // box size
+        candidate.extend_from_slice(b"ftypisom");
+        candidate.extend_from_slice(&[0u8; 16]);
+
+        assert!(
+            mp4.matches_header(&candidate),
+            "A signature with header_offset = 4 must match magic beginning at byte 4"
+        );
+
+        // Exactly-sized buffer: magic ends flush with the end of the data.
+        assert!(
+            mp4.matches_header(&[0x00, 0x00, 0x00, 0x20, b'f', b't', b'y', b'p']),
+            "A buffer ending exactly at the end of the magic must still match"
+        );
+    }
+
+    #[test]
+    fn test_header_offset_signature_does_not_falsely_match_at_byte_zero() {
+        let mut mp4 = legacy_signature("mp4", b"ftyp".to_vec());
+        mp4.header_offset = Some(4);
+
+        // The magic is present, but at byte 0 rather than byte 4. This is the false
+        // positive an offset-unaware matcher would accept, and it must be rejected.
+        let magic_at_zero = b"ftypisomAAAAAAAA";
+        assert!(
+            !mp4.matches_header(magic_at_zero),
+            "Magic at byte 0 must NOT satisfy a signature declaring header_offset = 4"
+        );
+
+        // Magic one byte early and one byte late must both be rejected.
+        assert!(!mp4.matches_header(b"AAAftypisom"));
+        assert!(!mp4.matches_header(b"AAAAAftypisom"));
+
+        // The same bytes as an offset-less signature would, of course, match at 0 —
+        // proving the two signatures are genuinely discriminated by the offset alone.
+        let offsetless = legacy_signature("mp4", b"ftyp".to_vec());
+        assert!(offsetless.matches_header(magic_at_zero));
+    }
+
+    #[test]
+    fn test_header_offset_matching_is_panic_free_on_short_input() {
+        let mut mp4 = legacy_signature("mp4", b"ftyp".to_vec());
+        mp4.header_offset = Some(4);
+
+        // Every truncation shorter than offset + header length must return false
+        // rather than panic on an out-of-range slice.
+        let full = [0x00, 0x00, 0x00, 0x20, b'f', b't', b'y', b'p'];
+        for len in 0..full.len() {
+            assert!(
+                !mp4.matches_header(&full[..len]),
+                "Truncated input of {} bytes must not match and must not panic",
+                len
+            );
+        }
+        assert!(mp4.matches_header(&full), "The full 8 bytes must match");
+
+        // An offset beyond any plausible buffer must also be handled, not panic.
+        let mut absurd = legacy_signature("absurd", b"XYZ".to_vec());
+        absurd.header_offset = Some(u32::MAX);
+        assert!(!absurd.matches_header(&[0u8; 64]));
+        assert!(!absurd.matches_header(&[]));
+
+        // An offset-less signature on an empty buffer, for completeness.
+        let png = legacy_signature("png", vec![0x89, 0x50]);
+        assert!(!png.matches_header(&[]));
+    }
+
+    #[test]
+    fn test_existing_signature_database_still_parses_and_is_unchanged() {
+        // The shipped database must still load, and every entry in it must resolve to
+        // offset 0 — i.e. introducing the field changed no existing format's behaviour.
+        let db = SignatureDb::standard_forensic_signatures();
+        assert!(
+            !db.signatures.is_empty(),
+            "The signature database must load and be non-empty"
+        );
+
+        for sig in &db.signatures {
+            assert_eq!(
+                sig.header_offset, None,
+                "Existing signature '{}' must not have acquired a header_offset",
+                sig.file_type
+            );
+            assert_eq!(sig.resolved_header_offset(), 0);
+        }
+
+        // All six shipped formats must still be present and detected at byte 0.
+        for (file_type, magic) in [
+            ("jpeg", vec![0xFF, 0xD8, 0xFF]),
+            ("png", vec![0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]),
+            ("pdf", b"%PDF-".to_vec()),
+            ("zip", b"PK\x03\x04".to_vec()),
+            ("sqlite", b"SQLite format 3\0".to_vec()),
+            ("ole2", vec![0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1]),
+        ] {
+            let sig = db
+                .signatures
+                .iter()
+                .find(|s| s.file_type == file_type)
+                .unwrap_or_else(|| panic!("signature database must contain '{}'", file_type));
+            assert_eq!(sig.header, magic, "'{}' magic must be unchanged", file_type);
+
+            // A candidate fronted by the magic must match, exactly as before.
+            let mut candidate = magic.clone();
+            candidate.extend_from_slice(&[0u8; 32]);
+            assert!(
+                sig.matches_header(&candidate),
+                "'{}' must still be detected at byte 0",
+                file_type
+            );
+
+            // And the same magic pushed off byte 0 must not match.
+            let mut shifted = vec![0xAA];
+            shifted.extend_from_slice(&candidate);
+            assert!(
+                !sig.matches_header(&shifted),
+                "'{}' must not match when its magic is not at byte 0",
+                file_type
+            );
+        }
+    }
+
+    #[test]
+    fn test_header_offset_json_round_trip_is_backward_compatible() {
+        // A JSON entry with no header_offset key must deserialize to None.
+        let legacy_json = r#"[
+            {
+                "file_type": "png",
+                "header": [137, 80, 78, 71],
+                "footer": null,
+                "max_size_bytes": 52428800,
+                "validator_id": "png"
+            }
+        ]"#;
+        let db = SignatureDb::from_json(legacy_json).expect("legacy JSON must still parse");
+        assert_eq!(db.signatures.len(), 1);
+        assert_eq!(db.signatures[0].header_offset, None);
+        assert!(db.signatures[0].matches_header(&[137, 80, 78, 71, 13, 10]));
+
+        // A JSON entry that declares the field must deserialize to Some(_).
+        let offset_json = r#"[
+            {
+                "file_type": "mp4",
+                "header": [102, 116, 121, 112],
+                "footer": null,
+                "max_size_bytes": 104857600,
+                "validator_id": "mp4",
+                "header_offset": 4
+            }
+        ]"#;
+        let db = SignatureDb::from_json(offset_json).expect("offset JSON must parse");
+        assert_eq!(db.signatures[0].header_offset, Some(4));
+        assert!(db.signatures[0].matches_header(b"\x00\x00\x00\x20ftypisom"));
+        assert!(!db.signatures[0].matches_header(b"ftypisomAAAA"));
+
+        // Serializing a signature that has no offset must not emit the key, so the
+        // on-disk database keeps its original shape if it is ever round-tripped.
+        let serialized =
+            serde_json::to_string(&legacy_signature("png", vec![137, 80])).expect("must serialize");
+        assert!(
+            !serialized.contains("header_offset"),
+            "An offset-less signature must not serialize a header_offset key, got: {}",
+            serialized
+        );
+    }
+
     #[test]
     fn test_ole2_entropy_profile_prefers_low_entropy() {
         let analyzer = HeuristicEntropyAnalyzer;
