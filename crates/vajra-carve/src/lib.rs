@@ -12,6 +12,7 @@
 //! # Safety Invariant (§16)
 //! Operates strictly on `&mut dyn ReadOnlyBlockSource`. Syntactically incapable of issuing writes to source evidence.
 
+pub mod calibration;
 pub mod confidence;
 pub mod entropy;
 pub mod error;
@@ -21,6 +22,9 @@ pub mod tier2;
 pub mod tier3;
 pub mod types;
 
+pub use calibration::{
+    CalibrationMetrics, EmpiricalCalibrator, LabeledGroundTruthSample, TunableWeightProfile,
+};
 pub use confidence::{
     ConfidenceBreakdown, WEIGHT_ENTROPY, WEIGHT_FRAGMENTATION, WEIGHT_HEADER_FOOTER,
     WEIGHT_METADATA, WEIGHT_OVERWRITE, WEIGHT_STRUCTURAL,

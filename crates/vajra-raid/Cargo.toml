@@ -1,4 +1,3 @@
-# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
 [package]
 name = "vajra-raid"
 version.workspace = true
@@ -8,3 +7,6 @@ license.workspace = true
 
 [dependencies]
 vajra-core = { path = "../vajra-core" }
+thiserror.workspace = true
+sha2.workspace = true
+serde.workspace = true
