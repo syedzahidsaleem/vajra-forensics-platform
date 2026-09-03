@@ -178,5 +178,74 @@ def generate_carve_corpus():
 
     print(f"Generated Carving Ground-Truth Image: {img_path} ({len(img)} bytes, {TOTAL_SECTORS} sectors)")
 
+# ---------------------------------------------------------------------------
+# MP4 / ISO-BMFF fixture (§26.2, §28) — Vaibhavi, MP4 validator task.
+#
+# DELIBERATELY written to a SEPARATE image. It is not added to carve_test.img
+# because tests/carve_tests.rs derives false positives as
+# (artifacts.len() - true_positives) and asserts precision == 1.0, so any extra
+# artifact in the shared corpus would break that ground-truth benchmark.
+# carve_test.img and its expected results are therefore untouched.
+# ---------------------------------------------------------------------------
+
+MP4_TOTAL_SECTORS = 200
+
+
+def _mp4_box(box_type: bytes, payload: bytes) -> bytes:
+    return struct.pack(">I", 8 + len(payload)) + box_type + payload
+
+
+def _mp4_ftyp(major: bytes, compatible=()) -> bytes:
+    payload = major + struct.pack(">I", 512) + b"".join(compatible)
+    return _mp4_box(b"ftyp", payload)
+
+
+def build_valid_mp4(major: bytes = b"isom") -> bytes:
+    """Minimal structurally complete ISO-BMFF object: ftyp + moov + mdat."""
+    return (
+        _mp4_ftyp(major, [b"isom", b"mp42"])
+        + _mp4_box(b"moov", bytes(range(256)) * 2)
+        + _mp4_box(b"mdat", bytes([(i * 7 + 3) % 256 for i in range(1024)]))
+    )
+
+
+def generate_mp4_fixture(img_path: str):
+    """Generates test_data/mp4_test.img with known MP4 ground truth."""
+    img = bytearray(MP4_TOTAL_SECTORS * SECTOR_SIZE)
+
+    # LBA 10: intact MP4 (ftyp at byte 0, 'ftyp' magic at byte 4)
+    intact = build_valid_mp4(b"isom")
+    img[10 * SECTOR_SIZE : 10 * SECTOR_SIZE + len(intact)] = intact
+
+    # LBA 40: intact QuickTime-brand MP4 ('qt  ')
+    qt = build_valid_mp4(b"qt  ")
+    img[40 * SECTOR_SIZE : 40 * SECTOR_SIZE + len(qt)] = qt
+
+    # LBA 70: corrupted - first box declares size 4, below its own 8-byte header
+    bad_size = bytearray(intact)
+    bad_size[0:4] = struct.pack(">I", 4)
+    img[70 * SECTOR_SIZE : 70 * SECTOR_SIZE + len(bad_size)] = bad_size
+
+    # LBA 100: truncated - mdat declares 8 MiB but only a stub is present
+    trunc = _mp4_ftyp(b"isom", [b"isom"]) + _mp4_box(b"moov", b"\xAA" * 64)
+    trunc += struct.pack(">I", 8 * 1024 * 1024) + b"mdat" + b"\x5A" * 64
+    img[100 * SECTOR_SIZE : 100 * SECTOR_SIZE + len(trunc)] = trunc
+
+    # LBA 130: decoy - the ASCII bytes 'ftyp' at offset 0 instead of offset 4,
+    # which the offset-aware signature matcher must NOT claim.
+    decoy = b"ftypisom" + b"\x00" * 64
+    img[130 * SECTOR_SIZE : 130 * SECTOR_SIZE + len(decoy)] = decoy
+
+    with open(img_path, "wb") as f:
+        f.write(bytes(img))
+
+    print(
+        f"Generated MP4 Ground-Truth Image: {img_path} "
+        f"({len(img)} bytes, {MP4_TOTAL_SECTORS} sectors) "
+        f"[intact@LBA10, qt-brand@LBA40, bad-size@LBA70, truncated@LBA100, decoy@LBA130]"
+    )
+
+
 if __name__ == "__main__":
     generate_carve_corpus()
+    generate_mp4_fixture(os.path.join(os.path.dirname(__file__), "..", "test_data", "mp4_test.img"))
