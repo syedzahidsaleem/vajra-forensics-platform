@@ -23,6 +23,7 @@ __pycache__/
 *.pyd
 
 # Development test outputs and demo reports
+demo_output/
 reports_demo/
 test_demo/
 win_anchor.json
