@@ -1,6 +1,8 @@
 //! Tier 2: Signature-Based Carving with Garfinkel Structural Validation (§26.1, §26.2).
 
 pub mod jpeg;
+pub mod mp4;
+pub mod ole2;
 pub mod pdf;
 pub mod png;
 pub mod signature_db;
@@ -9,6 +11,8 @@ pub mod validator;
 pub mod zip;
 
 pub use jpeg::JpegValidator;
+pub use mp4::Mp4Validator;
+pub use ole2::Ole2Validator;
 pub use pdf::PdfValidator;
 pub use png::PngValidator;
 pub use signature_db::{FileSignature, SignatureDb};
@@ -39,6 +43,8 @@ impl Default for ValidatorRegistry {
                 ("pdf".to_string(), Arc::new(PdfValidator)),
                 ("zip".to_string(), Arc::new(ZipValidator)),
                 ("sqlite".to_string(), Arc::new(SqliteValidator)),
+                ("ole2".to_string(), Arc::new(Ole2Validator)),
+                ("mp4".to_string(), Arc::new(Mp4Validator)),
             ],
         }
     }
@@ -106,7 +112,7 @@ pub fn carve_tier2_with_analyzer(
                 }
             }
 
-            if sector_bytes.starts_with(&sig.header) {
+            if sig.matches_header(&sector_bytes) {
                 let validator = match registry.get(&sig.validator_id) {
                     Some(v) => v,
                     None => continue,

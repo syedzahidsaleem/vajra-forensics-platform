@@ -10,12 +10,18 @@ pub mod linux;
 #[cfg(target_os = "linux")]
 pub use linux as imp;
 
-#[cfg(not(any(target_os = "windows", target_os = "linux")))]
+#[cfg(unix)]
+pub mod macos;
+#[cfg(target_os = "macos")]
+pub use macos as imp;
+
+
+#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
 pub mod stub {
     use crate::descriptor::DeviceDescriptor;
     use crate::health::DeviceHealth;
     use std::path::Path;
-    use vajra_core::{IoError, MediaType};
+    use vajra_core::IoError;
 
     pub fn enumerate_devices() -> Result<Vec<DeviceDescriptor>, IoError> {
         Err(IoError::UnsupportedOperation {
@@ -64,5 +70,6 @@ pub mod stub {
     }
 }
 
-#[cfg(not(any(target_os = "windows", target_os = "linux")))]
+#[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
 pub use stub as imp;
+
