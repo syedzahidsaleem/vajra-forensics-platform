@@ -369,7 +369,7 @@ export default function StorageMap({
 
       {/* Sanitization Complete Banner (§5) */}
       {mode === 'sanitization' && sanitizationStats?.isComplete && (
-        <div className="mb-5 p-3.5 rounded-lg bg-[#59EE99]/15 border-2 border-[#59EE99] flex items-center justify-between shadow-[0_0_20px_rgba(89,238,153,0.25)] animate-fadeIn">
+        <div className="mb-5 p-3.5 rounded-lg bg-[#59EE99]/15 border-2 border-[#59EE99] flex items-center justify-between shadow-[0_0_20px_rgba(89,238,153,0.25)]">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-[#59EE99] text-[#00120B] flex items-center justify-center font-bold text-lg">
               ✓
@@ -393,7 +393,6 @@ export default function StorageMap({
       {isLoading && (
         <div className="space-y-4 py-4">
           <div className="w-full h-[48px] bg-[#35605A] rounded-[4px] animate-pulse relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#59EE99]/10 to-transparent animate-shimmer" />
           </div>
           <div className="flex justify-between text-xs font-mono text-[#D8E4FF]/40">
             <span>0 LBA</span>
@@ -603,7 +602,7 @@ export default function StorageMap({
                 return (
                   <div
                     key={`san-${idx}`}
-                    className={`absolute top-0 bottom-0 bg-[#59EE99] cursor-pointer transition-all duration-400 ease-in-out hover:brightness-125 z-10 hover:z-20 ${
+                    className={`absolute top-0 bottom-0 bg-[#59EE99] cursor-pointer transition-all duration-300 ease-in-out hover:brightness-125 z-10 hover:z-20 ${
                       isSelected ? 'ring-2 ring-white z-30' : ''
                     }`}
                     style={{
