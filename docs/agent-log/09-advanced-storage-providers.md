@@ -95,20 +95,32 @@ To ensure interoperability with real-world forensic evidence rather than only ha
 |---|---|---|---|
 | **LUKS2** | **Genuine Real-Tool (`cryptsetup 2.8.4`)** | Formatted 32MB volume (`luks2_real.raw`) using `cryptsetup luksFormat --type luks2 --pbkdf argon2id`. Extracted ground-truth Master Key via `libcryptsetup.so.12` (`crypt_volume_key_get`). | **1. Base64 vs Hex**: Real LUKS2 JSON metadata encodes `salt` and `digest` in Base64 rather than hex. Fixed by integrating `base64` crate.<br>**2. AFMerge IV**: Standard LUKS specification (RFC 7634) defines IV as a single 32-bit big-endian integer ($\text{iv} = i \cdot B + j$), whereas initial code wrote two 32-bit ints. Fixed in `af_merge`. |
 | **LUKS1** | **Genuine Real-Tool (`cryptsetup 2.8.4`)** | Formatted 32MB volume (`luks1_real.raw`) using `cryptsetup luksFormat --type luks1`. Verified headers via `cryptsetup luksDump` and ground-truth key retrieval via `libcryptsetup`. | **1. Keyslot Cipher**: Fixed keyslot area decryption to support AES-XTS (standard in modern cryptsetup LUKS1) alongside ECB/CBC.<br>**2. PBKDF2 Iterations**: `cryptsetup` generated 6.2M PBKDF2 iterations by default, highlighting CPU cost during debug-mode derivation. |
-| **Linux Software RAID (mdadm)** | **Self-Serialized + Structural Mdadm Validation** | Evaluated `mdadm --create` against loopback files. In this unprivileged WSL2 environment, `mdadm --create` fails with `Cannot get size of /tmp/b0: Inappropriate ioctl for device` due to kernel `BLKGETSIZE64` ioctl requirements. Array layout, parity distribution, and superblock parsing were tested via exact mdadm 1.2 on-disk structure serialization. | Validated RAID 0, 5, 6 geometry, Left/Right Symmetric/Asymmetric parity rotation, and $GF(2^8)$ dual-parity reconstruction across single and dual failure modes. |
-| **BitLocker FVE** | **Structural Header & Modulo-11 Validation** | Evaluated against authentic BitLocker Volume Boot Record (`-FVE-FS-`) layouts and 48-digit Microsoft modulo-11 numerical recovery keys. | Live TPM-bound BitLocker volume generation was not available in Linux user-space without Windows BitLocker administrative provisioning; documented honestly as an environment limitation. |
+| **Linux Software RAID (mdadm)** | **Self-Serialized + Structural Mdadm Validation** | Evaluated `mdadm --create` against loopback files. In this unprivileged WSL2 environment, `mdadm --create` fails with `Cannot get size of /tmp/b0: Inappropriate ioctl for device` due to kernel `BLKGETSIZE64` ioctl requirements.<br><br>**Alternative Paths Attempted**:<br>1. *Privileged Docker/Podman Container*: Docker Desktop is installed on the host (`docker.exe`), but its background daemon service (`com.docker.service`) is stopped, and starting Windows system services requires Administrator elevation.<br>2. *WSL2 sudo elevation*: Non-root user in WSL requires interactive password authentication (`sudo: interactive authentication is required`).<br>3. *Native Linux machine*: No secondary bare-metal Linux hardware was accessible during this track.<br><br>Array layout, parity distribution, and superblock parsing were therefore cross-validated against exact mdadm 1.2 on-disk structure specifications. | Validated RAID 0, 5, 6 geometry, Left/Right Symmetric/Asymmetric parity rotation, and $GF(2^8)$ dual-parity reconstruction across single and dual failure modes. |
+| **BitLocker FVE** | **Structural Header & Modulo-11 Validation** | Evaluated against authentic BitLocker Volume Boot Record (`-FVE-FS-`) layouts and 48-digit Microsoft modulo-11 numerical recovery keys.<br><br>**Real-Volume Generation Attempted & Bounded Constraint**:<br>Creating a live BitLocker test volume on the Windows host was investigated and attempted, but is strictly blocked by bounded OS and privilege boundaries:<br>1. *Windows Edition*: The host OS is `Microsoft Windows 11 Home Single Language`. Full BitLocker Drive Encryption (`manage-bde -on` / `Enable-BitLocker`) on data volumes is an edition feature exclusive to Windows Pro, Enterprise, and Education.<br>2. *User Privilege*: PowerShell execution is non-elevated; WMI/CIM access to `root\CIMv2\Security\MicrosoftVolumeEncryption` is denied.<br>3. *Physical Media Safety*: The machine contains only 1 physical disk (`SAMSUNG MZVL81T0HFLB-00BH1`), housing the live system (C:) and active data (D:); encrypting live system/data partitions is strictly prohibited by project safety rules.<br>4. *Linux Tools*: Open-source Linux tools (`cryptsetup`) only support *reading/opening* BitLocker volumes (`--type bitlk`), having no implementation to format new BitLocker volumes. | Verified 48-digit Microsoft modulo-11 checksum validation algorithm, AES-CBC and AES-XTS metadata decryption flow, and correct/wrong key failure modes. |
 
 ---
 
-## 4. Physical Storage Device Diagnostic Run (Host Verification)
+## 4. Physical Storage Device Diagnostic Run & Hardware Status
 
-Executed `vajra-cli list` and `vajra-cli fingerprint` against connected storage drives:
-- **Discovered Storage Units**:
+### 4.1 USB and SD Card Real-Hardware Status (CRITICAL HONESTY STATEMENT)
+
+> [!WARNING]
+> **PHYSICAL USB / SD HARDWARE TEST REMAINS UNRESOLVED**:
+> A real, physical USB flash drive or SD card was **NOT** attached during this development track.
+>
+> The devices enumerated in prior transcripts (`/dev/sda` through `/dev/sdd`) are **WSL2 virtual SCSI disks under Windows Hyper-V (`Microsoft Virtual Disk`)**, not genuine external USB flash memory or SD card readers. Windows PnP queries confirm only one physical drive is present (`SAMSUNG MZVL81T0HFLB-00BH1`), and historical USB storage entries report `CM_PROB_PHANTOM` (`Present: False`).
+>
+> **Action Item**: The physical USB/SD hardware test is **NOT** marked resolved. It is designated as the **FIRST AND HIGHEST-PRIORITY HARDWARE ITEM** to be executed in Phase B when physical hardware (including the Mac and external media) is attached.
+
+### 4.2 Host Virtual & Internal Storage Diagnostic Run
+Executed `vajra-cli list` and `vajra-cli fingerprint` against connected storage drives on the host:
+- **Discovered Storage Units (Virtual Hyper-V Controllers)**:
   - `/dev/sdd`: 1.10 TB Virtual Disk (`naa.60022480ad4cc93734533f3aaddd1f65`), OS Boot Disk, SHA-256: `ef5a0e44...`
   - `/dev/sdb`: 167.24 MB Virtual Disk (`naa.600224806ca9c06d835376681e4a916b`), OS Read-Only Mount Active, SHA-256: `c6fe9a9a...`
   - `/dev/sdc`: 3.22 GB Virtual Disk (`naa.60022480316191b98b3acdfc6d10df62`), Non-System Storage, SHA-256: `cf1380b8...`
   - `/dev/sda`: 374.25 MB Virtual Disk (`naa.60022480df18deb7e179255b7b21f6fa`), OS Read-Only Mount Active, SHA-256: `52679473...`
 - **Safety Invariant Verified**: Non-root `inspect` on raw physical device nodes cleanly and safely halts with `IoError::PermissionDenied` (`Elevated administrator privileges required`).
+
 
 ---
 

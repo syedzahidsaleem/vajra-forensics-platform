@@ -132,3 +132,47 @@ fn test_macos_apfs_synthesized_container_detection() {
     let store_dev = store_dict.get("DeviceIdentifier").and_then(|v| v.as_str()).unwrap();
     assert_eq!(store_dev, "disk0s2");
 }
+
+#[test]
+fn test_macos_usb_vid_pid_and_write_blocker_integration() {
+    use vajra_device::detection::check_write_blocker;
+    use vajra_device::os::macos::find_vid_pid_for_bsd_name;
+    use vajra_core::WriteBlockerDetectionMethod;
+
+    let usb_json = serde_json::json!({
+        "_name": "USB 3.1 Bus",
+        "_items": [
+            {
+                "_name": "T8u Forensic Bridge",
+                "vendor_id": "0x0ecf",
+                "product_id": "0x0003",
+                "Media": [
+                    {
+                        "bsd_name": "disk2"
+                    }
+                ]
+            }
+        ]
+    });
+
+    // 1. Verify USB tree parsing extracts exact numeric VID/PID
+    let (vid, pid) = find_vid_pid_for_bsd_name(&usb_json, "disk2").expect("Must resolve VID/PID for disk2");
+    assert_eq!(vid, 0x0ECF);
+    assert_eq!(pid, 0x0003);
+
+    // 2. Pass extracted VID/PID into OS-agnostic check_write_blocker
+    let (is_blocked, meta) = check_write_blocker(Some(vid), Some(pid), "Tableau / OpenText", "T8u Forensic Bridge", false);
+    assert!(is_blocked);
+    let info = meta.expect("Metadata must be populated");
+    assert_eq!(info.detection_method, WriteBlockerDetectionMethod::KnownVidPid);
+    assert_eq!(info.vid, Some(0x0ECF));
+    assert_eq!(info.pid, Some(0x0003));
+    assert!(info.is_hardware_blocked);
+
+    // 3. Fallback check: even when VID/PID is None (e.g. diskutil info alone),
+    // check_write_blocker detects the bridge via vendor/model substring heuristic!
+    let (is_blocked_heuristic, meta_heuristic) = check_write_blocker(None, None, "Tableau", "T8u Forensic Bridge", false);
+    assert!(is_blocked_heuristic);
+    assert!(meta_heuristic.unwrap().is_hardware_blocked);
+}
+

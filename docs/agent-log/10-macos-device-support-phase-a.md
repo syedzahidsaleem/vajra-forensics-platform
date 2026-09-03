@@ -59,6 +59,20 @@
   3. Strip partition slice suffixes (e.g. `disk0s2` -> `disk0`).
   4. Tag physical disk `disk0` as protected system disk.
 
+### 2.4 Write-Blocker VID/PID Detection Logic Confirmation (§24)
+- **Question**: Does Conversation 01's OS-agnostic write-blocker detection logic (`check_write_blocker` in `detection.rs`) work unmodified on macOS, or does it require macOS-specific adaptation?
+- **Finding & Confirmation**:
+  - `check_write_blocker` is **100% OS-agnostic** and was integrated **completely unmodified**.
+  - Its three-tier hierarchy operates as follows:
+    1. *Tier 1 (Exact VID/PID)*: Matches numeric `(vid, pid)` against the known signature table (`Tableau`, `WiebeTech`, `Coolgear`).
+    2. *Tier 2 (Vendor/Model Keyword Heuristic)*: Matches substring signatures (`TABLEAU`, `WIEBETECH`, `FASTBLOC`, `WRITEBLOCK`, `WRITE-BLOCK`, `CRU DITTO`) across `vendor` and `model` strings.
+    3. *Tier 3 (OS Read-Only Status)*: Flags write-protection if the OS marks the device read-only (`Writable: false`).
+  - *macOS Subsystem Adaptation in `vajra-device`*:
+    - `diskutil info -plist` directly provides `DeviceVendor` and `DeviceModel`, immediately triggering Tier 2 keyword detection.
+    - To achieve full Tier 1 parity, `macos/mod.rs` implements `query_usb_vid_pid(disk_id)` to recursively parse `system_profiler SPUSBDataType -json` / IOKit USB trees for exact hexadecimal vendor and product IDs.
+    - Verified via unit test `test_macos_usb_vid_pid_and_write_blocker_integration`: correctly identifies a Tableau T8u bridge (`0x0ECF:0x0003`) with `WriteBlockerDetectionMethod::KnownVidPid`, and falls back to keyword heuristic when VID/PID is absent.
+  - *Phase B Item*: Physical confirmation with an actual hardware write-blocker attached to the Mac.
+
 ---
 
 ## 3. Static Verification & Cross-Compilation Results
@@ -78,35 +92,40 @@ Executed via `rustup` cross-compilation targets on development host:
 
 ### 3.3 Host Workspace Test Suite
 - Command: `cargo test --workspace` (on dev host)
-- Result: **100% PASSING** (all unit and integration tests passing across all 19 workspace crates, including new macOS plist parser, APFS container unwrap tests, and path normalizer tests).
+- Result: **100% PASSING** (all unit and integration tests passing across all 19 workspace crates, including new macOS plist parser, APFS container unwrap tests, path normalizer tests, and USB VID/PID write-blocker integration tests).
 
 ---
 
-## 4. PHASE B — TO DO WHEN THE MAC IS AVAILABLE (Required Verification Checklist)
+## 4. PHASE B — TO DO WHEN THE MAC IS AVAILABLE (Prioritized Verification Checklist)
 
 When physical macOS hardware becomes available, the following test matrix must be executed natively:
 
-- [ ] **1. Native Compilation & Toolchain**:
-  - Run `cargo build --workspace` natively on the Mac using Apple Clang / Xcode command-line tools.
-  - Run `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -D warnings`.
-- [ ] **2. Boot-Disk Detection & Safety Gate (HIGHEST PRIORITY)**:
+- [ ] **1. PHYSICAL USB & SD CARD REAL-HARDWARE TEST (HIGHEST HARDWARE PRIORITY — CARRIED FROM CONV 01 & 09)**:
+  - Attach a real physical USB flash drive and an external SD card (via internal card slot or USB reader) to the Mac.
+  - Run `vajra-cli list` and confirm authentic non-"Virtual Disk" vendor/model strings (e.g. `SanDisk`, `Kingston`, `Samsung`).
+  - Verify `MediaType::Usb` and `MediaType::SdCard` heuristic assignments on real physical hardware.
+  - Compute deterministic SHA-256 fingerprint on external media and verify sector 0 inspect.
+- [ ] **2. Boot-Disk Detection & Safety Gate (HIGHEST ARCHITECTURAL PRIORITY)**:
   - Execute `vajra-cli list` on the native Mac and verify the internal drive (e.g. `disk0` / `/dev/rdisk0`) is correctly tagged with `is_system_disk: true` (`[Protected System Disk]`).
   - Verify that `DeviceConfirmationGate` correctly and unconditionally hard-blocks any sanitization attempt against the host Mac's system disk with zero code changes.
-- [ ] **3. Real Hardware Device Enumeration**:
+- [ ] **3. Native Compilation & Toolchain**:
+  - Run `cargo build --workspace` natively on the Mac using Apple Clang / Xcode command-line tools.
+  - Run `cargo test --workspace` and `cargo clippy --workspace --all-targets -- -D warnings`.
+- [ ] **4. Real Internal Hardware Enumeration & Fingerprint**:
   - Inspect output of `vajra-cli list` on internal Apple SSD (Apple Fabric NAND / PCIe NVMe) to confirm model string, capacity, serial number, and `MediaType::Nvme` classification.
   - Compute deterministic SHA-256 fingerprint via `vajra-cli fingerprint /dev/rdisk0`.
-- [ ] **4. Raw Sector 0 Inspection (`/dev/rdiskN`)**:
+- [ ] **5. Raw Sector 0 Inspection (`/dev/rdiskN`)**:
   - Run `vajra-cli inspect /dev/rdisk0` (with `sudo`) and confirm unbuffered sector 0 read (GPT / protective MBR hex dump) succeeds with exact-byte alignment.
   - Confirm unprivileged execution cleanly returns `IoError::PermissionDenied`.
-- [ ] **5. SMART & Health Diagnostics Telemetry**:
+- [ ] **6. SMART & Health Diagnostics Telemetry**:
   - Run `vajra-cli health /dev/rdisk0` and observe what telemetry is returned:
     - Native `SMARTStatus` (Verified/Failing) on internal Apple SSD.
     - Extended `smartctl` metrics if Homebrew `smartmontools` is installed.
-- [ ] **6. SIP Enforcement Empirical Confirmation**:
+- [ ] **7. SIP Enforcement Empirical Confirmation**:
   - Confirm empirical behavior of macOS SIP when raw sector writes to `/dev/rdisk0` are attempted (expected: `EPERM` / Operation not permitted even as root).
-- [ ] **7. External Storage Validation (USB / SD Card)**:
-  - Attach a real USB flash drive and an external SD card to the Mac.
-  - Verify `vajra-cli list` correctly detects removable media and assigns `MediaType::Usb` / `MediaType::SdCard`.
-  - Validate non-system external drive read-only block acquisition.
-- [ ] **8. Agent Log Wrap-Up**:
+- [ ] **8. Hardware Write-Blocker Verification**:
+  - Connect a physical forensic hardware write-blocker (Tableau, WiebeTech, or Coolgear) to the Mac.
+  - Verify `vajra-cli list` detects `is_write_blocked: true` via `query_usb_vid_pid` matching or vendor keyword heuristic.
+- [ ] **9. Phase B Log Wrap-Up**:
   - Create `docs/agent-log/10-macos-device-support-phase-b.md` documenting the real terminal outputs, hardware serials, and test results from the native Mac run.
+

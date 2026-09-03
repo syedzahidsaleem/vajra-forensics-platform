@@ -353,10 +353,69 @@ fn classify_media_type(protocol: &str, is_ssd: bool, model: &str, is_internal: b
     }
 }
 
+/// Attempts to extract numeric USB Vendor ID and Product ID for a given disk identifier (e.g. "disk2")
+/// using macOS `system_profiler SPUSBDataType -json` (§24).
+pub fn query_usb_vid_pid(disk_id: &str) -> (Option<u16>, Option<u16>) {
+    let clean_id = disk_id.trim_start_matches("/dev/").trim_start_matches('r');
+    if let Ok(json_str) = run_command("system_profiler", &["SPUSBDataType", "-json"]) {
+        if let Ok(val) = serde_json::from_str::<serde_json::Value>(&json_str) {
+            if let Some(items) = val.get("SPUSBDataType").and_then(|v| v.as_array()) {
+                for item in items {
+                    if let Some((v, p)) = find_vid_pid_for_bsd_name(item, clean_id) {
+                        return (Some(v), Some(p));
+                    }
+                }
+            }
+        }
+    }
+    (None, None)
+}
+
+/// Recursively searches an SPUSBDataType device tree for a matching BSD disk name and returns (vid, pid).
+pub fn find_vid_pid_for_bsd_name(item: &serde_json::Value, target_bsd: &str) -> Option<(u16, u16)> {
+    let vid = item.get("vendor_id").and_then(|v| parse_hex_or_dec_u16(v.as_str()?));
+    let pid = item.get("product_id").and_then(|v| parse_hex_or_dec_u16(v.as_str()?));
+
+    // Check media array if present
+    if let Some(media) = item.get("Media").and_then(|m| m.as_array()) {
+        for m in media {
+            if let Some(bsd) = m.get("bsd_name").and_then(|b| b.as_str()) {
+                if bsd.trim_start_matches("/dev/").trim_start_matches('r') == target_bsd {
+                    if let (Some(v), Some(p)) = (vid, pid) {
+                        return Some((v, p));
+                    }
+                }
+            }
+        }
+    }
+
+    // Check sub_items recursively
+    if let Some(sub_items) = item.get("_items").and_then(|i| i.as_array()) {
+        for sub in sub_items {
+            if let Some(res) = find_vid_pid_for_bsd_name(sub, target_bsd) {
+                return Some(res);
+            }
+        }
+    }
+
+    None
+}
+
+/// Parses hex string (e.g. "0x0ecf") or decimal string to u16.
+pub fn parse_hex_or_dec_u16(s: &str) -> Option<u16> {
+    let trimmed = s.trim();
+    if let Some(hex_part) = trimmed.strip_prefix("0x") {
+        u16::from_str_radix(hex_part, 16).ok()
+    } else {
+        trimmed.parse::<u16>().ok()
+    }
+}
+
 /// Enumerates directly connected physical storage block devices on macOS (§23).
 ///
 /// Normalizes physical whole-disks to raw character nodes (`/dev/rdiskN`).
 pub fn enumerate_devices() -> Result<Vec<DeviceDescriptor>, IoError> {
+
     let mut descriptors = Vec::new();
 
     // 1. Query all disks via `diskutil list -plist`
@@ -451,8 +510,9 @@ pub fn enumerate_devices() -> Result<Vec<DeviceDescriptor>, IoError> {
 
         let media_type = classify_media_type(&protocol, is_ssd, &model, is_internal);
 
-        // Hardware write blocker detection
-        let (is_write_blocked, write_blocker_info) = check_write_blocker(None, None, &vendor, &model, is_os_read_only);
+        // Hardware write blocker detection (§24)
+        let (vid, pid) = query_usb_vid_pid(disk_id);
+        let (is_write_blocked, write_blocker_info) = check_write_blocker(vid, pid, &vendor, &model, is_os_read_only);
 
         // System boot disk detection (§24)
         let is_system_disk = check_if_system_disk(disk_id);
