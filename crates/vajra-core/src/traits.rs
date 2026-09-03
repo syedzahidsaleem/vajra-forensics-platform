@@ -46,6 +46,36 @@ pub trait ReadOnlyBlockSource: Send {
     fn device_fingerprint(&self) -> DeviceFingerprint;
 }
 
+impl<T: ?Sized + ReadOnlyBlockSource> ReadOnlyBlockSource for Box<T> {
+    fn read_blocks(&mut self, lba: u64, count: u32) -> Result<Vec<u8>, IoError> {
+        (**self).read_blocks(lba, count)
+    }
+
+    fn total_blocks(&self) -> u64 {
+        (**self).total_blocks()
+    }
+
+    fn block_size(&self) -> u32 {
+        (**self).block_size()
+    }
+
+    fn media_type(&self) -> MediaType {
+        (**self).media_type()
+    }
+
+    fn is_write_blocked(&self) -> bool {
+        (**self).is_write_blocked()
+    }
+
+    fn write_blocker_info(&self) -> Option<WriteBlockerMetadata> {
+        (**self).write_blocker_info()
+    }
+
+    fn device_fingerprint(&self) -> DeviceFingerprint {
+        (**self).device_fingerprint()
+    }
+}
+
 /// Only implemented by live physical devices being deliberately
 /// operated on in Sanitization Mode. A ForensicImage type, by
 /// construction, never implements this trait.
