@@ -132,7 +132,7 @@ export const CaseDashboard: React.FC = () => {
 
       {/* Active Case Hero Card */}
       {activeCase ? (
-        <GlassCard hover={false} className="p-5">
+        <GlassCard hover={false} className="p-5" style={{ border: '1px solid var(--border)', borderRadius: '12px' }}>
           {/* Top row */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
@@ -268,6 +268,10 @@ export const CaseDashboard: React.FC = () => {
                 hover={true}
                 onClick={() => setActiveCase(c)}
                 className="p-4"
+                style={{
+                  border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
+                  borderRadius: '12px',
+                }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-mono text-[#59EE99] font-bold">{c.case_id}</span>
@@ -312,6 +316,7 @@ export const CaseDashboard: React.FC = () => {
                   placeholder="CASE-2026-003"
                   value={newCaseId}
                   onChange={(e) => setNewCaseId(e.target.value)}
+                  style={{ padding: '10px 14px' }}
                   className="w-full font-mono text-[11px]"
                 />
               </div>
@@ -324,6 +329,7 @@ export const CaseDashboard: React.FC = () => {
                   placeholder="Operation Blue Horizon"
                   value={newCaseName}
                   onChange={(e) => setNewCaseName(e.target.value)}
+                  style={{ padding: '10px 14px' }}
                   className="w-full font-mono text-[11px]"
                 />
               </div>
@@ -335,6 +341,7 @@ export const CaseDashboard: React.FC = () => {
                   required
                   value={newInvestigator}
                   onChange={(e) => setNewInvestigator(e.target.value)}
+                  style={{ padding: '10px 14px' }}
                   className="w-full font-mono text-[11px]"
                 />
               </div>
@@ -346,7 +353,8 @@ export const CaseDashboard: React.FC = () => {
                   placeholder="Judicial warrant reference or context..."
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
-                  className="w-full font-mono text-[11px]"
+                  style={{ padding: '10px 14px', boxSizing: 'border-box' }}
+                  className="w-full font-mono text-[11px] leading-relaxed resize-none"
                 />
               </div>
 

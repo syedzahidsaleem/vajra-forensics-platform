@@ -160,7 +160,8 @@ export const ReportCenter: React.FC = () => {
             {reports.map((r) => (
               <div
                 key={r.report_id}
-                className="p-5 rounded-2xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-4 shadow-lg hover:border-[var(--border)]/50 transition-all text-[var(--text)]"
+                style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
+                className="p-5 bg-[var(--surface)] space-y-4 shadow-lg hover:border-[var(--primary)]/50 transition-all text-[var(--text)]"
               >
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
@@ -236,15 +237,14 @@ export const ReportCenter: React.FC = () => {
               <ShineBorder
                 key={type}
                 borderRadius={12}
-                className="cursor-pointer transition-all h-full"
+                color="var(--primary)"
+                onClick={() => {
+                  setSelectedType(type);
+                  setShowGenModal(true);
+                }}
+                className="cursor-pointer report-type-card h-full"
               >
-                <div
-                  onClick={() => {
-                    setSelectedType(type);
-                    setShowGenModal(true);
-                  }}
-                  className="p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 hover:border-[var(--primary)]/50 cursor-pointer transition-all space-y-1.5 h-full"
-                >
+                <div className="p-3.5 space-y-1.5 h-full rounded-[12px] bg-transparent cursor-pointer">
                   <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
                   <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
                   <div className="text-[10px] font-mono text-[var(--primary)] pt-1">Click to generate &rarr;</div>

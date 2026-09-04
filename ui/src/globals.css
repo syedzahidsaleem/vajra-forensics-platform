@@ -243,3 +243,15 @@ select option {
   background: var(--surface);
   color: var(--text);
 }
+
+/* ==========================================================================
+   Report Type Card Hover Lift & Primary Shadow
+   ========================================================================== */
+.report-type-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.report-type-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 25%, transparent);
+}
