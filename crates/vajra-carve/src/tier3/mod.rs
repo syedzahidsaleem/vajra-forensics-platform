@@ -68,7 +68,7 @@ pub fn carve_tier3_with_analyzer(
                 }
             }
 
-            if sector_bytes.starts_with(&sig.header) {
+            if sig.matches_header(&sector_bytes) {
                 let validator = match registry.get(&sig.validator_id) {
                     Some(v) => v,
                     None => continue,

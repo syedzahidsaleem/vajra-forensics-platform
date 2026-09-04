@@ -1,10 +1,22 @@
-# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
 [package]
 name = "vajra-raid"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
+description = "RAID 0/5/6 reconstruction and degraded recovery engine (§15 Part III, §16)"
 
 [dependencies]
 vajra-core = { path = "../vajra-core" }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+hex = { workspace = true }
+crc32fast = { workspace = true }
+sha2 = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.10"
+rand = { workspace = true }
+vajra-image = { path = "../vajra-image" }

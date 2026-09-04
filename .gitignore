@@ -22,25 +22,14 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Node / Frontend artifacts
-node_modules/
-**/node_modules/
-dist/
-**/dist/
-.vite/
-
 # Development test outputs and demo reports
+demo_output/
 reports_demo/
 test_demo/
-reports/
-**/reports/
-test_images/
-**/test_images/
 win_anchor.json
 *.raw
 *.img
 *.vjr
-
 
 # IDE & OS files
 .idea/

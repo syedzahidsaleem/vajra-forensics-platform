@@ -43,15 +43,28 @@ impl CaseDb {
 
     fn init_connection(&self, key: Option<&DatabaseKey>) -> Result<(), DbError> {
         let conn = self.conn.lock().unwrap();
-        // Enable Foreign Keys
-        conn.execute_batch("PRAGMA foreign_keys = ON;")?;
 
-        // If encryption key is supplied, apply cipher key pragma (for SQLCipher builds)
+        // 1. If encryption key is supplied, apply cipher key pragma FIRST before any other statement
         if let Some(k) = key {
-            conn.execute(&format!("PRAGMA key = \"x'{}'\";", k.as_hex()), [])?;
+            conn.execute_batch(&format!("PRAGMA key = \"x'{}'\";", k.as_hex()))?;
+            // Touch database to verify key immediately at SQLCipher level
+            conn.query_row("SELECT count(*) FROM sqlite_master;", [], |_| Ok(()))
+                .map_err(|e| DbError::KeyError(format!("SQLCipher authentication failed: invalid key or corrupted database ({})", e)))?;
         }
 
+        // 2. Enable Foreign Keys
+        conn.execute_batch("PRAGMA foreign_keys = ON;")?;
+
         Ok(())
+    }
+
+    /// Returns the active SQLCipher version string if SQLCipher is linked, or None if vanilla SQLite.
+    pub fn cipher_version(&self) -> Result<Option<String>, DbError> {
+        let conn = self.conn.lock().unwrap();
+        match conn.query_row("PRAGMA cipher_version;", [], |row| row.get::<_, String>(0)) {
+            Ok(v) if !v.is_empty() => Ok(Some(v)),
+            _ => Ok(None),
+        }
     }
 
     /// Executes database schema migrations up to the current SCHEMA_VERSION (§22).

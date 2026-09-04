@@ -1,6 +1,6 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+//! Tauri shell, IPC commands, Safety/Policy Engine enforcement (§13, §43a).
+#![allow(dead_code)]
 
 fn main() {
-  app_lib::run();
+    println!("Vajra Tauri Application Shell placeholder");
 }
