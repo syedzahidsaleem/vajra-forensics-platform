@@ -1,18 +1,18 @@
 :root {
-  /* Sanitize mode — dark theme (from provided palette) */
-  --sanitize-bg-dark: #2E0A16;      /* was #160029 — now a dark wine/red-black, not violet */
-  --sanitize-surface-dark: #4A1B26; /* darker wine surface */
+  /* Sanitize mode — dark theme (muted deep maroon palette) */
+  --sanitize-bg-dark: #2A0D12;
+  --sanitize-surface-dark: #3D171E;
   --sanitize-text-dark: #F5E9E2;
-  --sanitize-primary-dark: #D44D5C;
-  --sanitize-primary-hover-dark: #E3697A;
+  --sanitize-primary-dark: #A83B45;
+  --sanitize-primary-hover-dark: #8F2E38;
   --sanitize-border-dark: #E3B5A4;
 
-  /* Sanitize mode — light theme (derived tint, same hue family) */
-  --sanitize-bg-light: #FDF5F3;
-  --sanitize-surface-light: #F7E4E0;
+  /* Sanitize mode — light theme (muted maroon family) */
+  --sanitize-bg-light: #FBF1EF;
+  --sanitize-surface-light: #F3DEDD;
   --sanitize-text-light: #2E0A16;
-  --sanitize-primary-light: #D44D5C;
-  --sanitize-primary-hover-light: #B83C4A;
+  --sanitize-primary-light: #A83B45;
+  --sanitize-primary-hover-light: #8F2E38;
   --sanitize-border-light: #E3B5A4;
 
   /* Forensic mode — dark theme (from provided palette) */
