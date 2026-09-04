@@ -125,25 +125,41 @@ pub fn carve_tier2_with_analyzer(
                     continue;
                 }
 
-                // Determine read window
+                // Determine read window: initially read up to 1MB chunks (2048 sectors) for fast check
                 let max_sectors = ((sig.max_size_bytes + block_size - 1) / block_size).min(total_blocks - current_lba);
-                let read_sectors = max_sectors.min(2048) as u32; // Read up to 1MB chunks for fast validation
+                let read_sectors = max_sectors.min(2048) as u32;
 
-                let candidate_bytes = match source.read_blocks(current_lba, read_sectors) {
+                let mut candidate_bytes = match source.read_blocks(current_lba, read_sectors) {
                     Ok(b) => b,
                     Err(_) => continue,
                 };
 
-                let validation = validator.validate(&candidate_bytes);
+                let mut validation = validator.validate(&candidate_bytes);
+
+                // Priority 2 Fix 1: Window expansion when early read suggests a larger object
+                if validation.is_eof() && (read_sectors as u64) < max_sectors {
+                    // Try expanding window up to 8 MiB (16384 sectors) or max_sectors to resolve large files
+                    let expanded_sectors = max_sectors.min(16384) as u32;
+                    if expanded_sectors > read_sectors {
+                        if let Ok(exp_bytes) = source.read_blocks(current_lba, expanded_sectors) {
+                            let exp_validation = validator.validate(&exp_bytes);
+                            if exp_validation.is_ok() || exp_validation.is_eof() {
+                                candidate_bytes = exp_bytes;
+                                validation = exp_validation;
+                            }
+                        }
+                    }
+                }
 
                 if let ValidationResult::Ok { object_length } = validation {
                     let actual_len = object_length.unwrap_or(candidate_bytes.len() as u64) as usize;
                     let payload = if actual_len <= candidate_bytes.len() {
                         candidate_bytes[..actual_len].to_vec()
                     } else {
-                        // Read full length if beyond initial 1MB window
-                        let full_sectors = ((actual_len as u64 + block_size - 1) / block_size) as u32;
-                        source.read_blocks(current_lba, full_sectors).unwrap_or_default()[..actual_len.min(candidate_bytes.len())].to_vec()
+                        // Read full length if beyond initial window, properly bounded by total available sectors
+                        let full_sectors = ((actual_len as u64 + block_size - 1) / block_size).min(total_blocks - current_lba) as u32;
+                        let full_bytes = source.read_blocks(current_lba, full_sectors).unwrap_or_default();
+                        full_bytes[..actual_len.min(full_bytes.len())].to_vec()
                     };
 
                     let sectors_consumed = ((payload.len() as u64 + block_size - 1) / block_size).max(1);
@@ -155,9 +171,13 @@ pub fn carve_tier2_with_analyzer(
 
                     let entropy_sig = entropy_analyzer.evaluate_consistency(&payload, &sig.file_type);
 
+                    // Priority 1: Genuine per-candidate Header/Footer and Structural confidence scoring
+                    let (hfi_score, _hfi_reason) = evaluate_header_footer_integrity(&payload, sig, false);
+                    let (struct_score, _struct_reason) = evaluate_structural_validity(&validation, &payload, sig);
+
                     let confidence_breakdown = ConfidenceBreakdown {
-                        header_footer_integrity: 1.0,
-                        structural_validity: 1.0,
+                        header_footer_integrity: hfi_score,
+                        structural_validity: struct_score,
                         metadata_cross_reference: 0.0, // Pure carved artifact
                         entropy_consistency: entropy_sig,
                         entropy_explainability: None,
@@ -191,6 +211,72 @@ pub fn carve_tier2_with_analyzer(
 
                     current_lba += sectors_consumed.saturating_sub(1);
                     break;
+                } else if let ValidationResult::Eof { partial_length } = validation {
+                    // Priority 2 Fix 2: Surface V_EOF candidates as real partial recoveries with explicit limitations
+                    let min_useful_len: u64 = match sig.file_type.as_str() {
+                        "png" => 33,    // Magic (8) + IHDR (25)
+                        "jpeg" => 16,   // SOI (2) + SOF/DQT marker header
+                        "pdf" => 32,    // %PDF- + catalog object
+                        "sqlite" => 100,// 100-byte database header
+                        "mp4" => 24,    // ftyp box + brand
+                        "zip" => 30,    // Local file header (30 bytes min)
+                        "ole2" => 512,  // 512-byte header sector
+                        _ => 16,
+                    };
+
+                    if partial_length >= min_useful_len {
+                        let payload_len = (partial_length as usize).min(candidate_bytes.len());
+                        let payload = candidate_bytes[..payload_len].to_vec();
+                        let sectors_consumed = ((payload.len() as u64 + block_size - 1) / block_size).max(1);
+
+                        let mut hasher = Sha256::new();
+                        hasher.update(&payload);
+                        let content_hash = hex::encode(hasher.finalize());
+
+                        let entropy_sig = entropy_analyzer.evaluate_consistency(&payload, &sig.file_type);
+
+                        // Priority 1: Genuine per-candidate Header/Footer and Structural scoring for EOF candidate
+                        let (hfi_score, hfi_reason) = evaluate_header_footer_integrity(&payload, sig, true);
+                        let (struct_score, struct_reason) = evaluate_structural_validity(&validation, &payload, sig);
+
+                        let confidence_breakdown = ConfidenceBreakdown {
+                            header_footer_integrity: hfi_score,
+                            structural_validity: struct_score,
+                            metadata_cross_reference: 0.0,
+                            entropy_consistency: entropy_sig,
+                            entropy_explainability: None,
+                            fragmentation_confidence: 0.80, // Reduced confidence due to missing tail/fragment
+                            overwrite_probability: 1.0,
+                        };
+
+                        let confidence_score = confidence_breakdown.composite_score();
+
+                        id_counter += 1;
+                        let artifact = RecoveredArtifact {
+                            id: id_counter,
+                            recovery_method: RecoveryTier::Tier2Signature,
+                            source_locations: vec![(current_lba, sectors_consumed)],
+                            original_path: None,
+                            filename_guess: Some(format!("carved_partial_{:04}.{}", id_counter, sig.file_type)),
+                            file_type: sig.file_type.clone(),
+                            confidence_score,
+                            confidence_breakdown,
+                            fragmentation_detail: None,
+                            recovered_bytes: payload.len() as u64,
+                            expected_total_bytes: None,
+                            content_hash,
+                            recovery_limitations: Some(format!(
+                                "Truncated candidate (V_EOF): {}; {}",
+                                hfi_reason, struct_reason
+                            )),
+                            payload,
+                        };
+
+                        artifacts.push(artifact);
+                        // NOTE: We do NOT mark allocated_map for Eof candidates so Tier 3 BGC
+                        // can still attempt bifragment gap carving if a second fragment exists!
+                        break;
+                    }
                 }
             }
         }
@@ -199,4 +285,128 @@ pub fn carve_tier2_with_analyzer(
     }
 
     Ok(artifacts)
+}
+
+/// Evaluates genuine per-candidate header and footer integrity (§26.1, §29).
+///
+/// Returns `(score, explanation)` for forensic explainability.
+pub fn evaluate_header_footer_integrity(
+    payload: &[u8],
+    sig: &FileSignature,
+    is_eof: bool,
+) -> (f32, String) {
+    if let Some(ref footer) = sig.footer {
+        if is_eof {
+            (
+                0.50,
+                format!(
+                    "Valid {} header matched; footer missing due to stream truncation (V_EOF)",
+                    sig.file_type.to_uppercase()
+                ),
+            )
+        } else if payload.ends_with(footer) {
+            (
+                1.00,
+                format!(
+                    "Exact header and terminator match at boundary for {}",
+                    sig.file_type.to_uppercase()
+                ),
+            )
+        } else if let Some(pos) = payload.windows(footer.len()).rposition(|w| w == footer.as_slice()) {
+            let trailing_slack = payload.len() - (pos + footer.len());
+            let score = (1.00 - (trailing_slack as f32 / 512.0) * 0.15).clamp(0.80, 0.99);
+            (
+                score,
+                format!(
+                    "Header matched; footer present at offset {} ({} bytes trailing sector slack)",
+                    pos, trailing_slack
+                ),
+            )
+        } else {
+            (
+                0.60,
+                format!(
+                    "Valid header matched; expected footer sequence not located in payload"
+                ),
+            )
+        }
+    } else {
+        // Footerless format (SQLite, MP4, OLE2): evaluate format-specific header integrity & geometry
+        match sig.file_type.as_str() {
+            "sqlite" => {
+                if payload.len() >= 100 {
+                    let raw_page_size = u16::from_be_bytes([payload[16], payload[17]]);
+                    let page_size = if raw_page_size == 1 { 65536u32 } else { raw_page_size as u32 };
+                    if (512..=65536).contains(&page_size) && (page_size & (page_size - 1)) == 0 {
+                        (1.00, format!("SQLite 16-byte magic and valid page size ({} bytes) verified; footerless format by specification", page_size))
+                    } else {
+                        (0.70, "SQLite magic matched but page size field is non-standard".to_string())
+                    }
+                } else {
+                    (0.50, "SQLite candidate truncated within 100-byte database header".to_string())
+                }
+            }
+            "mp4" => {
+                if payload.len() >= 12 && &payload[4..8] == b"ftyp" {
+                    let brand = String::from_utf8_lossy(&payload[8..12]);
+                    (1.00, format!("ISO-BMFF ftyp atom confirmed at offset 4 (brand: '{}'); footerless format by specification", brand))
+                } else {
+                    (0.60, "MP4 ftyp atom detected with incomplete brand specification".to_string())
+                }
+            }
+            "ole2" => {
+                if payload.len() >= 512 {
+                    let sector_shift = u16::from_le_bytes([payload[30], payload[31]]);
+                    if sector_shift == 9 || sector_shift == 12 {
+                        (1.00, format!("OLE2 header magic and sector shift (2^{} = {} bytes) verified; footerless format by specification", sector_shift, 1 << sector_shift))
+                    } else {
+                        (0.75, "OLE2 magic verified with non-standard sector shift".to_string())
+                    }
+                } else {
+                    (0.50, "OLE2 candidate truncated within 512-byte header block".to_string())
+                }
+            }
+            _ => (1.00, format!("Valid magic header match for footerless format {}", sig.file_type)),
+        }
+    }
+}
+
+/// Evaluates genuine structural validity score based on Garfinkel validation state (§26.2, §29).
+///
+/// Returns `(score, explanation)`.
+pub fn evaluate_structural_validity(
+    validation: &ValidationResult,
+    payload: &[u8],
+    sig: &FileSignature,
+) -> (f32, String) {
+    match validation {
+        ValidationResult::Ok { object_length } => {
+            let desc = match object_length {
+                Some(len) => format!("Fully parsed and structurally validated (V_OK, length: {} bytes)", len),
+                None => "Fully parsed and structurally validated (V_OK, unbounded length)".to_string(),
+            };
+            (1.00, desc)
+        }
+        ValidationResult::Eof { partial_length } => {
+            let total = payload.len().max(1) as f32;
+            let ratio = (*partial_length as f32 / total).clamp(0.0, 1.0);
+            let score = match sig.file_type.as_str() {
+                "png" => 0.65, // IHDR chunk verified, stream truncated before IEND
+                "jpeg" => 0.60, // SOI and marker tables verified, scan data truncated before EOI
+                "pdf" => 0.60,  // Header and objects parsed, missing %%EOF trailer
+                "sqlite" => 0.70, // Page 1 b-tree header verified, truncated before declared file size
+                "mp4" => 0.55,  // Valid ftyp and partial box, truncated media stream
+                "zip" => 0.55,  // Valid local file header, central directory truncated
+                _ => (0.50 + 0.20 * ratio).clamp(0.50, 0.70),
+            };
+            (
+                score,
+                format!(
+                    "V_EOF: structurally sound prefix ({} bytes verified of {} bytes read), but object truncated before end",
+                    partial_length, payload.len()
+                ),
+            )
+        }
+        ValidationResult::Err(reason) => (0.00, format!("Structural parsing failed (V_ERR: {})", reason)),
+    }
 }

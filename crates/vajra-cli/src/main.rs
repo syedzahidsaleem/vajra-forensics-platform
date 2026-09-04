@@ -19,7 +19,7 @@ use vajra_audit::{
     export_anchor, verify_anchor, AcquisitionReportPayload, AuditChain, ChainOfCustodyPayload,
     DeviceHealthPayload, OperatorKeyPair, RecoveryReportPayload, ReportGenerator, ReportType,
 };
-use vajra_case_db::{CaseDb, CaseStatus, EvidenceItemRecord};
+use vajra_case_db::{CaseDb, CaseStatus, DatabaseKey, EvidenceItemRecord};
 use vajra_core::{MediaType, ReadOnlyBlockSource, SanitizeMethod, WritableBlockSource};
 use vajra_custody::{CustodyEvent, CustodyEventType, CustodyTracker};
 use vajra_device::{
@@ -116,7 +116,14 @@ ADVANCED STORAGE PROVIDERS (§15, §16, §57):
 
 
 fn open_db(db_path: &str) -> CaseDb {
-    CaseDb::open_file(db_path, None).unwrap_or_else(|e| {
+    let key = if let Ok(pass) = env::var("VAJRA_VAULT_KEY").or_else(|_| env::var("VAJRA_KEY")) {
+        DatabaseKey::from_passphrase(&pass, DatabaseKey::DEFAULT_SALT)
+            .expect("Valid Argon2id key derivation from environment passphrase")
+    } else {
+        DatabaseKey::default_station_key()
+    };
+
+    CaseDb::open_file(db_path, Some(&key)).unwrap_or_else(|e| {
         eprintln!("Error opening database at '{}': {}", db_path, e);
         process::exit(1);
     })
