@@ -93,14 +93,11 @@ export const DeviceSelection: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className="text-lg font-sans font-medium text-[var(--text)]">
               {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
-              §23, §24
-            </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className="text-[11px] text-[var(--text)]/50 font-sans">
             {isForensic
               ? 'Real-time hardware enumeration, SMART/NVMe telemetry, write-blocker detection, and SHA-256 fingerprinting.'
               : 'Target disk verification and strict OS-disk hard refusal (§24) prior to sanitization gate.'}
@@ -140,22 +137,22 @@ export const DeviceSelection: React.FC = () => {
                     <span className="font-mono text-[11px] text-[#59EE99] font-bold">{device.path}</span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
-                      <span className="px-1.5 py-0.5 rounded bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/40 text-[9px] font-mono">
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--text)]/60 text-[9px] font-mono">
                         {device.bus_type}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-medium text-sm text-[#D8E4FF] font-sans">{device.model}</h3>
-                  <div className="text-[10px] font-mono text-[#D8E4FF]/35">
-                    S/N: <span className="text-[#D8E4FF]/70">{device.serial}</span>
+                  <h3 className="font-medium text-sm text-[var(--text)] font-sans">{device.model}</h3>
+                  <div className="text-[10px] font-mono text-[var(--text)]/50">
+                    S/N: <span className="text-[var(--text)]/80">{device.serial}</span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm font-mono font-bold text-[#D8E4FF]">
+                  <div className="text-sm font-mono font-bold text-[var(--text)]">
                     {formatBytes(device.size_bytes)}
                   </div>
-                  <div className="text-[9px] font-mono text-[#D8E4FF]/30">
+                  <div className="text-[9px] font-mono text-[var(--text)]/50">
                     Sector: {device.block_size} B
                   </div>
                 </div>
@@ -181,7 +178,7 @@ export const DeviceSelection: React.FC = () => {
                     <span>Write-Blocker Active</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/40">
+                  <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)]/60">
                     <ShieldAlert className="w-3 h-3 flex-shrink-0 text-amber-400" />
                     <span>Direct Device Access</span>
                   </div>
@@ -241,32 +238,32 @@ export const DeviceSelection: React.FC = () => {
 
       {/* Inspect & Health Modal */}
       {inspectingDevice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4">
-          <div className="w-full max-w-xl bg-[#00120B] border border-[rgba(89,238,153,0.15)] rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Activity className="w-4 h-4 text-[#59EE99]" />
-                <span className="font-bold text-[#D8E4FF]">
+                <span className="font-bold text-[var(--text)]">
                   Diagnostics: {inspectingDevice.model}
                 </span>
               </div>
               <button
                 onClick={() => setInspectingDevice(null)}
-                className="text-[#D8E4FF]/40 hover:text-white"
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {loadingModal ? (
-              <div className="py-8 text-center text-[#D8E4FF]/30">Reading drive SMART & fingerprint...</div>
+              <div className="py-8 text-center text-[var(--text)]/50">Reading drive SMART & fingerprint...</div>
             ) : (
               <div className="space-y-3">
                 {/* Fingerprint Card */}
                 {fingerprint && (
-                  <div className="p-3 bg-[rgba(53,96,90,0.12)] rounded-lg space-y-1">
+                  <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1">
                     <p className="label-muted">Hardware Identity Fingerprint (§23)</p>
-                    <div className="text-[10px] text-[#D8E4FF]/60 truncate">
+                    <div className="text-[10px] text-[var(--text)]/70 truncate">
                       SHA-256 Digest: <span className="text-[#59EE99]">{fingerprint.sha256_hash}</span>
                     </div>
                   </div>
@@ -274,7 +271,7 @@ export const DeviceSelection: React.FC = () => {
 
                 {/* Health Snapshot */}
                 {health && (
-                  <div className="p-3 bg-[rgba(53,96,90,0.12)] rounded-lg space-y-2">
+                  <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-2">
                     <div className="flex items-center justify-between">
                       <p className="label-muted">SMART / NVMe Health Telemetry</p>
                       <span className="px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] text-[9px] font-bold">
@@ -282,7 +279,7 @@ export const DeviceSelection: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-[10px] text-[#D8E4FF]/60">
+                    <div className="grid grid-cols-3 gap-2 text-[10px] text-[var(--text)]/70">
                       <div className="flex items-center gap-1">
                         <Thermometer className="w-3 h-3 text-[#59EE99]" />
                         <span>Temp: {health.temperature_celsius}°C</span>
@@ -296,7 +293,7 @@ export const DeviceSelection: React.FC = () => {
                       </div>
                     </div>
 
-                    <p className="text-[10px] text-[#D8E4FF]/40 font-sans leading-relaxed pt-1 border-t border-[rgba(89,238,153,0.06)]">
+                    <p className="text-[10px] text-[var(--text)]/60 font-sans leading-relaxed pt-1 border-t border-[var(--border)]/20">
                       {health.recommendation}
                     </p>
                   </div>
@@ -307,7 +304,7 @@ export const DeviceSelection: React.FC = () => {
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setInspectingDevice(null)}
-                className="px-3 py-1.5 bg-[rgba(53,96,90,0.2)] text-[#D8E4FF]/70 hover:text-[#D8E4FF] rounded text-[10px]"
+                className="px-3 py-1.5 bg-[var(--border)]/20 text-[var(--text)]/80 hover:text-[var(--text)] rounded text-[10px]"
               >
                 Close Diagnostics
               </button>
@@ -318,13 +315,13 @@ export const DeviceSelection: React.FC = () => {
 
       {/* Vault Evidence Modal */}
       {registeringDevice && activeCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4">
-          <div className="w-full max-w-md bg-[#00120B] border border-[rgba(89,238,153,0.15)] rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
               <span className="font-bold text-[#59EE99]">Register Evidence Media</span>
               <button
                 onClick={() => setRegisteringDevice(null)}
-                className="text-[#D8E4FF]/40 hover:text-white"
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -343,7 +340,7 @@ export const DeviceSelection: React.FC = () => {
                     type="text"
                     disabled
                     value={`${activeCase.case_id} (${activeCase.case_name})`}
-                    className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.1)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/50"
+                    className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/20 text-[var(--text)]/60"
                   />
                 </div>
 
@@ -353,7 +350,7 @@ export const DeviceSelection: React.FC = () => {
                     type="text"
                     disabled
                     value={`${registeringDevice.path} — ${registeringDevice.model}`}
-                    className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.1)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/50"
+                    className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/20 text-[var(--text)]/60"
                   />
                 </div>
 
@@ -364,7 +361,7 @@ export const DeviceSelection: React.FC = () => {
                     placeholder="Seized USB drive from suspect workstation..."
                     value={evidenceDesc}
                     onChange={(e) => setEvidenceDesc(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none focus:border-[#59EE99]/50"
+                    className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/30 text-[var(--text)] outline-none focus:border-[#59EE99]/50"
                   />
                 </div>
 
@@ -372,7 +369,7 @@ export const DeviceSelection: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setRegisteringDevice(null)}
-                    className="px-3 py-1.5 rounded text-[#D8E4FF]/50 hover:bg-[rgba(53,96,90,0.2)]"
+                    className="px-3 py-1.5 rounded text-[var(--text)]/60 hover:bg-[var(--border)]/20"
                   >
                     Cancel
                   </button>

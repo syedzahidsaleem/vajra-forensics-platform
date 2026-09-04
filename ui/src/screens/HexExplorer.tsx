@@ -102,14 +102,11 @@ export const HexExplorer: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className="text-lg font-sans font-medium text-[var(--text)]">
               Hex Data & Raw Sector Explorer
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
-              §32
-            </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className="text-[11px] text-[var(--text)]/50 font-sans">
             Raw byte inspection, sector boundary mapping, fragment provenance overlay, and colored block storage visualization.
           </p>
         </div>
@@ -125,25 +122,25 @@ export const HexExplorer: React.FC = () => {
               setTargetHexLba(next);
             }}
             disabled={currentLba <= 0}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-600 disabled:opacity-40"
+            className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)]/80 hover:border-[var(--border)]/60 disabled:opacity-40"
             title="Previous Sector"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
           <div className="relative flex items-center">
-            <span className="absolute left-3 text-xs font-mono text-cyan-400 font-bold">LBA:</span>
+            <span className="absolute left-3 text-xs font-mono text-[var(--primary)] font-bold">LBA:</span>
             <input
               type="text"
               value={inputLba}
               onChange={(e) => setInputLba(e.target.value)}
-              className="pl-12 pr-3 py-1.5 w-32 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs font-bold focus:outline-none focus:border-cyan-500"
+              className="pl-12 pr-3 py-1.5 w-32 rounded-lg bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] font-mono text-xs font-bold focus:outline-none focus:border-[var(--primary)]"
             />
           </div>
 
           <button
             type="submit"
-            className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-950"
+            className="px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs font-bold flex items-center gap-1.5 shadow-md"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Jump</span>
@@ -157,7 +154,7 @@ export const HexExplorer: React.FC = () => {
               setInputLba(String(next));
               setTargetHexLba(next);
             }}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-600"
+            className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)]/80 hover:border-[var(--border)]/60"
             title="Next Sector"
           >
             <ArrowRight className="w-4 h-4" />
@@ -166,7 +163,7 @@ export const HexExplorer: React.FC = () => {
           <button
             type="button"
             onClick={handleCopyHex}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+            className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)]/80 hover:text-[var(--text)]"
             title="Copy Raw Hex Dump"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
@@ -187,23 +184,23 @@ export const HexExplorer: React.FC = () => {
       />
 
       {/* Fragment Provenance Overlay Legend (§31, §32) */}
-      <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        <div className="flex items-center gap-2 text-slate-300">
+      <div className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+        <div className="flex items-center gap-2 text-[var(--text)]/80">
           <Layers className="w-4 h-4 text-cyan-400" />
           <span className="font-bold">Bifragment Reconstruction Provenance Overlay (§31):</span>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-[11px]">
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-emerald-500/30 border border-emerald-400" />
-            <span className="text-emerald-300">Fragment 1 [LBA 2048..2247]</span>
+            <span className="text-emerald-400">Fragment 1 [LBA 2048..2247]</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-amber-500/30 border border-amber-400" />
-            <span className="text-amber-300">Gap Region [100 Sectors]</span>
+            <span className="text-amber-400">Gap Region [100 Sectors]</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded bg-cyan-500/30 border border-cyan-400" />
-            <span className="text-cyan-300">Fragment 2 [LBA 2348..2547]</span>
+            <span className="text-cyan-400">Fragment 2 [LBA 2348..2547]</span>
           </div>
         </div>
       </div>
@@ -211,24 +208,24 @@ export const HexExplorer: React.FC = () => {
       {/* Hex Dump & Byte Inspector Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* 16-Byte Hex Virtualized Table */}
-        <div className="xl:col-span-3 rounded-xl border border-slate-800 bg-black/60 p-4 font-mono text-xs overflow-x-auto">
+        <div className="xl:col-span-3 rounded-xl border border-[var(--border)]/30 bg-[var(--surface)] p-4 font-mono text-xs overflow-x-auto">
           {/* Header Row */}
-          <div className="grid grid-cols-24 gap-1 text-[11px] text-slate-500 pb-2 border-b border-slate-800 font-bold select-none">
-            <div className="col-span-3 text-cyan-500">Offset (h)</div>
+          <div className="grid grid-cols-24 gap-1 text-[11px] text-[var(--text)]/50 pb-2 border-b border-[var(--border)]/20 font-bold select-none">
+            <div className="col-span-3 text-[var(--primary)]">Offset (h)</div>
             <div className="col-span-13 grid grid-cols-16 gap-1 text-center">
               {Array.from({ length: 16 }, (_, i) => (
                 <span key={i}>{i.toString(16).toUpperCase().padStart(2, '0')}</span>
               ))}
             </div>
-            <div className="col-span-8 text-center text-slate-400">Decoded Text</div>
+            <div className="col-span-8 text-center text-[var(--text)]/60">Decoded Text</div>
           </div>
 
           {/* Data Rows */}
-          <div className="divide-y divide-slate-900/60 pt-1">
+          <div className="divide-y divide-[var(--border)]/10 pt-1">
             {rows.map((row) => (
-              <div key={row.offset} className="grid grid-cols-24 gap-1 py-1 items-center hover:bg-slate-900/40">
+              <div key={row.offset} className="grid grid-cols-24 gap-1 py-1 items-center hover:bg-[var(--primary)]/5">
                 {/* Offset */}
-                <div className="col-span-3 text-slate-500 select-none">
+                <div className="col-span-3 text-[var(--text)]/40 select-none">
                   {row.offset.toString(16).padStart(8, '0').toUpperCase()}
                 </div>
 
@@ -247,12 +244,12 @@ export const HexExplorer: React.FC = () => {
                         onClick={() => setSelectedByteOffset(byteGlobalOffset)}
                         className={`py-0.5 rounded transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-cyan-500 text-black font-bold ring-2 ring-cyan-300'
+                            ? 'bg-[var(--primary)] text-[var(--bg)] font-bold ring-2 ring-[var(--primary)]/50'
                             : isNull
-                            ? 'text-slate-600 hover:bg-slate-800 hover:text-slate-300'
+                            ? 'text-[var(--text)]/30 hover:bg-[var(--border)]/20 hover:text-[var(--text)]/70'
                             : isAscii
-                            ? 'text-cyan-300 hover:bg-slate-800'
-                            : 'text-amber-300 hover:bg-slate-800'
+                            ? 'text-cyan-500 dark:text-cyan-300 hover:bg-[var(--border)]/20'
+                            : 'text-amber-500 dark:text-amber-300 hover:bg-[var(--border)]/20'
                         }`}
                       >
                         {b.toString(16).padStart(2, '0').toUpperCase()}
@@ -262,7 +259,7 @@ export const HexExplorer: React.FC = () => {
                 </div>
 
                 {/* ASCII Column */}
-                <div className="col-span-8 pl-4 text-slate-300 tracking-wider">
+                <div className="col-span-8 pl-4 text-[var(--text)]/80 tracking-wider">
                   {Array.from(row.bytes).map((b, idx) => {
                     const char = b >= 32 && b <= 126 ? String.fromCharCode(b) : '.';
                     const byteGlobalOffset = row.offset + idx;
@@ -272,7 +269,7 @@ export const HexExplorer: React.FC = () => {
                         key={idx}
                         onClick={() => setSelectedByteOffset(byteGlobalOffset)}
                         className={`cursor-pointer inline-block ${
-                          isSelected ? 'bg-cyan-500 text-black font-bold px-0.5 rounded' : 'hover:text-cyan-400'
+                          isSelected ? 'bg-[var(--primary)] text-[var(--bg)] font-bold px-0.5 rounded' : 'hover:text-[var(--primary)]'
                         }`}
                       >
                         {char}
@@ -287,8 +284,8 @@ export const HexExplorer: React.FC = () => {
 
         {/* Byte Inspector Side Panel */}
         <div className="space-y-4">
-          <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-4 font-mono text-xs">
-            <div className="flex items-center gap-2 text-cyan-400 font-bold pb-2 border-b border-slate-800">
+          <div className="p-5 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-4 font-mono text-xs">
+            <div className="flex items-center gap-2 text-[var(--primary)] font-bold pb-2 border-b border-[var(--border)]/20">
               <Binary className="w-4 h-4" />
               <span>Byte Inspector & Types</span>
             </div>
@@ -296,41 +293,41 @@ export const HexExplorer: React.FC = () => {
             {selectedByteOffset !== null && selectedByteVal !== null ? (
               <div className="space-y-2.5 text-[11px]">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Selected Offset:</span>
-                  <span className="text-white font-bold">
+                  <span className="text-[var(--text)]/60">Selected Offset:</span>
+                  <span className="text-[var(--text)] font-bold">
                     0x{selectedByteOffset.toString(16).toUpperCase()} ({selectedByteOffset})
                   </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Hex Value:</span>
-                  <span className="text-cyan-300 font-bold">
+                  <span className="text-[var(--text)]/60">Hex Value:</span>
+                  <span className="text-[var(--primary)] font-bold">
                     0x{selectedByteVal.toString(16).toUpperCase().padStart(2, '0')}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Unsigned 8-bit:</span>
-                  <span className="text-white">{selectedByteVal}</span>
+                  <span className="text-[var(--text)]/60">Unsigned 8-bit:</span>
+                  <span className="text-[var(--text)]">{selectedByteVal}</span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Binary:</span>
-                  <span className="text-amber-300 font-bold">{selectedByteVal.toString(2).padStart(8, '0')}</span>
+                  <span className="text-[var(--text)]/60">Binary:</span>
+                  <span className="text-amber-500 dark:text-amber-300 font-bold">{selectedByteVal.toString(2).padStart(8, '0')}</span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span className="text-slate-400">ASCII Character:</span>
-                  <span className="text-emerald-400 font-bold">
+                  <span className="text-[var(--text)]/60">ASCII Character:</span>
+                  <span className="text-emerald-500 dark:text-emerald-400 font-bold">
                     {selectedByteVal >= 32 && selectedByteVal <= 126
                       ? `'${String.fromCharCode(selectedByteVal)}'`
                       : 'Non-Printable'}
                   </span>
                 </div>
 
-                <div className="pt-2 border-t border-slate-800">
-                  <span className="text-slate-400 block mb-1">Little-Endian 16-bit:</span>
-                  <span className="text-slate-200">
+                <div className="pt-2 border-t border-[var(--border)]/20">
+                  <span className="text-[var(--text)]/60 block mb-1">Little-Endian 16-bit:</span>
+                  <span className="text-[var(--text)]/90">
                     {selectedByteOffset + 1 < sectorBytes.length
                       ? sectorBytes[selectedByteOffset] | (sectorBytes[selectedByteOffset + 1] << 8)
                       : 'N/A'}
@@ -338,8 +335,8 @@ export const HexExplorer: React.FC = () => {
                 </div>
 
                 <div>
-                  <span className="text-slate-400 block mb-1">Little-Endian 32-bit:</span>
-                  <span className="text-slate-200">
+                  <span className="text-[var(--text)]/60 block mb-1">Little-Endian 32-bit:</span>
+                  <span className="text-[var(--text)]/90">
                     {selectedByteOffset + 3 < sectorBytes.length
                       ? (sectorBytes[selectedByteOffset] |
                           (sectorBytes[selectedByteOffset + 1] << 8) |
@@ -351,16 +348,16 @@ export const HexExplorer: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-slate-500 italic">Click any byte in the hex grid to inspect structure</div>
+              <div className="text-[var(--text)]/40 italic">Click any byte in the hex grid to inspect structure</div>
             )}
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 text-[11px] font-sans text-slate-400 leading-relaxed">
-            <div className="flex items-center gap-1.5 font-bold text-slate-300 font-mono mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <div className="p-4 rounded-xl bg-[var(--surface)]/60 border border-[var(--border)]/30 text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">
+            <div className="flex items-center gap-1.5 font-bold text-[var(--text)]/90 font-mono mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" />
               <span>Forensic Significance</span>
             </div>
-            Raw disk sector viewing operates strictly under <code className="text-cyan-400 font-mono">ReadOnlyBlockSource</code> type invariants (§16).
+            Raw disk sector viewing operates strictly under <code className="text-[var(--primary)] font-mono">ReadOnlyBlockSource</code> type invariants (§16).
           </div>
         </div>
       </div>

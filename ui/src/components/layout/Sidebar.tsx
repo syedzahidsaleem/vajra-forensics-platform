@@ -39,9 +39,9 @@ export const Sidebar: React.FC = () => {
   const currentNav = isForensic ? forensicNav : sanitizationNav;
 
   return (
-    <aside className="w-[180px] h-full flex flex-col bg-[rgba(0,18,11,0.6)] border-r border-[rgba(89,238,153,0.04)] py-4 select-none shrink-0 z-30">
+    <aside className="w-[180px] h-full flex flex-col bg-[var(--surface)]/70 border-r border-[var(--border)]/20 py-4 select-none shrink-0 z-30 text-[var(--text)]">
       {/* Section label */}
-      <p className="px-4 mb-3 text-[9px] font-mono text-[#D8E4FF]/25 uppercase tracking-[0.15em]">
+      <p className="px-4 mb-3 text-[9px] font-mono text-[var(--text)]/40 uppercase tracking-[0.15em]">
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
       </p>
 
@@ -57,12 +57,12 @@ export const Sidebar: React.FC = () => {
                 w-full flex items-center gap-3 px-4 py-2.5 text-[11px] font-sans text-left transition-all duration-150 cursor-pointer
                 ${
                   isActive
-                    ? 'text-[#59EE99] bg-[rgba(89,238,153,0.05)] border-l-2 border-[#59EE99] shadow-[-4px_0_12px_rgba(89,238,153,0.1)] font-medium'
-                    : 'text-[#D8E4FF]/45 hover:text-[#D8E4FF]/75 hover:bg-[rgba(89,238,153,0.03)] border-l-2 border-transparent'
+                    ? 'text-[var(--primary)] bg-[var(--primary)]/10 border-l-2 border-[var(--primary)] shadow-[-4px_0_12px_rgba(0,0,0,0.1)] font-semibold'
+                    : 'text-[var(--text)]/60 hover:text-[var(--text)] hover:bg-[var(--primary)]/5 border-l-2 border-transparent'
                 }
               `}
             >
-              <span className={isActive ? 'text-[#59EE99]' : 'text-[#D8E4FF]/40'}>
+              <span className={isActive ? 'text-[var(--primary)]' : 'text-[var(--text)]/50'}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>

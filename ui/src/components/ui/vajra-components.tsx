@@ -105,8 +105,8 @@ export function GlowButton({
       border border-[#EF4444]
     `,
     ghost: `
-      bg-transparent text-[#D8E4FF]
-      border border-[#35605A]
+      bg-transparent text-[var(--text)]
+      border border-[var(--border)]/40
       hover:border-[#59EE99]/50 hover:text-[#59EE99]
       hover:bg-[#59EE99]/5
     `,
@@ -254,8 +254,8 @@ const FILE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
 export function FileTypeBadge({ type }: { type: string }) {
   const normalized = type.toLowerCase().replace(/^\./, '');
   const colors = FILE_TYPE_COLORS[normalized] ?? {
-    bg: 'rgba(216,228,255,0.1)',
-    text: '#D8E4FF',
+    bg: 'var(--surface)',
+    text: 'var(--text)',
   };
 
   return (
@@ -276,11 +276,11 @@ export function TierBadge({ tier }: { tier: 'Tier1Metadata' | 'Tier2Signature' |
   const config = {
     Tier1Metadata:   { label: 'Tier 1', color: '#59EE99', bg: 'rgba(89,238,153,0.15)' },
     Tier2Signature:  { label: 'Tier 2', color: '#AA77A9', bg: 'rgba(170,119,169,0.15)' },
-    Tier3Fragmented: { label: 'Tier 3', color: '#D8E4FF', bg: 'rgba(216,228,255,0.1)' },
+    Tier3Fragmented: { label: 'Tier 3', color: 'var(--text)', bg: 'var(--surface)' },
     'Tier 1 (Metadata)': { label: 'Tier 1', color: '#59EE99', bg: 'rgba(89,238,153,0.15)' },
     'Tier 2 (Structural Carving)': { label: 'Tier 2', color: '#AA77A9', bg: 'rgba(170,119,169,0.15)' },
-    'Tier 3 (Bifragment Reconstructed)': { label: 'Tier 3', color: '#D8E4FF', bg: 'rgba(216,228,255,0.1)' },
-  }[tier] ?? { label: tier, color: '#D8E4FF', bg: 'rgba(216,228,255,0.1)' };
+    'Tier 3 (Bifragment Reconstructed)': { label: 'Tier 3', color: 'var(--text)', bg: 'var(--surface)' },
+  }[tier] ?? { label: tier, color: 'var(--text)', bg: 'var(--surface)' };
 
   return (
     <span
@@ -374,12 +374,12 @@ export function Tooltip({ content, children }: TooltipProps) {
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.12 }}
             className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2
-              bg-[#00120B] border border-[#35605A] rounded-lg px-2.5 py-1.5
-              text-[11px] font-mono text-[#D8E4FF] whitespace-nowrap
+              bg-[var(--surface)] border border-[var(--border)]/40 rounded-lg px-2.5 py-1.5
+              text-[11px] font-mono text-[var(--text)] whitespace-nowrap
               shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
           >
             {content}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#35605A]" />
+            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--border)]/60" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -427,7 +427,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       'border-[#59EE99]/40 bg-[rgba(89,238,153,0.08)] text-[#59EE99]',
     danger:
       'border-[#EF4444]/40 bg-[rgba(239,68,68,0.08)] text-[#EF4444]',
-    info: 'border-[#AA77A9]/40 bg-[rgba(170,119,169,0.08)] text-[#D8E4FF]',
+    info: 'border-[#AA77A9]/40 bg-[rgba(170,119,169,0.08)] text-[var(--text)]',
   };
 
   const icons: Record<ToastVariant, string> = {
@@ -486,13 +486,13 @@ export function FloatingInput({ label, error, className = '', ...props }: Floati
         onFocus={(e) => { setFocused(true); props.onFocus?.(e); }}
         onBlur={(e) => { setFocused(false); props.onBlur?.(e); }}
         className={`
-          peer w-full bg-[rgba(53,96,90,0.12)] border rounded-md
-          font-mono text-xs text-[#D8E4FF] placeholder-transparent
+          peer w-full bg-[var(--surface)]/50 border rounded-md
+          font-mono text-xs text-[var(--text)] placeholder-transparent
           px-3 pt-5 pb-2
           outline-none transition-all duration-200
           ${error
             ? 'border-[#EF4444]/50 focus:border-[#EF4444] focus:shadow-[0_0_0_2px_rgba(239,68,68,0.15)]'
-            : 'border-[rgba(89,238,153,0.15)] focus:border-[#59EE99]/50 focus:shadow-[0_0_0_2px_rgba(89,238,153,0.1)]'
+            : 'border-[var(--border)]/30 focus:border-[#59EE99]/50 focus:shadow-[0_0_0_2px_rgba(89,238,153,0.1)]'
           }
         `}
       />
@@ -503,7 +503,7 @@ export function FloatingInput({ label, error, className = '', ...props }: Floati
           ${focused || hasValue ? 'top-1.5 text-[9px]' : 'top-3.5 text-xs'}
           ${focused
             ? error ? 'text-[#EF4444]' : 'text-[#59EE99]'
-            : 'text-[#D8E4FF]/50'
+            : 'text-[var(--text)]/60'
           }
         `}
       >
@@ -535,7 +535,7 @@ export function SectionHeader({
     <div className="flex items-start justify-between mb-6">
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-xl font-sans font-semibold text-[#D8E4FF] tracking-tight">
+          <h1 className="text-xl font-sans font-semibold text-[var(--text)] tracking-tight">
             {title}
           </h1>
           {tags?.map((tag) => (
@@ -548,7 +548,7 @@ export function SectionHeader({
           ))}
         </div>
         {subtitle && (
-          <p className="text-[11px] text-[#D8E4FF]/50 font-sans max-w-xl">
+          <p className="text-[11px] text-[var(--text)]/60 font-sans max-w-xl">
             {subtitle}
           </p>
         )}
@@ -581,7 +581,7 @@ export function LinearProgress({
     <div className="w-full space-y-1.5">
       {label && (
         <div className="flex justify-between items-center">
-          <span className="text-[10px] font-mono text-[#D8E4FF]/60 uppercase tracking-wider">
+          <span className="text-[10px] font-mono text-[var(--text)]/70 uppercase tracking-wider">
             {label}
           </span>
           <AnimatedCounter

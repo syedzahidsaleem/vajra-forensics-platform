@@ -214,11 +214,8 @@ export const SanitizationConsole: React.FC = () => {
           <h1 className="text-lg font-sans font-medium text-[#EF4444]/90">
             Destructive Sanitization Console
           </h1>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(239,68,68,0.08)] text-[#EF4444]/60 border border-[#EF4444]/15">
-            §43
-          </span>
         </div>
-        <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+        <p className="text-[11px] text-[var(--text)]/40 font-sans">
           NIST SP 800-88 · IEEE 2883-2022 · mandatory 7-phase non-collapsible safety gate
         </p>
       </div>
@@ -233,13 +230,13 @@ export const SanitizationConsole: React.FC = () => {
                   ? 'bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/30 font-bold'
                   : i + 1 < gateStep
                   ? 'bg-[rgba(89,238,153,0.08)] text-[#59EE99]/50'
-                  : 'text-[#D8E4FF]/20'
+                  : 'text-[var(--text)]/30'
               }`}
             >
               {i + 1}. {step}
             </div>
             {i < stepsList.length - 1 && (
-              <div className="w-4 h-px bg-[rgba(216,228,255,0.08)] shrink-0" />
+              <div className="w-4 h-px bg-[var(--border)]/20 shrink-0" />
             )}
           </React.Fragment>
         ))}
@@ -264,10 +261,10 @@ export const SanitizationConsole: React.FC = () => {
                 <select
                   value={targetPath}
                   onChange={(e) => setTargetPath(e.target.value)}
-                  className="w-full px-3 py-2 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none"
+                  className="w-full px-3 py-2 rounded bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)] outline-none"
                 >
                   {devices.map((d: DeviceDescriptor) => (
-                    <option key={d.path} value={d.path} className="bg-[#00120B]">
+                    <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
                       {d.path} — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
                     </option>
                   ))}
@@ -280,17 +277,17 @@ export const SanitizationConsole: React.FC = () => {
                   type="text"
                   disabled
                   value={activeCase?.case_id || 'CASE-2026-001'}
-                  className="w-full px-3 py-2 rounded bg-[rgba(53,96,90,0.1)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/50"
+                  className="w-full px-3 py-2 rounded bg-[var(--surface)]/60 border border-[var(--border)]/20 text-[var(--text)]/50"
                 />
               </div>
             </div>
 
             {targetDevice && (
-              <div className="space-y-4 pt-3 border-t border-[rgba(89,238,153,0.06)]">
+              <div className="space-y-4 pt-3 border-t border-[var(--border)]/15">
                 <div className="grid grid-cols-3 gap-6">
                   <div>
                     <p className="label-muted mb-1">Model</p>
-                    <p className="text-[12px] font-sans text-[#D8E4FF]/80 font-medium">
+                    <p className="text-[12px] font-sans text-[var(--text)]/80 font-medium">
                       {targetDevice.model}
                     </p>
                   </div>
@@ -300,14 +297,14 @@ export const SanitizationConsole: React.FC = () => {
                   </div>
                   <div>
                     <p className="label-muted mb-1">Capacity</p>
-                    <p className="text-[12px] font-mono text-[#D8E4FF]/80">{formatBytes(targetDevice.size_bytes)}</p>
+                    <p className="text-[12px] font-mono text-[var(--text)]/80">{formatBytes(targetDevice.size_bytes)}</p>
                   </div>
                 </div>
 
                 {deviceFingerprint && (
                   <div className="flex items-center gap-2 pt-2">
                     <p className="label-muted">SHA-256</p>
-                    <p className="text-[10px] font-mono text-[#D8E4FF]/40 truncate">
+                    <p className="text-[10px] font-mono text-[var(--text)]/40 truncate">
                       {deviceFingerprint.sha256_hash}
                     </p>
                   </div>
@@ -324,7 +321,7 @@ export const SanitizationConsole: React.FC = () => {
                 <p className="text-[11px] font-mono text-[#EF4444]/80 mb-0.5">
                   OS Boot Disk — Hard Block §24
                 </p>
-                <p className="text-[10px] font-mono text-[#D8E4FF]/35">
+                <p className="text-[10px] font-mono text-[var(--text)]/50">
                   Destructive operations are structurally refused on system disks.
                   Select a secondary target device to proceed.
                 </p>
@@ -353,14 +350,14 @@ export const SanitizationConsole: React.FC = () => {
             <span>Phase 2 — Initial Device Verification (§43.2)</span>
           </div>
 
-          <p className="text-[11px] font-mono text-[#D8E4FF]/70 leading-relaxed">
+          <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
             Verify that you have physically identified the drive attached to <strong>{targetPath}</strong> ({targetDevice?.model}, Serial: <strong>{targetDevice?.serial}</strong>).
           </p>
 
           <div className="flex justify-between pt-3 border-t border-[rgba(239,68,68,0.15)]">
             <button
               onClick={() => setGateStep(1)}
-              className="text-[10px] font-mono text-[#D8E4FF]/40 hover:text-[#D8E4FF]"
+              className="text-[10px] font-mono text-[var(--text)]/50 hover:text-[var(--text)]"
             >
               Cancel
             </button>
@@ -374,33 +371,33 @@ export const SanitizationConsole: React.FC = () => {
       {/* STEP 3: Sanitization Decision Engine Recommendation (§34) */}
       {gateStep === 3 && recommendation && (
         <GlassCard hover={false} className="p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(89,238,153,0.06)]">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]/15">
             <div>
               <p className="label-muted">Decision Engine Recommendation (§34)</p>
-              <h2 className="text-sm font-mono font-bold text-[#D8E4FF] mt-0.5">{recommendation.recommended_method}</h2>
+              <h2 className="text-sm font-mono font-bold text-[var(--text)] mt-0.5">{recommendation.recommended_method}</h2>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99]">
               Assurance: {recommendation.assurance_level}
             </span>
           </div>
 
-          <p className="text-[11px] text-[#D8E4FF]/60 font-sans leading-relaxed">{recommendation.rationale}</p>
+          <p className="text-[11px] text-[var(--text)]/70 font-sans leading-relaxed">{recommendation.rationale}</p>
 
           <div className="grid grid-cols-2 gap-3 font-mono text-[11px]">
             <div>
               <p className="label-muted mb-0.5">Required Passes</p>
-              <p className="text-[#D8E4FF]">{recommendation.passes_required} Pass</p>
+              <p className="text-[var(--text)]">{recommendation.passes_required} Pass</p>
             </div>
             <div>
               <p className="label-muted mb-0.5">Est. Duration</p>
-              <p className="text-[#D8E4FF]">~{recommendation.estimated_duration_minutes} min</p>
+              <p className="text-[var(--text)]">~{recommendation.estimated_duration_minutes} min</p>
             </div>
           </div>
 
-          <div className="flex justify-between pt-3 border-t border-[rgba(89,238,153,0.06)]">
+          <div className="flex justify-between pt-3 border-t border-[var(--border)]/15">
             <button
               onClick={() => setGateStep(2)}
-              className="text-[10px] font-mono text-[#D8E4FF]/40 hover:text-[#D8E4FF]"
+              className="text-[10px] font-mono text-[var(--text)]/50 hover:text-[var(--text)]"
             >
               &larr; Back
             </button>
@@ -419,14 +416,14 @@ export const SanitizationConsole: React.FC = () => {
             <span>Phase 4 — Second Independent Reconfirmation (§43.3)</span>
           </div>
 
-          <p className="text-[11px] font-mono text-[#D8E4FF]/70 leading-relaxed">
+          <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
             Per safety engineering standard §43.3, this confirmation is deliberately separated from the initial check. All data, partitions, and filesystems on <strong>{targetPath}</strong> will be permanently erased.
           </p>
 
           <div className="flex justify-between pt-3 border-t border-[rgba(239,68,68,0.15)]">
             <button
               onClick={() => setGateStep(3)}
-              className="text-[10px] font-mono text-[#D8E4FF]/40 hover:text-[#D8E4FF]"
+              className="text-[10px] font-mono text-[var(--text)]/50 hover:text-[var(--text)]"
             >
               &larr; Back
             </button>
@@ -446,8 +443,8 @@ export const SanitizationConsole: React.FC = () => {
           </div>
 
           <div className="space-y-3 font-mono text-[11px]">
-            <p className="text-[#D8E4FF]/60">Type the exact displayed serial number to unlock execution:</p>
-            <div className="p-2.5 rounded bg-[rgba(0,18,11,0.8)] border border-[#EF4444]/30 text-center text-sm font-bold text-[#EF4444] tracking-widest">
+            <p className="text-[var(--text)]/70">Type the exact displayed serial number to unlock execution:</p>
+            <div className="p-2.5 rounded bg-[var(--surface)] border border-[#EF4444]/30 text-center text-sm font-bold text-[#EF4444] tracking-widest">
               {targetDevice?.serial}
             </div>
 
@@ -456,14 +453,14 @@ export const SanitizationConsole: React.FC = () => {
               value={typedSerial}
               onChange={(e) => setTypedSerial(e.target.value)}
               placeholder="Type exact serial number here..."
-              className="w-full px-3 py-2 rounded bg-[rgba(0,18,11,0.9)] border border-[#EF4444]/40 text-white font-mono text-xs font-bold outline-none focus:border-[#EF4444]"
+              className="w-full px-3 py-2 rounded bg-[var(--surface)] border border-[#EF4444]/40 text-[var(--text)] font-mono text-xs font-bold outline-none focus:border-[#EF4444]"
             />
           </div>
 
           <div className="flex justify-between pt-3 border-t border-[rgba(239,68,68,0.15)]">
             <button
               onClick={() => setGateStep(4)}
-              className="text-[10px] font-mono text-[#D8E4FF]/40 hover:text-[#D8E4FF]"
+              className="text-[10px] font-mono text-[var(--text)]/50 hover:text-[var(--text)]"
             >
               &larr; Back
             </button>
@@ -485,14 +482,14 @@ export const SanitizationConsole: React.FC = () => {
           <div className="flex items-center justify-between font-mono">
             <div>
               <p className="text-xs font-bold text-[#EF4444]">Live Pass Sanitization in Progress...</p>
-              <p className="text-[10px] text-[#D8E4FF]/40">
+              <p className="text-[10px] text-[var(--text)]/50">
                 Target: {targetDevice?.model} (S/N: {targetDevice?.serial}){authToken ? ` · Token: ${authToken.slice(0, 12)}` : ''}
               </p>
             </div>
-            <span className="text-xl font-bold text-white">{overallPercent}%</span>
+            <span className="text-xl font-bold text-[var(--text)]">{overallPercent}%</span>
           </div>
 
-          <div className="w-full h-1.5 bg-[rgba(0,18,11,0.8)] rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-[var(--surface)] rounded-full overflow-hidden">
             <div
               className="h-full rounded-full bg-[#EF4444] shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300"
               style={{ width: `${overallPercent}%` }}
@@ -509,12 +506,12 @@ export const SanitizationConsole: React.FC = () => {
           <div className="space-y-2 font-mono text-[11px]">
             <p className="label-muted">Pass-by-Pass Verification Status (§43a)</p>
             {passes.map((p: PassVerificationStatus) => (
-              <div key={p.pass_number} className="p-3 bg-[rgba(0,18,11,0.6)] rounded-lg border border-[#EF4444]/20 space-y-1">
+              <div key={p.pass_number} className="p-3 bg-[var(--surface)] rounded-lg border border-[#EF4444]/20 space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">{p.pattern_description}</span>
+                  <span className="text-[var(--text)] font-medium">{p.pattern_description}</span>
                   <span className="text-[#EF4444] font-bold">{p.percent_complete}%</span>
                 </div>
-                <div className="flex items-center justify-between text-[10px] text-[#D8E4FF]/40">
+                <div className="flex items-center justify-between text-[10px] text-[var(--text)]/50">
                   <span>Verified: {formatBytes(p.bytes_verified)} / {formatBytes(p.total_bytes)}</span>
                   <span>Errors: {p.error_count}</span>
                 </div>
@@ -527,14 +524,14 @@ export const SanitizationConsole: React.FC = () => {
       {/* STEP 7: Cryptographic Sanitization Certificate Display (§38) */}
       {gateStep === 7 && certificate && (
         <GlassCard hover={false} className="p-5 space-y-5">
-          <div className="flex items-center justify-between pb-3 border-b border-[rgba(89,238,153,0.1)]">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]/15">
             <div className="flex items-center gap-2.5">
               <CheckCircle className="w-5 h-5 text-[#59EE99]" />
               <div>
                 <h2 className="text-xs font-mono font-bold text-[#59EE99]">
                   Sanitization Certificate Generated (§38)
                 </h2>
-                <p className="text-[10px] font-mono text-[#D8E4FF]/40">
+                <p className="text-[10px] font-mono text-[var(--text)]/50">
                   {certificate.certificate_id}
                 </p>
               </div>
@@ -545,12 +542,12 @@ export const SanitizationConsole: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4 font-mono text-[11px]">
-            <div className="space-y-1 text-[#D8E4FF]/60">
+            <div className="space-y-1 text-[var(--text)]/70">
               <p className="label-muted mb-1">Execution Record</p>
-              <div>Model: <span className="text-[#D8E4FF]">{certificate.device_fingerprint.model}</span></div>
+              <div>Model: <span className="text-[var(--text)]">{certificate.device_fingerprint.model}</span></div>
               <div>Serial: <span className="text-[#59EE99]">{certificate.device_fingerprint.serial}</span></div>
               <div>Method: <span className="text-[#59EE99]">{certificate.method_applied}</span></div>
-              <div>Operator: <span className="text-[#D8E4FF]">{certificate.operator_id}</span></div>
+              <div>Operator: <span className="text-[var(--text)]">{certificate.operator_id}</span></div>
             </div>
 
             <div className="space-y-1">
@@ -566,12 +563,12 @@ export const SanitizationConsole: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-2.5 bg-[rgba(0,18,11,0.6)] rounded-lg font-mono text-[10px] text-[#D8E4FF]/40 space-y-0.5">
+          <div className="p-2.5 bg-[var(--surface)] rounded-lg font-mono text-[10px] text-[var(--text)]/50 space-y-0.5">
             <p className="label-muted">Ed25519 Digital Signature</p>
             <p className="text-[#59EE99] font-mono truncate">{certificate.digital_signature}</p>
           </div>
 
-          <div className="flex justify-between pt-2 border-t border-[rgba(89,238,153,0.06)]">
+          <div className="flex justify-between pt-2 border-t border-[var(--border)]/15">
             <GlowButton
               variant="ghost"
               size="sm"

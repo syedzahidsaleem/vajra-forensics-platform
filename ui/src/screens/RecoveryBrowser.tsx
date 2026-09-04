@@ -148,7 +148,7 @@ export const RecoveryBrowser: React.FC = () => {
       <SectionHeader
         title="Recovery Browser & Artifact Inspector"
         subtitle="Browse recovered files across Tier-1 (metadata), Tier-2 (carving), and Tier-3 (bifragment reconstruction) with 6-signal confidence breakdowns."
-        tags={['§29–§32', 'FORENSIC READ-ONLY']}
+        tags={['FORENSIC READ-ONLY']}
         actions={
           <GlowButton
             variant="primary"
@@ -163,7 +163,7 @@ export const RecoveryBrowser: React.FC = () => {
       />
 
       {/* Tier Filter Tabs */}
-      <div className="flex items-center justify-between gap-4 bg-[rgba(0,18,11,0.6)] p-2 rounded-xl border border-[rgba(89,238,153,0.1)]">
+      <div className="flex items-center justify-between gap-4 bg-[var(--surface)] p-2 rounded-xl border border-[var(--border)]/30">
         <div className="flex items-center gap-1.5 font-mono text-xs">
           {(['All', 'Tier 1', 'Tier 2', 'Tier 3'] as const).map((tier) => (
             <button
@@ -172,8 +172,8 @@ export const RecoveryBrowser: React.FC = () => {
               onClick={() => setSelectedTier(tier)}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold ${
                 selectedTier === tier
-                  ? 'bg-[#59EE99] text-[#00120B] shadow-[0_0_12px_rgba(89,238,153,0.3)]'
-                  : 'text-[#D8E4FF]/60 hover:text-[#D8E4FF] hover:bg-[rgba(53,96,90,0.2)]'
+                  ? 'bg-[var(--primary)] text-[var(--bg)] shadow-[0_0_12px_rgba(89,238,153,0.3)]'
+                  : 'text-[var(--text)]/60 hover:text-[var(--text)] hover:bg-[var(--primary)]/10'
               }`}
             >
               {tier}
@@ -181,7 +181,7 @@ export const RecoveryBrowser: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-[#59EE99]">
+        <div className="flex items-center gap-2 text-xs font-mono text-[var(--primary)]">
           <Filter className="w-3.5 h-3.5" />
           <span>Active Filter: {selectedTier}</span>
         </div>
@@ -200,8 +200,8 @@ export const RecoveryBrowser: React.FC = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <OrbitalSpinner size={40} />
           <div className="text-center">
-            <p className="text-sm font-mono text-[#59EE99]">Running recovery pipeline...</p>
-            <p className="text-xs text-[#D8E4FF]/40 mt-1">
+            <p className="text-sm font-mono text-[var(--primary)]">Running recovery pipeline...</p>
+            <p className="text-xs text-[var(--text)]/40 mt-1">
               Scanning Tier 1 metadata → Tier 2 signatures → Tier 3 fragments
             </p>
           </div>
@@ -211,11 +211,11 @@ export const RecoveryBrowser: React.FC = () => {
       {/* Empty state */}
       {!isLoading && filteredArtifacts.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="w-12 h-12 rounded-full bg-[rgba(89,238,153,0.08)] border border-[#59EE99]/20 flex items-center justify-center">
-            <Binary className="w-5 h-5 text-[#59EE99]/50" />
+          <div className="w-12 h-12 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center">
+            <Binary className="w-5 h-5 text-[var(--primary)]/50" />
           </div>
-          <p className="text-sm font-mono text-[#D8E4FF]/50">No artifacts recovered</p>
-          <p className="text-xs text-[#D8E4FF]/30">Try enabling additional tiers or selecting a different source</p>
+          <p className="text-sm font-mono text-[var(--text)]/50">No artifacts recovered</p>
+          <p className="text-xs text-[var(--text)]/30">Try enabling additional tiers or selecting a different source</p>
         </div>
       )}
 
@@ -224,7 +224,7 @@ export const RecoveryBrowser: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Candidate List */}
           <div className="lg:col-span-2 space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono text-[#D8E4FF]/50">
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--text)]/50">
               <span>Evidence Candidates ({filteredArtifacts.length} items)</span>
             </div>
 
@@ -241,31 +241,31 @@ export const RecoveryBrowser: React.FC = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2.5">
                         <FileTypeBadge type={art.type} />
-                        <span className="font-mono text-sm font-bold text-[#D8E4FF]">{art.name}</span>
+                        <span className="font-mono text-sm font-bold text-[var(--text)]">{art.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <TierBadge tier={art.tier} />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-[#D8E4FF]/60 pt-2 border-t border-[rgba(89,238,153,0.08)] mb-3">
+                    <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-[var(--text)]/60 pt-2 border-t border-[var(--border)]/20 mb-3">
                       <div>
-                        <span className="text-[#D8E4FF]/40 block">Confidence:</span>
+                        <span className="text-[var(--text)]/40 block">Confidence:</span>
                         <ConfidenceBar value={art.confidence} />
                       </div>
                       <div>
-                        <span className="text-[#D8E4FF]/40 block">LBA Offset:</span>
-                        <span className="text-[#D8E4FF]">LBA {art.startLba.toLocaleString()}</span>
+                        <span className="text-[var(--text)]/40 block">LBA Offset:</span>
+                        <span className="text-[var(--text)]">LBA {art.startLba.toLocaleString()}</span>
                       </div>
                       <div>
-                        <span className="text-[#D8E4FF]/40 block">Status:</span>
-                        <span className="text-[#59EE99]">{art.status}</span>
+                        <span className="text-[var(--text)]/40 block">Status:</span>
+                        <span className="text-[var(--primary)]">{art.status}</span>
                       </div>
                     </div>
 
                     {/* Actions Bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-[rgba(89,238,153,0.06)]">
-                      <span className="text-[10px] font-mono text-[#D8E4FF]/40">
+                    <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]/10">
+                      <span className="text-[10px] font-mono text-[var(--text)]/40">
                         Size: {(art.sizeBytes / 1024).toFixed(1)} KB ({art.blockCount} sectors)
                       </span>
                       <GlowButton
@@ -288,25 +288,25 @@ export const RecoveryBrowser: React.FC = () => {
 
           {/* 6-Signal Confidence Inspector */}
           <GlassCard hover={false} className="h-fit space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[rgba(89,238,153,0.1)]">
-              <div className="flex items-center gap-2 text-[#59EE99] font-mono font-bold text-xs">
+            <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]/20">
+              <div className="flex items-center gap-2 text-[var(--primary)] font-mono font-bold text-xs">
                 <Sparkles className="w-4 h-4" />
                 <span>6-Signal Confidence Breakdown</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.15)] text-[#59EE99]">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--primary)]">
                 Verified
               </span>
             </div>
 
             <div className="space-y-1 font-mono">
-              <div className="text-[11px] text-[#D8E4FF]/40">Target Artifact:</div>
-              <div className="text-sm font-bold text-[#D8E4FF] truncate">{selectedArtifact.name}</div>
+              <div className="text-[11px] text-[var(--text)]/40">Target Artifact:</div>
+              <div className="text-sm font-bold text-[var(--text)] truncate">{selectedArtifact.name}</div>
             </div>
 
             {/* Signal List */}
             <div className="space-y-3 text-[11px] font-mono">
               <div>
-                <div className="flex justify-between text-[#D8E4FF] mb-1">
+                <div className="flex justify-between text-[var(--text)] mb-1">
                   <span>1. Signature Magic Bytes Match</span>
                   <AnimatedCounter value={selectedArtifact.signals.signature * 100} suffix="%" glowColor="green" />
                 </div>
@@ -314,7 +314,7 @@ export const RecoveryBrowser: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex justify-between text-[#D8E4FF] mb-1">
+                <div className="flex justify-between text-[var(--text)] mb-1">
                   <span>2. Internal Structure Parser</span>
                   <AnimatedCounter value={selectedArtifact.signals.structure * 100} suffix="%" glowColor="green" />
                 </div>
@@ -322,7 +322,7 @@ export const RecoveryBrowser: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex justify-between text-[#D8E4FF] mb-1">
+                <div className="flex justify-between text-[var(--text)] mb-1">
                   <span>3. Chi-Square Entropy Consistency</span>
                   <AnimatedCounter value={selectedArtifact.signals.entropy * 100} suffix="%" glowColor="green" />
                 </div>
@@ -330,7 +330,7 @@ export const RecoveryBrowser: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex justify-between text-[#D8E4FF] mb-1">
+                <div className="flex justify-between text-[var(--text)] mb-1">
                   <span>4. Filesystem Slack Match</span>
                   <AnimatedCounter value={selectedArtifact.signals.slack * 100} suffix="%" glowColor="green" />
                 </div>
@@ -338,7 +338,7 @@ export const RecoveryBrowser: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex justify-between text-[#D8E4FF] mb-1">
+                <div className="flex justify-between text-[var(--text)] mb-1">
                   <span>5. ML Classifier Signal</span>
                   <AnimatedCounter value={selectedArtifact.signals.ml * 100} suffix="%" glowColor="green" />
                 </div>
@@ -346,7 +346,7 @@ export const RecoveryBrowser: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex justify-between text-[#D8E4FF] mb-1">
+                <div className="flex justify-between text-[var(--text)] mb-1">
                   <span>6. Cross-Validation Verification</span>
                   <AnimatedCounter value={selectedArtifact.signals.validation * 100} suffix="%" glowColor="green" />
                 </div>
@@ -354,8 +354,8 @@ export const RecoveryBrowser: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[rgba(0,18,11,0.6)] border border-[rgba(89,238,153,0.1)] text-[10px] text-[#D8E4FF]/60 leading-relaxed font-mono space-y-1">
-              <span className="text-[#59EE99] font-bold block">Recovery Provenance & Explainability:</span>
+            <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)]/20 text-[10px] text-[var(--text)]/60 leading-relaxed font-mono space-y-1">
+              <span className="text-[var(--primary)] font-bold block">Recovery Provenance & Explainability:</span>
               All 6 independent validation signals evaluated. No corrupt extents or broken clusters detected.
             </div>
 

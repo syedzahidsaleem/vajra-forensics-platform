@@ -1,15 +1,15 @@
 :root {
   /* Sanitize mode — dark theme (from provided palette) */
-  --sanitize-bg-dark: #160029;
-  --sanitize-surface-dark: #773344;
+  --sanitize-bg-dark: #2E0A16;      /* was #160029 — now a dark wine/red-black, not violet */
+  --sanitize-surface-dark: #4A1B26; /* darker wine surface */
   --sanitize-text-dark: #F5E9E2;
   --sanitize-primary-dark: #D44D5C;
   --sanitize-primary-hover-dark: #E3697A;
   --sanitize-border-dark: #E3B5A4;
 
   /* Sanitize mode — light theme (derived tint, same hue family) */
-  --sanitize-bg-light: #FBF3EF;
-  --sanitize-surface-light: #F5E9E2;
+  --sanitize-bg-light: #FDF5F3;
+  --sanitize-surface-light: #F7E4E0;
   --sanitize-text-light: #2E0A16;
   --sanitize-primary-light: #D44D5C;
   --sanitize-primary-hover-light: #B83C4A;
@@ -96,12 +96,25 @@
   --border: var(--forensic-border-light);
 }
 
+/* Fallback mappings for legacy color variables */
+[data-theme="light"] {
+  --onyx: var(--bg);
+  --surface-base: var(--surface);
+  --lavender: var(--text);
+  --dark-slate: var(--border);
+}
+
+[data-theme="dark"] {
+  --onyx: var(--bg);
+  --surface-base: var(--surface);
+  --lavender: var(--text);
+  --dark-slate: var(--border);
+}
+
 /* Page wrapper element styling */
 [data-mode] {
   background: var(--bg);
   color: var(--text);
-  border-radius: 1rem;
-  padding: 1.5rem;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
