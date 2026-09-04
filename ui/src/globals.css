@@ -1,0 +1,197 @@
+:root {
+  /* Sanitize mode — dark theme (from provided palette) */
+  --sanitize-bg-dark: #160029;
+  --sanitize-surface-dark: #773344;
+  --sanitize-text-dark: #F5E9E2;
+  --sanitize-primary-dark: #D44D5C;
+  --sanitize-primary-hover-dark: #E3697A;
+  --sanitize-border-dark: #E3B5A4;
+
+  /* Sanitize mode — light theme (derived tint, same hue family) */
+  --sanitize-bg-light: #FBF3EF;
+  --sanitize-surface-light: #F5E9E2;
+  --sanitize-text-light: #2E0A16;
+  --sanitize-primary-light: #D44D5C;
+  --sanitize-primary-hover-light: #B83C4A;
+  --sanitize-border-light: #E3B5A4;
+
+  /* Forensic mode — dark theme (from provided palette) */
+  --forensic-bg-dark: #2B193D;
+  --forensic-surface-dark: #2C365E;
+  --forensic-text-dark: #EDE7EA;
+  --forensic-primary-dark: #4B8F8C;
+  --forensic-primary-hover-dark: #5FA8A4;
+  --forensic-border-dark: #C5979D;
+
+  /* Forensic mode — light theme (derived tint, same hue family) */
+  --forensic-bg-light: #F2F4F6;
+  --forensic-surface-light: #E3E8ED;
+  --forensic-text-light: #1B2440;
+  --forensic-primary-light: #4B8F8C;
+  --forensic-primary-hover-light: #3A716E;
+  --forensic-border-light: #C5979D;
+}
+
+/* Scoped mode + theme custom properties */
+[data-mode="sanitize"][data-theme="dark"],
+[data-theme="dark"] [data-mode="sanitize"],
+[data-theme="dark"][data-mode="sanitize"] {
+  --bg: var(--sanitize-bg-dark);
+  --surface: var(--sanitize-surface-dark);
+  --text: var(--sanitize-text-dark);
+  --primary: var(--sanitize-primary-dark);
+  --primary-hover: var(--sanitize-primary-hover-dark);
+  --border: var(--sanitize-border-dark);
+}
+
+[data-mode="sanitize"][data-theme="light"],
+[data-theme="light"] [data-mode="sanitize"],
+[data-theme="light"][data-mode="sanitize"] {
+  --bg: var(--sanitize-bg-light);
+  --surface: var(--sanitize-surface-light);
+  --text: var(--sanitize-text-light);
+  --primary: var(--sanitize-primary-light);
+  --primary-hover: var(--sanitize-primary-hover-light);
+  --border: var(--sanitize-border-light);
+}
+
+[data-mode="forensic"][data-theme="dark"],
+[data-theme="dark"] [data-mode="forensic"],
+[data-theme="dark"][data-mode="forensic"] {
+  --bg: var(--forensic-bg-dark);
+  --surface: var(--forensic-surface-dark);
+  --text: var(--forensic-text-dark);
+  --primary: var(--forensic-primary-dark);
+  --primary-hover: var(--forensic-primary-hover-dark);
+  --border: var(--forensic-border-dark);
+}
+
+[data-mode="forensic"][data-theme="light"],
+[data-theme="light"] [data-mode="forensic"],
+[data-theme="light"][data-mode="forensic"] {
+  --bg: var(--forensic-bg-light);
+  --surface: var(--forensic-surface-light);
+  --text: var(--forensic-text-light);
+  --primary: var(--forensic-primary-light);
+  --primary-hover: var(--forensic-primary-hover-light);
+  --border: var(--forensic-border-light);
+}
+
+/* Default fallback when theme is dark but mode isn't explicitly set */
+:root[data-theme="dark"], html[data-theme="dark"] {
+  --bg: var(--forensic-bg-dark);
+  --surface: var(--forensic-surface-dark);
+  --text: var(--forensic-text-dark);
+  --primary: var(--forensic-primary-dark);
+  --primary-hover: var(--forensic-primary-hover-dark);
+  --border: var(--forensic-border-dark);
+}
+
+:root[data-theme="light"], html[data-theme="light"] {
+  --bg: var(--forensic-bg-light);
+  --surface: var(--forensic-surface-light);
+  --text: var(--forensic-text-light);
+  --primary: var(--forensic-primary-light);
+  --primary-hover: var(--forensic-primary-hover-light);
+  --border: var(--forensic-border-light);
+}
+
+/* Page wrapper element styling */
+[data-mode] {
+  background: var(--bg);
+  color: var(--text);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ──────────────────────────────────────────────────
+   STEP 4: Gradient Button with @property support
+────────────────────────────────────────────────── */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --gradient-percent {
+  syntax: "<percentage>";
+  initial-value: 5%;
+  inherits: false;
+}
+
+@property --gradient-shine {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: false;
+}
+
+.gradient-button-sanitize {
+  --color-1: var(--primary);
+  --color-2: var(--surface);
+  --color-3: var(--primary-hover);
+  --color-4: var(--surface);
+  --color-5: var(--primary);
+  --border-color-1: var(--border);
+  --border-color-2: var(--primary-hover);
+}
+
+.gradient-button-forensic {
+  --color-1: var(--primary);
+  --color-2: var(--surface);
+  --color-3: var(--primary-hover);
+  --color-4: var(--surface);
+  --color-5: var(--primary);
+  --border-color-1: var(--border);
+  --border-color-2: var(--primary-hover);
+}
+
+.gradient-button-sanitize,
+.gradient-button-forensic {
+  position: relative;
+  isolation: isolate;
+  background: radial-gradient(
+    circle at 50% 0%,
+    var(--color-1) 0%,
+    var(--color-2) 40%,
+    var(--color-3) 70%,
+    var(--color-4) 100%
+  );
+  color: var(--text);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gradient-button-sanitize::before,
+.gradient-button-forensic::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--gradient-angle, 135deg),
+    var(--border-color-1),
+    var(--border-color-2),
+    var(--border-color-1)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.gradient-button-sanitize:hover,
+.gradient-button-forensic:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px -3px rgba(0, 0, 0, 0.5);
+}
+
+.gradient-button-sanitize:hover::before,
+.gradient-button-forensic:hover::before {
+  opacity: 1;
+}

@@ -206,7 +206,7 @@ export const SanitizationConsole: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div data-mode="sanitize" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Quiet Imposing Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">

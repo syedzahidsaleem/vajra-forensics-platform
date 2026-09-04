@@ -143,7 +143,7 @@ export const RecoveryBrowser: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Page Header */}
       <SectionHeader
         title="Recovery Browser & Artifact Inspector"

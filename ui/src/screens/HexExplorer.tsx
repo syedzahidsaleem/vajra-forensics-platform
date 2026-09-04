@@ -97,7 +97,7 @@ export const HexExplorer: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Header & Title */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>

@@ -1,3 +1,4 @@
+@import './globals.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -104,3 +105,4 @@ html, body, #root {
   font-family: monospace;
   color: #59EE99;
 }
+
