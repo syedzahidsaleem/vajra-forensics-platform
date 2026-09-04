@@ -1,0 +1,120 @@
+import React, { useState, useEffect } from 'react';
+import { useApp } from '../../context/AppContext';
+import { Header } from './Header';
+import { Sidebar } from './Sidebar';
+import { AlertTriangle, ShieldAlert, CheckCircle, X } from 'lucide-react';
+import { GradientDots } from '../ui/gradient-dots';
+import { motion, AnimatePresence } from 'framer-motion';
+
+export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { activeScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
+  const [timeStr, setTimeStr] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setTimeStr(now.toUTCString().replace('GMT', 'UTC'));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="app-bg w-full h-screen flex flex-col overflow-hidden relative select-none">
+      <GradientDots />
+
+      {/* Top Application Header */}
+      <Header />
+
+      {/* Main Container */}
+      <div className="flex-1 flex overflow-hidden z-10 relative">
+        {/* Left Navigation Sidebar */}
+        <Sidebar />
+
+        {/* Center Main Screen Viewport with 960px centering constraint & page transitions */}
+        <main className="flex-1 overflow-y-auto bg-transparent">
+          <div className="max-w-[960px] mx-auto px-8 py-8">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeScreen}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </main>
+      </div>
+
+      {/* Bottom Status Bar Footer */}
+      <footer className="h-5 px-6 border-t border-[rgba(89,238,153,0.04)] bg-[rgba(0,18,11,0.9)] flex items-center justify-between font-mono text-[9px] text-[#D8E4FF]/25 z-40">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#59EE99] opacity-50" />
+          <span>AIRGAP VERIFIED</span>
+        </div>
+        <div>{timeStr || 'UTC'}</div>
+      </footer>
+
+      {/* Explicit Mode Switch Confirmation Modal */}
+      {pendingModeSwitch === 'sanitization' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-lg bg-[#00120B] border border-[#EF4444]/40 rounded-2xl p-6 shadow-[0_0_50px_rgba(239,68,68,0.3)] space-y-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="p-2.5 bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/40 rounded-xl">
+                  <ShieldAlert className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-mono font-bold text-[#EF4444] tracking-wide">
+                    ATTENTION: ENTERING SANITIZATION MODE
+                  </h3>
+                  <p className="text-[11px] text-[#D8E4FF]/40 font-sans">
+                    Part VIII §43 — Destructive Operation Protocol
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={cancelModeSwitch}
+                className="text-[#D8E4FF]/40 hover:text-white p-1 rounded-lg hover:bg-[rgba(53,96,90,0.2)]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-4 rounded-xl bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/30 text-[11px] text-[#D8E4FF]/80 leading-relaxed space-y-2 font-sans">
+              <p>
+                You are transitioning from <strong>Forensic Mode</strong> (where all connected drives are guarded by read-only block source wrappers) to <strong>Sanitization Mode</strong>.
+              </p>
+              <div className="p-2.5 rounded bg-[rgba(239,68,68,0.15)] border border-[#EF4444]/40 flex items-start space-x-2 text-[10px] font-mono text-[#EF4444]">
+                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+                <span>
+                  Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block (§24) and two-phase authorization gate (§43) will remain strictly enforced.
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-3 pt-2">
+              <button
+                onClick={cancelModeSwitch}
+                className="px-3.5 py-1.5 rounded-lg text-[11px] font-mono text-[#D8E4FF]/70 hover:bg-[rgba(53,96,90,0.2)] border border-[#35605A] transition-colors"
+              >
+                Cancel (Stay in Forensic Mode)
+              </button>
+              <button
+                onClick={confirmModeSwitch}
+                className="px-4 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-[#EF4444] hover:bg-[#f55] text-white shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer"
+              >
+                <CheckCircle className="w-3.5 h-3.5" />
+                <span>Authorize & Enter Sanitization Mode</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

@@ -1,0 +1,11 @@
+{
+  "name": "vajra-forensics-platform",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "npm --prefix ui run dev -- --open",
+    "build": "npm --prefix ui run build",
+    "tauri": "cargo tauri dev -c crates/vajra-tauri-app/tauri.conf.json",
+    "tauri:build": "cargo tauri build -c crates/vajra-tauri-app/tauri.conf.json"
+  }
+}

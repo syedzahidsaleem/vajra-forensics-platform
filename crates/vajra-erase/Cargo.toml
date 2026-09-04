@@ -1,0 +1,27 @@
+[package]
+name = "vajra-erase"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "NIST SP 800-88 / IEEE 2883 media sanitization engine, decision engine, and multi-layer verification (§33a–§38, §43)"
+
+[dependencies]
+vajra-core = { path = "../vajra-core" }
+vajra-device = { path = "../vajra-device" }
+vajra-carve = { path = "../vajra-carve" }
+vajra-audit = { path = "../vajra-audit" }
+vajra-case-db = { path = "../vajra-case-db" }
+rand = { workspace = true }
+rand_chacha = "0.3"
+sha2 = { workspace = true }
+hex = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.10"

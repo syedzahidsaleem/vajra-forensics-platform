@@ -1,0 +1,21 @@
+# Implemented in a later conversation — see docs/agent-log/ for the current status of this crate.
+[package]
+name = "vajra-case-db"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+vajra-core = { path = "../vajra-core" }
+rusqlite = { workspace = true }
+uuid = { workspace = true }
+argon2 = { workspace = true }
+zeroize = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
