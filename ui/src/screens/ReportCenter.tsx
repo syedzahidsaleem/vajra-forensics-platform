@@ -252,9 +252,9 @@ export const ReportCenter: React.FC = () => {
       {/* Document Viewer Modal */}
       {viewingReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden my-8 border border-slate-200">
+          <div className="w-full max-w-3xl bg-[var(--surface)] text-[var(--text)] rounded-2xl shadow-2xl overflow-hidden my-8 border border-[var(--border)]/30">
             {/* Document Header Toolbar */}
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg)] text-[var(--text)] p-4 flex items-center justify-between border-b border-[var(--border)]/20">
               <div className="flex items-center space-x-2">
                 <FileCheck className="w-5 h-5 text-cyan-400" />
                 <span className="font-mono font-bold text-sm">Official Forensic Evidence Report (§41)</span>
@@ -262,61 +262,61 @@ export const ReportCenter: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => window.print()}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs rounded-lg transition-all"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs rounded-lg transition-all cursor-pointer font-bold"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print / Save as PDF</span>
                 </button>
                 <button
                   onClick={() => setViewingReport(null)}
-                  className="text-slate-400 hover:text-white p-1 rounded-lg"
+                  className="text-[var(--text)]/60 hover:text-[var(--text)] p-1 rounded-lg cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Document Body (Print-optimized layout) */}
+            {/* Document Body */}
             <div className="p-8 space-y-6 font-sans">
-              <div className="border-b-2 border-slate-900 pb-4 flex justify-between items-start">
+              <div className="border-b-2 border-[var(--border)]/40 pb-4 flex justify-between items-start">
                 <div>
-                  <h1 className="text-xl font-extrabold tracking-tight text-slate-950">
+                  <h1 className="text-xl font-extrabold tracking-tight text-[var(--text)]">
                     VAJRA FORENSICS PLATFORM
                   </h1>
-                  <p className="text-xs text-slate-500 font-mono mt-0.5">
+                  <p className="text-xs text-[var(--text)]/60 font-mono mt-0.5">
                     Official Digital Evidence & Integrity Report (§41)
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold">
+                  <span className="inline-block bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold">
                     CRYPTOGRAPHICALLY SIGNED
                   </span>
-                  <div className="text-xs font-mono text-slate-500 mt-1">ID: {viewingReport.report_id}</div>
+                  <div className="text-xs font-mono text-[var(--text)]/60 mt-1">ID: {viewingReport.report_id}</div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs font-mono">
+              <div className="grid grid-cols-2 gap-4 bg-[var(--bg)]/40 p-4 rounded-xl border border-[var(--border)]/20 text-xs font-mono">
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Case Identifier:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.case_id}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Case Identifier:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.case_id}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Classification:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.report_type}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Classification:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.report_type}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Lead Examiner:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.operator_id}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Lead Examiner:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.operator_id}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Date of Certification:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.created_at}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Date of Certification:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.created_at}</span>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-bold text-sm text-slate-950 border-b pb-1">Report Narrative & Findings</h3>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed font-mono whitespace-pre-wrap">
+                <h3 className="font-bold text-sm text-[var(--text)] border-b border-[var(--border)]/20 pb-1">Report Narrative & Findings</h3>
+                <div className="p-4 bg-[var(--bg)]/40 rounded-xl border border-[var(--border)]/20 text-xs text-[var(--text)]/80 leading-relaxed font-mono whitespace-pre-wrap">
                   {viewingReport.title}
                   {'\n\n'}
                   Procedural chain of custody and cryptographic verification executed in strict compliance with ISO/IEC 27037 and Vajra Forensic Standard §41.
@@ -324,12 +324,12 @@ export const ReportCenter: React.FC = () => {
               </div>
 
               {/* Local File Location Box */}
-              <div className="p-4 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs space-y-2">
+              <div className="p-4 rounded-xl bg-[var(--bg)]/80 text-[var(--text)] font-mono text-xs space-y-2 border border-[var(--border)]/20">
                 <div className="text-cyan-400 font-bold flex items-center gap-1.5">
                   <FileText className="w-4 h-4" />
                   <span>On-Disk Storage Location on Your Laptop:</span>
                 </div>
-                <div className="p-2 bg-black/60 rounded text-[11px] select-all break-all text-amber-300">
+                <div className="p-2 bg-[var(--surface)] rounded text-[11px] select-all break-all text-amber-500 dark:text-amber-300">
                   {viewingReport.json_path}
                 </div>
               </div>

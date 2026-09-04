@@ -111,7 +111,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </button>
               <button
                 onClick={confirmModeSwitch}
-                className="px-4 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-[#EF4444] hover:bg-[#f55] text-white shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer"
+                className="px-4 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-[#EF4444] hover:bg-[#f55] text-[var(--text)] shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span>Authorize & Enter Sanitization Mode</span>

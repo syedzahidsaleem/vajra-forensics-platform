@@ -104,6 +104,6 @@ html, body, #root {
 .value-accent {
   font-size: 12px;
   font-family: monospace;
-  color: #59EE99;
+  color: var(--primary);
 }
 
