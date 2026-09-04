@@ -14,6 +14,7 @@ import {
   Printer,
   Eye,
 } from 'lucide-react';
+import { ShineBorder } from '../components/ui/shine-border';
 
 export const ReportCenter: React.FC = () => {
   const { activeCase, mode } = useApp();
@@ -104,7 +105,7 @@ export const ReportCenter: React.FC = () => {
     },
     Recovery: {
       title: 'Carved Artifact Recovery Report',
-      desc: 'Per-artifact provenance (§31), aggregate recovery statistics, and multi-signal confidence scores.',
+      desc: 'Per-artifact provenance, aggregate recovery statistics, and multi-signal confidence scores.',
     },
     SanitizationCertificate: {
       title: 'NIST/IEEE Sanitization Certificate',
@@ -191,7 +192,7 @@ export const ReportCenter: React.FC = () => {
                     className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary)]/15 hover:bg-[var(--primary)]/25 border border-[var(--primary)]/40 text-[var(--primary)] text-xs font-mono transition-colors cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Verify (§42)</span>
+                    <span>Verify</span>
                   </button>
 
                   <div className="flex items-center space-x-2 text-xs font-mono">
@@ -225,25 +226,30 @@ export const ReportCenter: React.FC = () => {
       {/* Six Report Types Reference Grid */}
       <div className="space-y-3 pt-4 border-t border-[var(--border)]/20">
         <h3 className="text-xs font-mono font-bold text-[var(--text)]/60 uppercase tracking-wider">
-          Six Standardized Forensic Report Types (§41)
+          Six Standardized Forensic Report Types
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {(Object.keys(reportTypeMeta) as ReportType[]).map((type) => {
             const meta = reportTypeMeta[type];
             return (
-              <div
+              <ShineBorder
                 key={type}
-                onClick={() => {
-                  setSelectedType(type);
-                  setShowGenModal(true);
-                }}
-                className="p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 hover:border-[var(--primary)]/50 cursor-pointer transition-all space-y-1.5"
+                borderRadius={12}
+                className="cursor-pointer transition-all h-full"
               >
-                <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
-                <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
-                <div className="text-[10px] font-mono text-[var(--primary)] pt-1">Click to generate &rarr;</div>
-              </div>
+                <div
+                  onClick={() => {
+                    setSelectedType(type);
+                    setShowGenModal(true);
+                  }}
+                  className="p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 hover:border-[var(--primary)]/50 cursor-pointer transition-all space-y-1.5 h-full"
+                >
+                  <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
+                  <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
+                  <div className="text-[10px] font-mono text-[var(--primary)] pt-1">Click to generate &rarr;</div>
+                </div>
+              </ShineBorder>
             );
           })}
         </div>
@@ -257,7 +263,7 @@ export const ReportCenter: React.FC = () => {
             <div className="bg-[var(--bg)] text-[var(--text)] p-4 flex items-center justify-between border-b border-[var(--border)]/20">
               <div className="flex items-center space-x-2">
                 <FileCheck className="w-5 h-5 text-cyan-400" />
-                <span className="font-mono font-bold text-sm">Official Forensic Evidence Report (§41)</span>
+                <span className="font-mono font-bold text-sm">Official Forensic Evidence Report</span>
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -284,7 +290,7 @@ export const ReportCenter: React.FC = () => {
                     VAJRA FORENSICS PLATFORM
                   </h1>
                   <p className="text-xs text-[var(--text)]/60 font-mono mt-0.5">
-                    Official Digital Evidence & Integrity Report (§41)
+                    Official Digital Evidence & Integrity Report
                   </p>
                 </div>
                 <div className="text-right">
@@ -319,7 +325,7 @@ export const ReportCenter: React.FC = () => {
                 <div className="p-4 bg-[var(--bg)]/40 rounded-xl border border-[var(--border)]/20 text-xs text-[var(--text)]/80 leading-relaxed font-mono whitespace-pre-wrap">
                   {viewingReport.title}
                   {'\n\n'}
-                  Procedural chain of custody and cryptographic verification executed in strict compliance with ISO/IEC 27037 and Vajra Forensic Standard §41.
+                  Procedural chain of custody and cryptographic verification executed in strict compliance with ISO/IEC 27037 and Vajra Forensic Standard.
                 </div>
               </div>
 
@@ -345,7 +351,7 @@ export const ReportCenter: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-mono font-bold text-[var(--primary)] flex items-center space-x-2">
                 <FileCheck className="w-5 h-5" />
-                <span>Generate Forensic Report (§41)</span>
+                <span>Generate Forensic Report</span>
               </h3>
               <button
                 onClick={() => setShowGenModal(false)}
@@ -412,7 +418,7 @@ export const ReportCenter: React.FC = () => {
               <div className="flex items-center space-x-2">
                 <ShieldCheck className="w-5 h-5 text-[var(--primary)]" />
                 <h3 className="font-mono font-bold text-base text-[var(--text)]">
-                  Independent Verification (§42)
+                  Independent Verification
                 </h3>
               </div>
               <button
@@ -449,7 +455,7 @@ export const ReportCenter: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-[var(--text)]/70 font-bold">Independent Checks Performed (§42):</div>
+                  <div className="text-[var(--text)]/70 font-bold">Independent Checks Performed:</div>
                   {verifyResult.checks.map((c: VerificationCheckResult, idx: number) => (
                     <div
                       key={idx}

@@ -27,17 +27,16 @@ export function GradientDots({
       style={{
         backgroundColor,
         backgroundImage: `
-          radial-gradient(circle, rgba(89,238,153,0.18) 1px, transparent 1px),
-          radial-gradient(circle, rgba(170,119,169,0.10) 1px, transparent 1px)
+          radial-gradient(circle, var(--primary) 1px, transparent 1px)
         `,
-        backgroundSize: `${spacing}px ${hexSpacing}px, ${spacing * 2}px ${hexSpacing * 2}px`,
-        backgroundPosition: `0px 0px, ${spacing / 2}px ${hexSpacing / 2}px`,
-        opacity: 0.6,
+        backgroundSize: `${spacing}px ${hexSpacing}px`,
+        backgroundPosition: `0px 0px`,
+        opacity: 0.25,
       }}
       animate={{
         backgroundPosition: [
-          `0px 0px, ${spacing / 2}px ${hexSpacing / 2}px`,
-          `${spacing}px ${hexSpacing}px, ${spacing * 1.5}px ${hexSpacing * 1.5}px`,
+          `0px 0px`,
+          `${spacing}px ${hexSpacing}px`,
         ],
       }}
       transition={{

@@ -37,3 +37,9 @@ win_anchor.json
 *.log
 .DS_Store
 Thumbs.db
+
+# Node & UI build artifacts
+node_modules/
+dist/
+ui/dist/
+crates/vajra-tauri-app/reports/

@@ -225,7 +225,7 @@ export const AcquisitionWizard: React.FC = () => {
 
           {/* Profile Choice */}
           <div className="space-y-2">
-            <label className="block text-xs font-mono text-[var(--text)]/60">Acquisition Profile (§19)</label>
+            <label className="block text-xs font-mono text-[var(--text)]/60">Acquisition Profile</label>
             <div className="grid grid-cols-3 gap-3">
               {[
                 {
@@ -262,7 +262,7 @@ export const AcquisitionWizard: React.FC = () => {
 
           {/* Container Format Choice */}
           <div className="space-y-2">
-            <label className="block text-xs font-mono text-[var(--text)]/60">Image Container Format (§19)</label>
+            <label className="block text-xs font-mono text-[var(--text)]/60">Image Container Format</label>
             <div className="grid grid-cols-2 gap-3">
               <div
                 onClick={() => setFormat('E01')}
@@ -369,7 +369,7 @@ export const AcquisitionWizard: React.FC = () => {
           </div>
 
           <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-3 font-mono text-xs">
-            <div className="text-[var(--text)]/80 font-bold">Cryptographic Integrity Hashing (§19)</div>
+            <div className="text-[var(--text)]/80 font-bold">Cryptographic Integrity Hashing</div>
             <div className="flex items-center space-x-6">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
@@ -487,19 +487,19 @@ export const AcquisitionWizard: React.FC = () => {
               </div>
 
               <div className="p-3 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30">
-                <div className="text-[var(--text)]/50 text-[10px]">Bad Sectors Detected (§20)</div>
+                <div className="text-[var(--text)]/50 text-[10px]">Bad Sectors Detected</div>
                 <div className="text-base font-bold text-emerald-400">
                   {progress.bad_sectors_count} (0 LBA errors)
                 </div>
               </div>
             </div>
 
-            {/* Bad Sector Map Visualization (§20) */}
+            {/* Bad Sector Map Visualization */}
             <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-2 font-mono text-xs">
               <div className="flex items-center justify-between text-[var(--text)]/80 font-bold">
                 <span className="flex items-center space-x-1.5">
                   <Activity className="w-4 h-4 text-[var(--primary)]" />
-                  <span>Sector Map & LBA Block Visualization (§20)</span>
+                  <span>Sector Map & LBA Block Visualization</span>
                 </span>
                 <span className="text-[10px] text-[var(--text)]/50">64 Sector Chunks</span>
               </div>
@@ -568,7 +568,7 @@ export const AcquisitionWizard: React.FC = () => {
                     className="flex items-center space-x-1.5 px-5 py-2 rounded-xl bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs font-bold shadow-lg"
                   >
                     <FileCode className="w-4 h-4" />
-                    <span>Generate Acquisition Report (§41)</span>
+                    <span>Generate Acquisition Report</span>
                   </button>
                 </>
               ) : (

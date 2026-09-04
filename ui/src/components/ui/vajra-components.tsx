@@ -212,21 +212,21 @@ export function GlassCard({
       whileHover={hover ? { y: -1 } : undefined}
       className={`
         relative rounded-xl p-4 transition-all duration-200
-        bg-[rgba(53,96,90,0.12)]
+        bg-[var(--surface)]/70
         backdrop-blur-sm
         border
         ${selected
-          ? 'border-[#59EE99]/60 shadow-[0_0_0_1px_rgba(89,238,153,0.3),0_0_20px_rgba(89,238,153,0.1)]'
+          ? 'border-[var(--primary)]/60 shadow-[0_0_0_1px_var(--primary),0_0_20px_var(--primary)]'
           : danger
           ? 'border-[#EF4444]/30 shadow-[0_0_12px_rgba(239,68,68,0.1)]'
-          : 'border-[rgba(89,238,153,0.08)]'
+          : 'border-[var(--border)]/20'
         }
-        ${hover && !selected ? 'hover:border-[rgba(89,238,153,0.2)] hover:shadow-[0_0_16px_rgba(89,238,153,0.08)] cursor-pointer' : ''}
+        ${hover && !selected ? 'hover:border-[var(--primary)]/40 hover:shadow-[0_0_16px_rgba(0,0,0,0.08)] cursor-pointer' : ''}
         ${className}
       `}
     >
       {selected && (
-        <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[#59EE99]/60 to-transparent" />
+        <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-[var(--primary)]/60 to-transparent" />
       )}
       {children}
     </motion.div>

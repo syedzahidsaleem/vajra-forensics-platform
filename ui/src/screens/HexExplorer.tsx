@@ -171,7 +171,7 @@ export const HexExplorer: React.FC = () => {
         </form>
       </div>
 
-      {/* Synchronized Storage Map (§32) */}
+      {/* Synchronized Storage Map */}
       <StorageMap
         sourcePath={selectedDevice?.path || '\\\\.\\PhysicalDrive0'}
         mode="forensic"
@@ -183,11 +183,11 @@ export const HexExplorer: React.FC = () => {
         }}
       />
 
-      {/* Fragment Provenance Overlay Legend (§31, §32) */}
+      {/* Fragment Provenance Overlay Legend */}
       <div className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
         <div className="flex items-center gap-2 text-[var(--text)]/80">
           <Layers className="w-4 h-4 text-cyan-400" />
-          <span className="font-bold">Bifragment Reconstruction Provenance Overlay (§31):</span>
+          <span className="font-bold">Bifragment Reconstruction Provenance Overlay:</span>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-[11px]">
           <div className="flex items-center gap-1.5">
@@ -357,7 +357,7 @@ export const HexExplorer: React.FC = () => {
               <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" />
               <span>Forensic Significance</span>
             </div>
-            Raw disk sector viewing operates strictly under <code className="text-[var(--primary)] font-mono">ReadOnlyBlockSource</code> type invariants (§16).
+            Raw disk sector viewing operates strictly under <code className="text-[var(--primary)] font-mono">ReadOnlyBlockSource</code> type invariants.
           </div>
         </div>
       </div>

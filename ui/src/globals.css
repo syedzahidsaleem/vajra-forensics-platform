@@ -33,6 +33,7 @@
 }
 
 /* Scoped mode + theme custom properties */
+[data-mode="sanitize"],
 [data-mode="sanitize"][data-theme="dark"],
 [data-theme="dark"] [data-mode="sanitize"],
 [data-theme="dark"][data-mode="sanitize"] {
@@ -55,6 +56,7 @@
   --border: var(--sanitize-border-light);
 }
 
+[data-mode="forensic"],
 [data-mode="forensic"][data-theme="dark"],
 [data-theme="dark"] [data-mode="forensic"],
 [data-theme="dark"][data-mode="forensic"] {

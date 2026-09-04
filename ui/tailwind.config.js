@@ -48,11 +48,17 @@ export default {
       animation: {
         'pulse-hazard': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'scanline': 'scanline 8s linear infinite',
+        shine: "shine var(--duration) infinite linear",
       },
       keyframes: {
         scanline: {
           '0%': { transform: 'translateY(-100%)' },
           '100%': { transform: 'translateY(1000%)' },
+        },
+        shine: {
+          "0%": { "background-position": "0% 0%" },
+          "50%": { "background-position": "100% 100%" },
+          to: { "background-position": "0% 0%" },
         },
       },
     },

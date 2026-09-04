@@ -37,7 +37,7 @@ export const SanitizationConsole: React.FC = () => {
   const [gateId, setGateId] = useState('');
   const [authToken, setAuthToken] = useState('');
 
-  // Execution & Per-Pass Telemetry (§43a)
+  // Execution & Per-Pass Telemetry
   const [passes, setPasses] = useState<PassVerificationStatus[]>([]);
   const [overallPercent, setOverallPercent] = useState(0);
   const [certificate, setCertificate] = useState<SanitizationCertificate | null>(null);
@@ -81,7 +81,7 @@ export const SanitizationConsole: React.FC = () => {
   // Step 1 -> 2: Begin Backend Safety Gate
   const handleBeginGate = async () => {
     if (isSystemDisk) {
-      setErrorMsg('CRITICAL HARD BLOCK (§24): Sanitization of the live OS boot disk is strictly prohibited.');
+      setErrorMsg('CRITICAL HARD BLOCK: Sanitization of the live OS boot disk is strictly prohibited.');
       return;
     }
     try {
@@ -126,7 +126,7 @@ export const SanitizationConsole: React.FC = () => {
     }
   };
 
-  // Step 6: Live per-pass verification execution (§43a)
+  // Step 6: Live per-pass verification execution
   const startLiveSanitization = () => {
     const totalPasses = recommendation?.passes_required || 1;
     const passList: PassVerificationStatus[] = [
@@ -160,7 +160,7 @@ export const SanitizationConsole: React.FC = () => {
           }
         ]);
 
-        // Generate Sanitization Certificate (§38)
+        // Generate Sanitization Certificate
         const cert: SanitizationCertificate = {
           certificate_id: 'CERT-VAJRA-SAN-' + Date.now().toString().slice(-6),
           case_id: activeCase?.case_id || 'CASE-2026-001',
@@ -253,7 +253,7 @@ export const SanitizationConsole: React.FC = () => {
       {gateStep === 1 && (
         <div className="space-y-4">
           <GlassCard danger={false} className="p-5">
-            <p className="label-muted mb-4">Phase 1 — Target Identity Fingerprint §23</p>
+            <p className="label-muted mb-4">Phase 1 — Target Identity Fingerprint</p>
 
             <div className="grid grid-cols-2 gap-4 font-mono text-[11px] mb-5">
               <div>
@@ -319,7 +319,7 @@ export const SanitizationConsole: React.FC = () => {
               <span className="text-[#EF4444]/70 text-sm shrink-0 mt-0.5">⊘</span>
               <div>
                 <p className="text-[11px] font-mono text-[#EF4444]/80 mb-0.5">
-                  OS Boot Disk — Hard Block §24
+                  OS Boot Disk — Hard Block
                 </p>
                 <p className="text-[10px] font-mono text-[var(--text)]/50">
                   Destructive operations are structurally refused on system disks.
@@ -347,7 +347,7 @@ export const SanitizationConsole: React.FC = () => {
         <GlassCard danger={true} hover={false} className="p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#EF4444] font-mono text-xs font-bold">
             <AlertTriangle className="w-4 h-4 text-amber-400" />
-            <span>Phase 2 — Initial Device Verification (§43.2)</span>
+            <span>Phase 2 — Initial Device Verification</span>
           </div>
 
           <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
@@ -368,12 +368,12 @@ export const SanitizationConsole: React.FC = () => {
         </GlassCard>
       )}
 
-      {/* STEP 3: Sanitization Decision Engine Recommendation (§34) */}
+      {/* STEP 3: Sanitization Decision Engine Recommendation */}
       {gateStep === 3 && recommendation && (
         <GlassCard hover={false} className="p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]/15">
             <div>
-              <p className="label-muted">Decision Engine Recommendation (§34)</p>
+              <p className="label-muted">Decision Engine Recommendation</p>
               <h2 className="text-sm font-mono font-bold text-[var(--text)] mt-0.5">{recommendation.recommended_method}</h2>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99]">
@@ -408,16 +408,16 @@ export const SanitizationConsole: React.FC = () => {
         </GlassCard>
       )}
 
-      {/* STEP 4: Second, Separate Reconfirmation (§43.3) */}
+      {/* STEP 4: Second, Separate Reconfirmation */}
       {gateStep === 4 && (
         <GlassCard danger={true} hover={false} className="p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#EF4444] font-mono text-xs font-bold">
             <ShieldAlert className="w-4 h-4" />
-            <span>Phase 4 — Second Independent Reconfirmation (§43.3)</span>
+            <span>Phase 4 — Second Independent Reconfirmation</span>
           </div>
 
           <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
-            Per safety engineering standard §43.3, this confirmation is deliberately separated from the initial check. All data, partitions, and filesystems on <strong>{targetPath}</strong> will be permanently erased.
+            Per safety engineering standards, this confirmation is deliberately separated from the initial check. All data, partitions, and filesystems on <strong>{targetPath}</strong> will be permanently erased.
           </p>
 
           <div className="flex justify-between pt-3 border-t border-[rgba(239,68,68,0.15)]">
@@ -434,12 +434,12 @@ export const SanitizationConsole: React.FC = () => {
         </GlassCard>
       )}
 
-      {/* STEP 5: Type-to-Confirm Serial Number (§43.4) */}
+      {/* STEP 5: Type-to-Confirm Serial Number */}
       {gateStep === 5 && (
         <GlassCard danger={true} hover={false} className="p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#EF4444] font-mono text-xs font-bold">
             <Lock className="w-4 h-4" />
-            <span>Phase 5 — Type-to-Confirm Serial Gate (§43.4)</span>
+            <span>Phase 5 — Type-to-Confirm Serial Gate</span>
           </div>
 
           <div className="space-y-3 font-mono text-[11px]">
@@ -476,7 +476,7 @@ export const SanitizationConsole: React.FC = () => {
         </GlassCard>
       )}
 
-      {/* STEP 6: Live Per-Pass Verification Telemetry (§43a) */}
+      {/* STEP 6: Live Per-Pass Verification Telemetry */}
       {gateStep === 6 && (
         <GlassCard danger={true} hover={false} className="p-5 space-y-5">
           <div className="flex items-center justify-between font-mono">
@@ -504,7 +504,7 @@ export const SanitizationConsole: React.FC = () => {
           />
 
           <div className="space-y-2 font-mono text-[11px]">
-            <p className="label-muted">Pass-by-Pass Verification Status (§43a)</p>
+            <p className="label-muted">Pass-by-Pass Verification Status</p>
             {passes.map((p: PassVerificationStatus) => (
               <div key={p.pass_number} className="p-3 bg-[var(--surface)] rounded-lg border border-[#EF4444]/20 space-y-1">
                 <div className="flex items-center justify-between">
@@ -521,7 +521,7 @@ export const SanitizationConsole: React.FC = () => {
         </GlassCard>
       )}
 
-      {/* STEP 7: Cryptographic Sanitization Certificate Display (§38) */}
+      {/* STEP 7: Cryptographic Sanitization Certificate Display */}
       {gateStep === 7 && certificate && (
         <GlassCard hover={false} className="p-5 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]/15">
@@ -529,7 +529,7 @@ export const SanitizationConsole: React.FC = () => {
               <CheckCircle className="w-5 h-5 text-[#59EE99]" />
               <div>
                 <h2 className="text-xs font-mono font-bold text-[#59EE99]">
-                  Sanitization Certificate Generated (§38)
+                  Sanitization Certificate Generated
                 </h2>
                 <p className="text-[10px] font-mono text-[var(--text)]/50">
                   {certificate.certificate_id}
@@ -551,7 +551,7 @@ export const SanitizationConsole: React.FC = () => {
             </div>
 
             <div className="space-y-1">
-              <p className="label-muted mb-1">5-Layer Verification (§37)</p>
+              <p className="label-muted mb-1">5-Layer Verification</p>
               <ul className="space-y-1 text-[10px] text-[#59EE99]">
                 {certificate.layers_verified.map((layer: string, idx: number) => (
                   <li key={idx} className="flex items-center gap-1">
@@ -588,7 +588,7 @@ export const SanitizationConsole: React.FC = () => {
               icon={<Download className="w-3.5 h-3.5" />}
               onClick={() => setActiveScreen('reports')}
             >
-              View in Report Center (§41)
+              View in Report Center
             </GlowButton>
           </div>
         </GlassCard>

@@ -21,6 +21,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-mode', currentMode);
+  }, [currentMode]);
+
   return (
     <div
       data-mode={currentMode}
@@ -33,12 +37,20 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <Header />
 
       {/* Main Container */}
-      <div className="flex-1 flex overflow-hidden z-10 relative">
+      <div
+        data-mode={currentMode}
+        style={{ background: 'var(--bg)', color: 'var(--text)' }}
+        className="flex-1 flex overflow-hidden z-10 relative"
+      >
         {/* Left Navigation Sidebar */}
         <Sidebar />
 
         {/* Center Main Screen Viewport with 960px centering constraint & page transitions */}
-        <main className="flex-1 overflow-y-auto bg-transparent">
+        <main
+          data-mode={currentMode}
+          style={{ background: 'var(--bg)', color: 'var(--text)' }}
+          className="flex-1 overflow-y-auto"
+        >
           <div className="max-w-[960px] mx-auto px-8 py-8">
             <AnimatePresence mode="wait">
               <motion.div
@@ -78,7 +90,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     ATTENTION: ENTERING SANITIZATION MODE
                   </h3>
                   <p className="text-[11px] text-[var(--text)]/40 font-sans">
-                    Part VIII §43 — Destructive Operation Protocol
+                    Part VIII — Destructive Operation Protocol
                   </p>
                 </div>
               </div>
@@ -97,7 +109,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               <div className="p-2.5 rounded bg-[rgba(239,68,68,0.15)] border border-[#EF4444]/40 flex items-start space-x-2 text-[10px] font-mono text-[#EF4444]">
                 <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
                 <span>
-                  Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block (§24) and two-phase authorization gate (§43) will remain strictly enforced.
+                  Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block and two-phase authorization gate will remain strictly enforced.
                 </span>
               </div>
             </div>
