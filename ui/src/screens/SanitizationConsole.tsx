@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import StorageMap from '../storage-map/StorageMap';
 import { GlassCard, GlowButton, useToast } from '../components/ui/vajra-components';
-import NeonMesh from '../components/ui/neon-mesh';
 
 export const SanitizationConsole: React.FC = () => {
   const { devices, selectedDevice, activeCase, setActiveScreen } = useApp();
@@ -209,7 +208,7 @@ export const SanitizationConsole: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Quiet Imposing Header */}
-      <div className="mb-4">
+      <div className="mb-6">
         <div className="flex items-center gap-3 mb-1">
           <span className="text-[#EF4444] opacity-60 text-sm">🔥</span>
           <h1 className="text-lg font-sans font-medium text-[#EF4444]/90">
@@ -222,17 +221,6 @@ export const SanitizationConsole: React.FC = () => {
         <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
           NIST SP 800-88 · IEEE 2883-2022 · mandatory 7-phase non-collapsible safety gate
         </p>
-      </div>
-
-      {/* 3D Interactive Neon Mesh Banner (Red in Sanitization Mode) */}
-      <div className="rounded-2xl overflow-hidden border border-[#EF4444]/20 shadow-2xl relative h-[160px] mb-4">
-        <NeonMesh
-          title="DESTRUCTIVE KINETICS"
-          subtitle="SANITIZATION MODE (RED MESH)"
-          description="Interactive 3D Verlet physics cloth — Armed for hardware destruction protocol"
-          className="h-full"
-          mode="sanitization"
-        />
       </div>
 
       {/* Slim Step Breadcrumb */}

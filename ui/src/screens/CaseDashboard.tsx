@@ -11,7 +11,6 @@ import {
   Check,
 } from 'lucide-react';
 import { GlassCard, GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
-import NeonMesh from '../components/ui/neon-mesh';
 
 export const CaseDashboard: React.FC = () => {
   const { activeCase, cases, setActiveCase, refreshCases, setActiveScreen } = useApp();
@@ -132,16 +131,6 @@ export const CaseDashboard: React.FC = () => {
         >
           Create New Case
         </GlowButton>
-      </div>
-
-      {/* 3D Interactive Neon Mesh Banner (Blue in Forensic, Red in Sanitization) */}
-      <div className="rounded-2xl overflow-hidden border border-[rgba(89,238,153,0.1)] shadow-2xl relative h-[200px]">
-        <NeonMesh
-          title="VAJRA PHYSICS"
-          subtitle="3D VERLET MESH (BLUE = FORENSIC | RED = SANITIZE)"
-          description="Move cursor across canvas to interact with spatial 3D physics vectors."
-          className="h-full"
-        />
       </div>
 
       {/* Active Case Hero Card */}
