@@ -134,7 +134,7 @@ export const HexExplorer: React.FC = () => {
               type="text"
               value={inputLba}
               onChange={(e) => setInputLba(e.target.value)}
-              className="pl-12 pr-3 py-1.5 w-32 rounded-lg bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] font-mono text-xs font-bold focus:outline-none focus:border-[var(--primary)]"
+              className="pl-12 pr-3 w-32 font-mono text-xs font-bold"
             />
           </div>
 

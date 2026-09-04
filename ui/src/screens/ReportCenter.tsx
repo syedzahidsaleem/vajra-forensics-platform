@@ -367,7 +367,7 @@ export const ReportCenter: React.FC = () => {
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value as ReportType)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                  className="w-full font-mono text-xs cursor-pointer"
                 >
                   {(Object.keys(reportTypeMeta) as ReportType[]).map((t) => (
                     <option key={t} value={t} className="bg-[var(--surface)] text-[var(--text)]">
@@ -384,7 +384,7 @@ export const ReportCenter: React.FC = () => {
                   placeholder="Enter examiner methodology narrative, court findings, or observation notes..."
                   value={reportNotes}
                   onChange={(e) => setReportNotes(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)] font-sans"
+                  className="w-full font-sans text-xs"
                 />
               </div>
 

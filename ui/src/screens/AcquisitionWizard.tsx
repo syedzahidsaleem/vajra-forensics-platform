@@ -165,7 +165,7 @@ export const AcquisitionWizard: React.FC = () => {
               <select
                 value={sourcePath}
                 onChange={(e) => setSourcePath(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                className="w-full font-mono text-xs cursor-pointer"
               >
                 {devices.map((d: DeviceDescriptor) => (
                   <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
@@ -182,7 +182,7 @@ export const AcquisitionWizard: React.FC = () => {
                 value={evidenceId}
                 onChange={(e) => setEvidenceId(e.target.value)}
                 placeholder="EVID-001"
-                className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                className="w-full font-mono text-xs"
               />
             </div>
           </div>
@@ -330,7 +330,7 @@ export const AcquisitionWizard: React.FC = () => {
                 type="text"
                 value={destDir}
                 onChange={(e) => setDestDir(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                className="w-full font-mono text-xs"
               />
             </div>
 
@@ -340,7 +340,7 @@ export const AcquisitionWizard: React.FC = () => {
                 type="text"
                 value={imageName}
                 onChange={(e) => setImageName(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                className="w-full font-mono text-xs"
               />
             </div>
 
@@ -349,7 +349,7 @@ export const AcquisitionWizard: React.FC = () => {
               <select
                 value={segmentSizeMb}
                 onChange={(e) => setSegmentSizeMb(Number(e.target.value))}
-                className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                className="w-full font-mono text-xs cursor-pointer"
               >
                 <option value={2048} className="bg-[var(--surface)] text-[var(--text)]">2048 MB (2 GB standard E01 chunks)</option>
                 <option value={4096} className="bg-[var(--surface)] text-[var(--text)]">4096 MB (4 GB chunks)</option>
@@ -363,7 +363,7 @@ export const AcquisitionWizard: React.FC = () => {
                 type="text"
                 value={examiner}
                 onChange={(e) => setExaminer(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-[var(--bg)]/60 border border-[var(--border)]/30 text-[var(--text)] focus:outline-none focus:border-[var(--primary)]"
+                className="w-full font-mono text-xs"
               />
             </div>
           </div>

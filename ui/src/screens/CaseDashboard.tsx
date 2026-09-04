@@ -312,7 +312,7 @@ export const CaseDashboard: React.FC = () => {
                   placeholder="CASE-2026-003"
                   value={newCaseId}
                   onChange={(e) => setNewCaseId(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/30 text-[var(--text)] outline-none focus:border-[#59EE99]/50"
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 
@@ -324,7 +324,7 @@ export const CaseDashboard: React.FC = () => {
                   placeholder="Operation Blue Horizon"
                   value={newCaseName}
                   onChange={(e) => setNewCaseName(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/30 text-[var(--text)] outline-none focus:border-[#59EE99]/50"
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 
@@ -335,7 +335,7 @@ export const CaseDashboard: React.FC = () => {
                   required
                   value={newInvestigator}
                   onChange={(e) => setNewInvestigator(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/30 text-[var(--text)] outline-none focus:border-[#59EE99]/50"
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 
@@ -346,7 +346,7 @@ export const CaseDashboard: React.FC = () => {
                   placeholder="Judicial warrant reference or context..."
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/30 text-[var(--text)] outline-none focus:border-[#59EE99]/50"
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 

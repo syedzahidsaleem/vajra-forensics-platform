@@ -261,7 +261,7 @@ export const SanitizationConsole: React.FC = () => {
                 <select
                   value={targetPath}
                   onChange={(e) => setTargetPath(e.target.value)}
-                  className="w-full px-3 py-2 rounded bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)] outline-none"
+                  className="w-full font-mono text-xs cursor-pointer"
                 >
                   {devices.map((d: DeviceDescriptor) => (
                     <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
@@ -277,7 +277,7 @@ export const SanitizationConsole: React.FC = () => {
                   type="text"
                   disabled
                   value={activeCase?.case_id || 'CASE-2026-001'}
-                  className="w-full px-3 py-2 rounded bg-[var(--surface)]/60 border border-[var(--border)]/20 text-[var(--text)]/50"
+                  className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -453,7 +453,7 @@ export const SanitizationConsole: React.FC = () => {
               value={typedSerial}
               onChange={(e) => setTypedSerial(e.target.value)}
               placeholder="Type exact serial number here..."
-              className="w-full px-3 py-2 rounded bg-[var(--surface)] border border-[#EF4444]/40 text-[var(--text)] font-mono text-xs font-bold outline-none focus:border-[#EF4444]"
+              className="w-full font-mono text-xs font-bold text-center tracking-wider"
             />
           </div>
 

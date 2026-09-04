@@ -346,7 +346,7 @@ export const DeviceSelection: React.FC = () => {
                     type="text"
                     disabled
                     value={`${activeCase.case_id} (${activeCase.case_name})`}
-                    className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/20 text-[var(--text)]/60"
+                    className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                   />
                 </div>
 
@@ -356,7 +356,7 @@ export const DeviceSelection: React.FC = () => {
                     type="text"
                     disabled
                     value={`${registeringDevice.path} — ${registeringDevice.model}`}
-                    className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/20 text-[var(--text)]/60"
+                    className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                   />
                 </div>
 
@@ -367,7 +367,7 @@ export const DeviceSelection: React.FC = () => {
                     placeholder="Seized USB drive from suspect workstation..."
                     value={evidenceDesc}
                     onChange={(e) => setEvidenceDesc(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded bg-[var(--bg)]/50 border border-[var(--border)]/30 text-[var(--text)] outline-none focus:border-[#59EE99]/50"
+                    className="w-full font-mono text-xs"
                   />
                 </div>
 

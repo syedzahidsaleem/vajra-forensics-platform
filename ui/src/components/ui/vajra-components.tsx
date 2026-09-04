@@ -492,7 +492,7 @@ export function FloatingInput({ label, error, className = '', ...props }: Floati
           outline-none transition-all duration-200
           ${error
             ? 'border-[#EF4444]/50 focus:border-[#EF4444] focus:shadow-[0_0_0_2px_rgba(239,68,68,0.15)]'
-            : 'border-[var(--border)]/30 focus:border-[#59EE99]/50 focus:shadow-[0_0_0_2px_rgba(89,238,153,0.1)]'
+            : 'border-[var(--border)] focus:border-[var(--primary)] focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--primary)_30%,transparent)]'
           }
         `}
       />
@@ -502,7 +502,7 @@ export function FloatingInput({ label, error, className = '', ...props }: Floati
           transition-all duration-200 pointer-events-none
           ${focused || hasValue ? 'top-1.5 text-[9px]' : 'top-3.5 text-xs'}
           ${focused
-            ? error ? 'text-[#EF4444]' : 'text-[#59EE99]'
+            ? error ? 'text-[#EF4444]' : 'text-[var(--primary)]'
             : 'text-[var(--text)]/60'
           }
         `}
