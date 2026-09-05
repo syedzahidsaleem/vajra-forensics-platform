@@ -31,7 +31,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
   onRegionClick,
   className = '',
   collapsible = true,
-  defaultCollapsed = false,
+  defaultCollapsed = true,
 }) => {
   const devInfo = formatDevicePath(sourcePath);
   const [isExpanded, setIsExpanded] = useState(!defaultCollapsed);

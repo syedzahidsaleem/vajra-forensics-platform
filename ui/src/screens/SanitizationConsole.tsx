@@ -507,6 +507,7 @@ export const SanitizationConsole: React.FC = () => {
           <StorageMap
             sourcePath={targetDevice?.path || targetPath}
             mode="sanitization"
+            defaultCollapsed={false}
             sanitizedRanges={liveSanitizedRanges}
             onRegionClick={(start, count) => console.log('Range:', start, count)}
           />

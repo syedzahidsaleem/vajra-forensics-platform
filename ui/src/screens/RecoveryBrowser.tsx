@@ -186,10 +186,12 @@ export const RecoveryBrowser: React.FC = () => {
         </div>
       </div>
 
-      {/* Embedded Storage Map in Forensic Mode */}
+      {/* Embedded Storage Map in Forensic Mode (Collapsed by default) */}
       <StorageMap
         sourcePath={selectedDevice?.path || '\\\\.\\PhysicalDrive0'}
         mode="forensic"
+        collapsible={true}
+        defaultCollapsed={true}
         highlightArtifact={selectedArtifact}
         onRegionClick={(start) => jumpToHexLba(start)}
       />
