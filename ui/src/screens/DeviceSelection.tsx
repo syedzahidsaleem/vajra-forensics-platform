@@ -122,47 +122,47 @@ export const DeviceSelection: React.FC = () => {
             <div
               key={device.path}
               style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
-              className="p-3.5 px-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm w-full"
+              className="w-full p-3.5 px-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex items-center justify-between gap-3 sm:gap-4 shadow-sm min-w-0"
             >
               {/* Left: Drive Info + Capacity */}
-              <div className="flex items-center gap-4 min-w-0 flex-1">
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`font-mono text-xs font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                <div className="space-y-0.5 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className={`font-mono text-xs font-bold shrink-0 ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
                       {devInfo.primary}
                     </span>
-                    <span className="font-mono text-[10px] text-[var(--text)]/50">
+                    <span className="font-mono text-[10px] text-[var(--text)]/50 shrink-0">
                       {devInfo.raw}
                     </span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${isForensic ? 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/40'}`}>
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono shrink-0 ${isForensic ? 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/40'}`}>
                         {device.bus_type}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-baseline gap-2.5 flex-wrap">
-                    <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                  <div className="flex items-baseline gap-2 min-w-0">
+                    <h3 className={`font-medium text-xs font-sans truncate max-w-[150px] sm:max-w-[200px] ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                       {device.model}
                     </h3>
-                    <span className={`text-[10px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/35'}`}>
+                    <span className={`text-[10px] font-mono shrink-0 ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/35'}`}>
                       S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
                     </span>
                   </div>
                 </div>
 
-                <div className="pl-3 border-l border-[var(--border)]/20 shrink-0">
-                  <div className={`text-sm font-mono font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                <div className="pl-3 border-l border-[var(--border)]/20 shrink-0 font-mono text-xs">
+                  <div className={`font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                     {formatBytes(device.size_bytes)}
                   </div>
-                  <div className={`text-[9px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/30'}`}>
+                  <div className={`text-[9px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/30'}`}>
                     Sector: {device.block_size} B
                   </div>
                 </div>
               </div>
 
               {/* Middle: Safety Badges */}
-              <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono shrink-0">
+              <div className="flex items-center gap-1.5 text-[10px] font-mono shrink-0">
                 {isSystem ? (
                   <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444] whitespace-nowrap">
                     <AlertOctagon className="w-3 h-3 flex-shrink-0" />
@@ -189,7 +189,7 @@ export const DeviceSelection: React.FC = () => {
               </div>
 
               {/* Right: Action Buttons */}
-              <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
+              <div className="flex items-center gap-2 shrink-0">
                 <GlowButton
                   variant="ghost"
                   size="sm"
