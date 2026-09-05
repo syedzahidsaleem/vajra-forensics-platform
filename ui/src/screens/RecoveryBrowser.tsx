@@ -224,8 +224,8 @@ export const RecoveryBrowser: React.FC = () => {
       {!isLoading && filteredArtifacts.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Candidate List */}
-          <div className="lg:col-span-2 space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono text-[var(--text)]/50">
+          <div className="lg:col-span-2 flex flex-col space-y-3">
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--text)]/50 h-5">
               <span>Evidence Candidates ({filteredArtifacts.length} items)</span>
             </div>
 
@@ -288,88 +288,98 @@ export const RecoveryBrowser: React.FC = () => {
           </div>
 
           {/* 6-Signal Confidence Inspector */}
-          <GlassCard hover={false} className="h-fit space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-[var(--forensic-border)]">
-              <div className="flex items-center gap-2 text-[var(--forensic-accent)] font-mono font-bold text-xs">
-                <Sparkles className="w-4 h-4" />
-                <span>6-Signal Confidence Breakdown</span>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
-                Verified
-              </span>
+          <div className="flex flex-col space-y-3">
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--text)]/50 h-5">
+              <span>Artifact Confidence & Signal Inspector</span>
             </div>
 
-            <div className="space-y-1 font-mono">
-              <div className="text-[11px] text-[var(--forensic-text-secondary)]">Target Artifact:</div>
-              <div className="text-sm font-bold text-[var(--forensic-text-primary)] truncate">{selectedArtifact.name}</div>
-            </div>
-
-            {/* Signal List */}
-            <div className="space-y-3 text-[11px] font-mono">
-              <div>
-                <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
-                  <span>1. Signature Magic Bytes Match</span>
-                  <AnimatedCounter value={selectedArtifact.signals.signature * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+            <GlassCard hover={false} className="flex-1 flex flex-col justify-between space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-2 border-b border-[var(--forensic-border)]">
+                  <div className="flex items-center gap-2 text-[var(--forensic-accent)] font-mono font-bold text-xs">
+                    <Sparkles className="w-4 h-4" />
+                    <span>6-Signal Confidence Breakdown</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
+                    Verified
+                  </span>
                 </div>
-                <ConfidenceBar value={selectedArtifact.signals.signature} showLabel={false} />
+
+                <div className="space-y-1 font-mono">
+                  <div className="text-[11px] text-[var(--forensic-text-secondary)]">Target Artifact:</div>
+                  <div className="text-sm font-bold text-[var(--forensic-text-primary)] truncate">{selectedArtifact.name}</div>
+                </div>
+
+                {/* Signal List */}
+                <div className="space-y-3 text-[11px] font-mono">
+                  <div>
+                    <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
+                      <span>1. Signature Magic Bytes Match</span>
+                      <AnimatedCounter value={selectedArtifact.signals.signature * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+                    </div>
+                    <ConfidenceBar value={selectedArtifact.signals.signature} showLabel={false} />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
+                      <span>2. Internal Structure Parser</span>
+                      <AnimatedCounter value={selectedArtifact.signals.structure * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+                    </div>
+                    <ConfidenceBar value={selectedArtifact.signals.structure} showLabel={false} />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
+                      <span>3. Chi-Square Entropy Consistency</span>
+                      <AnimatedCounter value={selectedArtifact.signals.entropy * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+                    </div>
+                    <ConfidenceBar value={selectedArtifact.signals.entropy} showLabel={false} />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
+                      <span>4. Filesystem Slack Match</span>
+                      <AnimatedCounter value={selectedArtifact.signals.slack * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+                    </div>
+                    <ConfidenceBar value={selectedArtifact.signals.slack} showLabel={false} />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
+                      <span>5. ML Classifier Signal</span>
+                      <AnimatedCounter value={selectedArtifact.signals.ml * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+                    </div>
+                    <ConfidenceBar value={selectedArtifact.signals.ml} showLabel={false} />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
+                      <span>6. Cross-Validation Verification</span>
+                      <AnimatedCounter value={selectedArtifact.signals.validation * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
+                    </div>
+                    <ConfidenceBar value={selectedArtifact.signals.validation} showLabel={false} />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[10px] text-[var(--forensic-text-secondary)] leading-relaxed font-mono space-y-1">
+                  <span className="text-[var(--forensic-accent)] font-bold block">Recovery Provenance & Explainability:</span>
+                  All 6 independent validation signals evaluated. No corrupt extents or broken clusters detected.
+                </div>
               </div>
 
-              <div>
-                <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
-                  <span>2. Internal Structure Parser</span>
-                  <AnimatedCounter value={selectedArtifact.signals.structure * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
-                </div>
-                <ConfidenceBar value={selectedArtifact.signals.structure} showLabel={false} />
+              <div className="pt-2">
+                <GlowButton
+                  variant="outline"
+                  size="md"
+                  className="w-full justify-center"
+                  icon={<Binary className="w-3.5 h-3.5" />}
+                  onClick={() => jumpToHexLba(selectedArtifact.startLba)}
+                >
+                  Open in Raw Hex Explorer
+                </GlowButton>
               </div>
-
-              <div>
-                <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
-                  <span>3. Chi-Square Entropy Consistency</span>
-                  <AnimatedCounter value={selectedArtifact.signals.entropy * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
-                </div>
-                <ConfidenceBar value={selectedArtifact.signals.entropy} showLabel={false} />
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
-                  <span>4. Filesystem Slack Match</span>
-                  <AnimatedCounter value={selectedArtifact.signals.slack * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
-                </div>
-                <ConfidenceBar value={selectedArtifact.signals.slack} showLabel={false} />
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
-                  <span>5. ML Classifier Signal</span>
-                  <AnimatedCounter value={selectedArtifact.signals.ml * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
-                </div>
-                <ConfidenceBar value={selectedArtifact.signals.ml} showLabel={false} />
-              </div>
-
-              <div>
-                <div className="flex justify-between text-[var(--forensic-text-primary)] mb-1">
-                  <span>6. Cross-Validation Verification</span>
-                  <AnimatedCounter value={selectedArtifact.signals.validation * 100} suffix="%" className="text-[var(--forensic-accent)] font-bold" />
-                </div>
-                <ConfidenceBar value={selectedArtifact.signals.validation} showLabel={false} />
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[10px] text-[var(--forensic-text-secondary)] leading-relaxed font-mono space-y-1">
-              <span className="text-[var(--forensic-accent)] font-bold block">Recovery Provenance & Explainability:</span>
-              All 6 independent validation signals evaluated. No corrupt extents or broken clusters detected.
-            </div>
-
-            <GlowButton
-              variant="outline"
-              size="md"
-              className="w-full justify-center"
-              icon={<Binary className="w-3.5 h-3.5" />}
-              onClick={() => jumpToHexLba(selectedArtifact.startLba)}
-            >
-              Open in Raw Hex Explorer
-            </GlowButton>
-          </GlassCard>
+            </GlassCard>
+          </div>
         </div>
       )}
     </div>
