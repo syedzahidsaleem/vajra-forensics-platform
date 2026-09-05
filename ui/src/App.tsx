@@ -10,6 +10,8 @@ import { ReportCenter } from './screens/ReportCenter';
 import { RecoveryBrowser } from './screens/RecoveryBrowser';
 import { HexExplorer } from './screens/HexExplorer';
 
+import { ThemeProvider } from './context/ThemeContext';
+
 const ScreenRouter: React.FC = () => {
   const { activeScreen } = useApp();
 
@@ -36,13 +38,15 @@ const ScreenRouter: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <ToastProvider>
-      <AppProvider>
-        <AppShell>
-          <ScreenRouter />
-        </AppShell>
-      </AppProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <AppProvider>
+          <AppShell>
+            <ScreenRouter />
+          </AppShell>
+        </AppProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 };
 

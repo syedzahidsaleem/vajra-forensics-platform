@@ -1,8 +1,11 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useTheme } from '../../context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { mode, setMode } = useApp();
+  const { theme, toggleTheme } = useTheme();
   const isForensic = mode === 'forensic';
 
   return (
@@ -39,8 +42,8 @@ export const Header: React.FC = () => {
             Forensic Mode
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[rgba(239,68,68,0.12)] border border-[#EF4444]/30 text-[#EF4444] font-mono text-[10px] tracking-widest uppercase animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444] shadow-[0_0_6px_#EF4444]" />
+          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[var(--primary)]/15 border border-[var(--primary)]/30 text-[var(--primary-text)] font-mono text-[10px] tracking-widest uppercase animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_6px_var(--primary)]" />
             Sanitization Mode
           </div>
         )}
@@ -72,6 +75,30 @@ export const Header: React.FC = () => {
         >
           Sanitize
         </button>
+
+        {/* Existing Mode Toggle Buttons */}
+        <div className="flex rounded-md overflow-hidden border border-[var(--border)]/30">
+          <button
+            onClick={() => setMode('forensic')}
+            className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
+              isForensic
+                ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold'
+                : 'text-[var(--text)]/50 hover:text-[var(--text)]'
+            }`}
+          >
+            Forensic
+          </button>
+          <button
+            onClick={() => setMode('sanitization')}
+            className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
+              !isForensic
+                ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold'
+                : 'text-[var(--text)]/50 hover:text-[var(--text)]'
+            }`}
+          >
+            Sanitize
+          </button>
+        </div>
       </div>
     </header>
   );

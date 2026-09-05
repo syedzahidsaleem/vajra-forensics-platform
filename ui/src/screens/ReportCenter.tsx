@@ -14,9 +14,11 @@ import {
   Printer,
   Eye,
 } from 'lucide-react';
+import { ShineBorder } from '../components/ui/shine-border';
 
 export const ReportCenter: React.FC = () => {
-  const { activeCase } = useApp();
+  const { activeCase, mode } = useApp();
+  const isForensic = mode === 'forensic';
   const [reports, setReports] = useState<ReportSummary[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -103,7 +105,7 @@ export const ReportCenter: React.FC = () => {
     },
     Recovery: {
       title: 'Carved Artifact Recovery Report',
-      desc: 'Per-artifact provenance (§31), aggregate recovery statistics, and multi-signal confidence scores.',
+      desc: 'Per-artifact provenance, aggregate recovery statistics, and multi-signal confidence scores.',
     },
     SanitizationCertificate: {
       title: 'NIST/IEEE Sanitization Certificate',
@@ -120,7 +122,7 @@ export const ReportCenter: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-mode={isForensic ? "forensic" : "sanitize"} style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
@@ -148,10 +150,10 @@ export const ReportCenter: React.FC = () => {
 
       {/* Reports Grid */}
       <div className="space-y-3">
-        <h2 className="text-base font-bold font-mono text-slate-200 flex items-center space-x-2">
-          <FileText className="w-4 h-4 text-cyan-400" />
+        <h2 className="text-base font-bold font-mono text-[var(--text)] flex items-center space-x-2">
+          <FileText className="w-4 h-4 text-[var(--primary-text)]" />
           <span>Recorded Reports for {activeCase?.case_id || 'Active Case'}</span>
-          <span className="text-xs text-slate-500">({reports.length})</span>
+          <span className="text-xs text-[var(--text)]/50">({reports.length})</span>
         </h2>
 
         {reports.length > 0 ? (
@@ -159,17 +161,18 @@ export const ReportCenter: React.FC = () => {
             {reports.map((r) => (
               <div
                 key={r.report_id}
-                className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-lg hover:border-slate-700 transition-all"
+                style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
+                className="p-5 bg-[var(--surface)] space-y-4 shadow-lg hover:border-[var(--primary)]/50 transition-all text-[var(--text)]"
               >
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono font-bold text-xs text-cyan-400">{r.report_id}</span>
-                      <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 text-[10px] font-mono">
+                      <span className="font-mono font-bold text-xs text-[var(--primary-text)]">{r.report_id}</span>
+                      <span className="px-2 py-0.5 rounded bg-[var(--border)]/20 text-[var(--text)]/80 border border-[var(--border)]/30 text-[10px] font-mono">
                         {r.report_type}
                       </span>
                     </div>
-                    <h3 className="font-bold text-sm text-slate-100 font-sans">{r.title}</h3>
+                    <h3 className="font-bold text-sm text-[var(--text)] font-sans">{r.title}</h3>
                   </div>
 
                   {r.signed && (
@@ -180,31 +183,31 @@ export const ReportCenter: React.FC = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-xs font-mono text-slate-400 pt-2 border-t border-slate-800/80">
-                  <div>Operator: <span className="text-slate-200">{r.operator_id}</span></div>
-                  <div>Created: <span className="text-slate-200">{r.created_at.split('T')[0]}</span></div>
+                <div className="grid grid-cols-2 gap-2 text-xs font-mono text-[var(--text)]/60 pt-2 border-t border-[var(--border)]/20">
+                  <div>Operator: <span className="text-[var(--text)]">{r.operator_id}</span></div>
+                  <div>Created: <span className="text-[var(--text)]">{r.created_at.split('T')[0]}</span></div>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--border)]/20">
                   <button
                     onClick={() => handleVerify(r)}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/70 hover:bg-cyan-900 border border-cyan-800/60 text-cyan-300 text-xs font-mono transition-colors cursor-pointer"
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary-text)]/10 hover:bg-[var(--primary-text)]/20 border border-[var(--primary-text)]/30 text-[var(--primary-text)] text-xs font-mono transition-colors cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Verify (§42)</span>
+                    <span>Verify</span>
                   </button>
 
                   <div className="flex items-center space-x-2 text-xs font-mono">
                     <button
                       onClick={() => setViewingReport(r)}
-                      className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-bold transition-all shadow cursor-pointer"
+                      className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-bold transition-all shadow cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" />
                       <span>View Report</span>
                     </button>
                     <button
                       onClick={() => handleExportHtml(r)}
-                      className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 cursor-pointer flex items-center gap-1"
+                      className="px-2.5 py-1.5 rounded-lg bg-[var(--border)]/20 hover:bg-[var(--border)]/30 text-[var(--text)]/80 border border-[var(--border)]/30 cursor-pointer flex items-center gap-1"
                       title="Print court-admissible formatted document"
                     >
                       <Printer className="w-3 h-3" />
@@ -216,34 +219,38 @@ export const ReportCenter: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="p-8 rounded-2xl bg-slate-900/30 border border-slate-800 text-center text-xs font-mono text-slate-500">
+          <div className="p-8 rounded-2xl bg-[var(--surface)]/40 border border-[var(--border)]/20 text-center text-xs font-mono text-[var(--text)]/50">
             {loading ? 'Loading report registry...' : 'No reports generated yet for this case. Click "Generate New Report" above.'}
           </div>
         )}
       </div>
 
       {/* Six Report Types Reference Grid */}
-      <div className="space-y-3 pt-4 border-t border-slate-800/80">
-        <h3 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-          Six Standardized Forensic Report Types (§41)
+      <div className="space-y-3 pt-4 border-t border-[var(--border)]/20">
+        <h3 className="text-xs font-mono font-bold text-[var(--text)]/60 uppercase tracking-wider">
+          Six Standardized Forensic Report Types
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {(Object.keys(reportTypeMeta) as ReportType[]).map((type) => {
             const meta = reportTypeMeta[type];
             return (
-              <div
+              <ShineBorder
                 key={type}
+                borderRadius={12}
+                color="var(--primary)"
                 onClick={() => {
                   setSelectedType(type);
                   setShowGenModal(true);
                 }}
-                className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all space-y-1.5"
+                className="cursor-pointer report-type-card h-full"
               >
-                <div className="font-mono font-bold text-xs text-slate-200">{meta.title}</div>
-                <p className="text-[11px] font-sans text-slate-400 leading-relaxed">{meta.desc}</p>
-                <div className="text-[10px] font-mono text-cyan-400 pt-1">Click to generate &rarr;</div>
-              </div>
+                <div className="p-3.5 space-y-1.5 h-full rounded-[12px] bg-transparent cursor-pointer">
+                  <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
+                  <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
+                  <div className="text-[10px] font-mono text-[var(--primary-text)] font-semibold pt-1">Click to generate &rarr;</div>
+                </div>
+              </ShineBorder>
             );
           })}
         </div>
@@ -252,84 +259,84 @@ export const ReportCenter: React.FC = () => {
       {/* Document Viewer Modal */}
       {viewingReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-white text-slate-900 rounded-2xl shadow-2xl overflow-hidden my-8 border border-slate-200">
+          <div className="w-full max-w-3xl bg-[var(--surface)] text-[var(--text)] rounded-2xl shadow-2xl overflow-hidden my-8 border border-[var(--border)]/30">
             {/* Document Header Toolbar */}
-            <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
+            <div className="bg-[var(--bg)] text-[var(--text)] p-4 flex items-center justify-between border-b border-[var(--border)]/20">
               <div className="flex items-center space-x-2">
                 <FileCheck className="w-5 h-5 text-cyan-400" />
-                <span className="font-mono font-bold text-sm">Official Forensic Evidence Report (§41)</span>
+                <span className="font-mono font-bold text-sm">Official Forensic Evidence Report</span>
               </div>
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => window.print()}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs rounded-lg transition-all"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs rounded-lg transition-all cursor-pointer font-bold"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print / Save as PDF</span>
                 </button>
                 <button
                   onClick={() => setViewingReport(null)}
-                  className="text-slate-400 hover:text-white p-1 rounded-lg"
+                  className="text-[var(--text)]/60 hover:text-[var(--text)] p-1 rounded-lg cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Document Body (Print-optimized layout) */}
+            {/* Document Body */}
             <div className="p-8 space-y-6 font-sans">
-              <div className="border-b-2 border-slate-900 pb-4 flex justify-between items-start">
+              <div className="border-b-2 border-[var(--border)]/40 pb-4 flex justify-between items-start">
                 <div>
-                  <h1 className="text-xl font-extrabold tracking-tight text-slate-950">
+                  <h1 className="text-xl font-extrabold tracking-tight text-[var(--text)]">
                     VAJRA FORENSICS PLATFORM
                   </h1>
-                  <p className="text-xs text-slate-500 font-mono mt-0.5">
-                    Official Digital Evidence & Integrity Report (§41)
+                  <p className="text-xs text-[var(--text)]/60 font-mono mt-0.5">
+                    Official Digital Evidence & Integrity Report
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold">
+                  <span className="inline-block bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold">
                     CRYPTOGRAPHICALLY SIGNED
                   </span>
-                  <div className="text-xs font-mono text-slate-500 mt-1">ID: {viewingReport.report_id}</div>
+                  <div className="text-xs font-mono text-[var(--text)]/60 mt-1">ID: {viewingReport.report_id}</div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs font-mono">
+              <div className="grid grid-cols-2 gap-4 bg-[var(--bg)]/40 p-4 rounded-xl border border-[var(--border)]/20 text-xs font-mono">
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Case Identifier:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.case_id}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Case Identifier:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.case_id}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Classification:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.report_type}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Classification:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.report_type}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Lead Examiner:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.operator_id}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Lead Examiner:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.operator_id}</span>
                 </div>
                 <div>
-                  <span className="text-slate-500 block uppercase text-[10px] tracking-wider font-bold">Date of Certification:</span>
-                  <span className="font-bold text-slate-800">{viewingReport.created_at}</span>
+                  <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Date of Certification:</span>
+                  <span className="font-bold text-[var(--text)]">{viewingReport.created_at}</span>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-bold text-sm text-slate-950 border-b pb-1">Report Narrative & Findings</h3>
-                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed font-mono whitespace-pre-wrap">
+                <h3 className="font-bold text-sm text-[var(--text)] border-b border-[var(--border)]/20 pb-1">Report Narrative & Findings</h3>
+                <div className="p-4 bg-[var(--bg)]/40 rounded-xl border border-[var(--border)]/20 text-xs text-[var(--text)]/80 leading-relaxed font-mono whitespace-pre-wrap">
                   {viewingReport.title}
                   {'\n\n'}
-                  Procedural chain of custody and cryptographic verification executed in strict compliance with ISO/IEC 27037 and Vajra Forensic Standard §41.
+                  Procedural chain of custody and cryptographic verification executed in strict compliance with ISO/IEC 27037 and Vajra Forensic Standard.
                 </div>
               </div>
 
               {/* Local File Location Box */}
-              <div className="p-4 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs space-y-2">
+              <div className="p-4 rounded-xl bg-[var(--bg)]/80 text-[var(--text)] font-mono text-xs space-y-2 border border-[var(--border)]/20">
                 <div className="text-cyan-400 font-bold flex items-center gap-1.5">
                   <FileText className="w-4 h-4" />
                   <span>On-Disk Storage Location on Your Laptop:</span>
                 </div>
-                <div className="p-2 bg-black/60 rounded text-[11px] select-all break-all text-amber-300">
+                <div className="p-2 bg-[var(--surface)] rounded text-[11px] select-all break-all text-amber-500 dark:text-amber-300">
                   {viewingReport.json_path}
                 </div>
               </div>
@@ -341,15 +348,15 @@ export const ReportCenter: React.FC = () => {
       {/* Generate Report Modal */}
       {showGenModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+          <div className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)]/30 rounded-2xl p-6 shadow-2xl space-y-4 text-[var(--text)]">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-mono font-bold text-cyan-400 flex items-center space-x-2">
+              <h3 className="text-base font-mono font-bold text-[var(--primary-text)] flex items-center space-x-2">
                 <FileCheck className="w-5 h-5" />
-                <span>Generate Forensic Report (§41)</span>
+                <span>Generate Forensic Report</span>
               </h3>
               <button
                 onClick={() => setShowGenModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg"
+                className="text-[var(--text)]/50 hover:text-[var(--text)] p-1 rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -357,14 +364,14 @@ export const ReportCenter: React.FC = () => {
 
             <form onSubmit={handleGenerate} className="space-y-4 font-mono text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Select Report Type</label>
+                <label className="block text-[var(--text)]/60 mb-1">Select Report Type</label>
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value as ReportType)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 focus:outline-none focus:border-cyan-500"
+                  className="w-full font-mono text-xs cursor-pointer"
                 >
                   {(Object.keys(reportTypeMeta) as ReportType[]).map((t) => (
-                    <option key={t} value={t}>
+                    <option key={t} value={t} className="bg-[var(--surface)] text-[var(--text)]">
                       {reportTypeMeta[t].title}
                     </option>
                   ))}
@@ -372,13 +379,13 @@ export const ReportCenter: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">Examiner Narrative / Judicial Notes</label>
+                <label className="block text-[var(--text)]/60 mb-1">Examiner Narrative / Judicial Notes</label>
                 <textarea
                   rows={4}
                   placeholder="Enter examiner methodology narrative, court findings, or observation notes..."
                   value={reportNotes}
                   onChange={(e) => setReportNotes(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 focus:outline-none focus:border-cyan-500 font-sans"
+                  className="w-full font-sans text-xs"
                 />
               </div>
 
@@ -386,14 +393,14 @@ export const ReportCenter: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowGenModal(false)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl"
+                  className="px-4 py-2 bg-[var(--border)]/20 hover:bg-[var(--border)]/30 text-[var(--text)]/80 rounded-xl"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={generating}
-                  className="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-bold rounded-xl flex items-center space-x-2 shadow-lg shadow-cyan-950"
+                  className="px-5 py-2 bg-[var(--primary)] hover:brightness-110 disabled:opacity-50 text-[var(--bg)] font-bold rounded-xl flex items-center space-x-2 shadow-lg"
                 >
                   {generating && <RotateCw className="w-3.5 h-3.5 animate-spin" />}
                   <span>Generate & Sign</span>
@@ -407,12 +414,12 @@ export const ReportCenter: React.FC = () => {
       {/* Verification Results Modal */}
       {verifyingReport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-slate-950 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-5">
+          <div className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)]/30 rounded-2xl p-6 shadow-2xl space-y-5 text-[var(--text)]">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-cyan-400" />
-                <h3 className="font-mono font-bold text-base text-slate-200">
-                  Independent Verification (§42)
+                <ShieldCheck className="w-5 h-5 text-[var(--primary)]" />
+                <h3 className="font-mono font-bold text-base text-[var(--text)]">
+                  Independent Verification
                 </h3>
               </div>
               <button
@@ -420,21 +427,21 @@ export const ReportCenter: React.FC = () => {
                   setVerifyingReport(null);
                   setVerifyResult(null);
                 }}
-                className="text-slate-400 hover:text-white p-1 rounded-lg"
+                className="text-[var(--text)]/50 hover:text-[var(--text)] p-1 rounded-lg"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 text-xs font-mono space-y-1">
-              <div className="text-slate-400">Target Report: <span className="text-slate-200 font-bold">{verifyingReport.report_id}</span></div>
-              <div className="text-slate-400">Classification: <span className="text-slate-200">{verifyingReport.report_type}</span></div>
+            <div className="p-3.5 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30 text-xs font-mono space-y-1">
+              <div className="text-[var(--text)]/60">Target Report: <span className="text-[var(--text)] font-bold">{verifyingReport.report_id}</span></div>
+              <div className="text-[var(--text)]/60">Classification: <span className="text-[var(--text)]">{verifyingReport.report_type}</span></div>
             </div>
 
             {isVerifying ? (
               <div className="py-8 text-center space-y-3">
-                <RotateCw className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
-                <p className="font-mono text-xs text-slate-400">
+                <RotateCw className="w-8 h-8 text-[var(--primary)] animate-spin mx-auto" />
+                <p className="font-mono text-xs text-[var(--text)]/60">
                   Executing vajra-verify: recomputing SHA-256 digests and validating Ed25519 signatures...
                 </p>
               </div>
@@ -449,16 +456,16 @@ export const ReportCenter: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-slate-400 font-bold">Independent Checks Performed (§42):</div>
+                  <div className="text-[var(--text)]/70 font-bold">Independent Checks Performed:</div>
                   {verifyResult.checks.map((c: VerificationCheckResult, idx: number) => (
                     <div
                       key={idx}
-                      className="p-3 bg-slate-900/70 rounded-xl border border-slate-800 flex items-start space-x-3"
+                      className="p-3 bg-[var(--bg)]/40 rounded-xl border border-[var(--border)]/20 flex items-start space-x-3"
                     >
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
-                        <div className="font-bold text-slate-200">{c.check_name}</div>
-                        <div className="text-[11px] text-slate-400">{c.details}</div>
+                        <div className="font-bold text-[var(--text)]">{c.check_name}</div>
+                        <div className="text-[11px] text-[var(--text)]/60">{c.details}</div>
                       </div>
                     </div>
                   ))}
@@ -472,7 +479,7 @@ export const ReportCenter: React.FC = () => {
                   setVerifyingReport(null);
                   setVerifyResult(null);
                 }}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono rounded-xl cursor-pointer"
+                className="px-4 py-2 bg-[var(--border)]/20 hover:bg-[var(--border)]/30 text-[var(--text)]/80 text-xs font-mono rounded-xl cursor-pointer"
               >
                 Close Verifier
               </button>

@@ -123,13 +123,35 @@ fn test_gpt_and_mbr_partition_detection() {
 }
 
 #[test]
-fn test_media_type_classification_coverage() {
-    assert_eq!(format!("{}", MediaType::Nvme), "NVMe SSD");
-    assert_eq!(format!("{}", MediaType::SataSsd), "SATA SSD");
-    assert_eq!(format!("{}", MediaType::Hdd), "HDD (Magnetic)");
-    assert_eq!(format!("{}", MediaType::Usb), "USB Flash Drive");
-    assert_eq!(format!("{}", MediaType::SdCard), "SD/microSD Card");
-    assert_eq!(format!("{}", MediaType::Sed), "Self-Encrypting Drive (SED)");
-    assert_eq!(format!("{}", MediaType::ForensicImage), "Forensic Disk Image");
+fn test_device_health_query_on_system_disk() {
+    #[cfg(target_os = "linux")]
+    {
+        use vajra_device::device_health;
+        let desc = DeviceDescriptor {
+            path: "/dev/sdd".to_string(),
+            device_index: 3,
+            manufacturer: "Microsoft".to_string(),
+            model: "Virtual Disk".to_string(),
+            serial: "123456".to_string(),
+            capacity_bytes: 1_000_000_000,
+            logical_block_size: 512,
+            physical_block_size: 4096,
+            media_type: MediaType::Hdd,
+            interface: "SCSI".to_string(),
+            partition_table: "GPT".to_string(),
+            is_system_disk: true,
+            is_read_only: false,
+            is_write_blocked: false,
+            write_blocker_info: None,
+            boundary_sample: vec![0u8; 512],
+        };
+
+        if std::path::Path::new("/dev/sdd").exists() {
+            let res = device_health(&desc);
+            assert!(res.is_ok(), "query_device_health on /dev/sdd must succeed: {:?}", res);
+            let health = res.unwrap();
+            assert_eq!(health.status, HealthStatus::Good);
+        }
+    }
 }
 

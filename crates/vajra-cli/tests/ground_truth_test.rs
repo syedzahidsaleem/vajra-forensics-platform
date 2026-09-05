@@ -23,10 +23,7 @@ fn get_test_image_path(name: &str) -> PathBuf {
 #[test]
 fn test_fat32_ground_truth_recovery() {
     let img_path = get_test_image_path("fat32_test.img");
-    if !img_path.exists() {
-        println!("Skipping test_fat32_ground_truth_recovery: test_data/fat32_test.img not found");
-        return;
-    }
+    assert!(img_path.exists(), "fat32_test.img must exist");
 
     let mut reader = RawImageReader::open(img_path.to_str().unwrap(), None).unwrap();
 
@@ -76,10 +73,7 @@ fn test_fat32_ground_truth_recovery() {
 #[test]
 fn test_ext4_ground_truth_recovery() {
     let img_path = get_test_image_path("ext4_test.img");
-    if !img_path.exists() {
-        println!("Skipping test_ext4_ground_truth_recovery: test_data/ext4_test.img not found");
-        return;
-    }
+    assert!(img_path.exists(), "ext4_test.img must exist");
 
     let mut reader = RawImageReader::open(img_path.to_str().unwrap(), None).unwrap();
 
@@ -117,10 +111,7 @@ fn test_ext4_ground_truth_recovery() {
 #[test]
 fn test_ntfs_ground_truth_recovery() {
     let img_path = get_test_image_path("ntfs_test.img");
-    if !img_path.exists() {
-        println!("Skipping test_ntfs_ground_truth_recovery: test_data/ntfs_test.img not found");
-        return;
-    }
+    assert!(img_path.exists(), "ntfs_test.img must exist");
 
     let mut reader = RawImageReader::open(img_path.to_str().unwrap(), None).unwrap();
 
@@ -167,10 +158,7 @@ fn test_ntfs_ground_truth_recovery() {
 #[test]
 fn test_ntfs_quickformat_scenario_recovery() {
     let img_path = get_test_image_path("ntfs_quickformat.img");
-    if !img_path.exists() {
-        println!("Skipping test_ntfs_quickformat_scenario_recovery: test_data/ntfs_quickformat.img not found");
-        return;
-    }
+    assert!(img_path.exists(), "ntfs_quickformat.img must exist");
 
     let mut reader = RawImageReader::open(img_path.to_str().unwrap(), None).unwrap();
 

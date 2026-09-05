@@ -79,6 +79,22 @@ impl EntropyAnalyzer for HeuristicEntropyAnalyzer {
                     0.3
                 }
             }
+            // Legacy OLE2 / Compound File Binary containers (DOC/XLS/PPT):
+            // structured binary records interleaved with large zero-padded regions
+            // (unallocated sectors, zero-filled stream tails) — characteristically
+            // LOW entropy, which is the same property behind this format's
+            // `no_zblocks: false` flag (§26.2). Very high entropy in an OLE2
+            // candidate indicates compressed/encrypted content or a misidentified
+            // header rather than a plain legacy Office document, so it scores down.
+            "ole2" | "doc" | "xls" | "ppt" | "msole" => {
+                if (1.0..=6.0).contains(&entropy) {
+                    1.0
+                } else if entropy <= 7.0 {
+                    0.6
+                } else {
+                    0.2
+                }
+            }
             // Default generic profile
             _ => {
                 if entropy > 3.0 {

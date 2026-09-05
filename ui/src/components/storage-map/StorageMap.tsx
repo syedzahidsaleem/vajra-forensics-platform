@@ -136,7 +136,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-3 text-[11px] font-medium text-slate-400">
+        <div className="flex items-center gap-3 text-[11px] font-medium text-[var(--text)]/70">
           {isSanitizing ? (
             <>
               <div className="flex items-center gap-1">
@@ -176,7 +176,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
       </div>
 
       {/* Grid Canvas */}
-      <div className="grid grid-cols-16 sm:grid-cols-32 gap-1 p-2 rounded-lg bg-black/40 border border-slate-800/80 mb-2">
+      <div className="grid grid-cols-16 sm:grid-cols-32 gap-1 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border)]/20 mb-2">
         {segments.map((seg) => (
           <button
             key={seg.index}
@@ -193,32 +193,32 @@ export const StorageMap: React.FC<StorageMapProps> = ({
             onMouseLeave={() => setHoveredBlock(null)}
             className={`h-4.5 rounded-[2px] border transition-all duration-100 cursor-pointer ${
               seg.colorClass
-            } ${selectedBlockIndex === seg.index ? 'ring-2 ring-white scale-110 z-10' : ''}`}
+            } ${selectedBlockIndex === seg.index ? 'ring-2 ring-[var(--primary)] scale-110 z-10' : ''}`}
             title={`LBA ${seg.startLba.toLocaleString()} - ${seg.endLba.toLocaleString()} (${seg.status})`}
           />
         ))}
       </div>
 
       {/* Interactive Telemetry Tooltip / Footer */}
-      <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 px-1">
+      <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text)]/70 px-1">
         <div className="flex items-center gap-2">
-          <Database className="w-3.5 h-3.5 text-slate-500" />
+          <Database className="w-3.5 h-3.5 text-[var(--text)]/50" />
           <span>LBA Range: 0 .. {totalBlocks.toLocaleString()}</span>
         </div>
 
         {hoveredBlock ? (
-          <div className="flex items-center gap-2 text-slate-200">
+          <div className="flex items-center gap-2 text-[var(--text)]">
             <Info className="w-3 h-3 text-cyan-400" />
             <span>
               Segment #{hoveredBlock.index}: LBA [{hoveredBlock.startLba.toLocaleString()} ..{' '}
               {hoveredBlock.endLba.toLocaleString()}]
             </span>
-            <span className="capitalize px-1.5 py-0.2 rounded bg-slate-800 text-[10px] text-amber-300 font-sans border border-slate-700">
+            <span className="capitalize px-1.5 py-0.2 rounded bg-[var(--surface)] text-[10px] text-amber-500 dark:text-amber-300 font-sans border border-[var(--border)]/30">
               {hoveredBlock.status.replace('_', ' ')}
             </span>
           </div>
         ) : (
-          <span className="text-slate-500 italic">Hover or click block to inspect sector provenance</span>
+          <span className="text-[var(--text)]/40 italic">Hover or click block to inspect sector provenance</span>
         )}
       </div>
     </div>

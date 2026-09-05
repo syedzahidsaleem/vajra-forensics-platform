@@ -143,12 +143,11 @@ export const RecoveryBrowser: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Page Header */}
       <SectionHeader
         title="Recovery Browser & Artifact Inspector"
-        subtitle="Browse recovered files across Tier-1 (metadata), Tier-2 (carving), and Tier-3 (bifragment reconstruction) with 6-signal confidence breakdowns."
-        tags={['§29–§32', 'FORENSIC READ-ONLY']}
+        tags={['FORENSIC READ-ONLY']}
         actions={
           <GlowButton
             variant="primary"
@@ -200,8 +199,8 @@ export const RecoveryBrowser: React.FC = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <OrbitalSpinner size={40} />
           <div className="text-center">
-            <p className="text-sm font-mono text-[#59EE99]">Running recovery pipeline...</p>
-            <p className="text-xs text-[#D8E4FF]/40 mt-1">
+            <p className="text-sm font-mono text-[var(--primary-text)]">Running recovery pipeline...</p>
+            <p className="text-xs text-[var(--text)]/40 mt-1">
               Scanning Tier 1 metadata → Tier 2 signatures → Tier 3 fragments
             </p>
           </div>
@@ -211,11 +210,11 @@ export const RecoveryBrowser: React.FC = () => {
       {/* Empty state */}
       {!isLoading && filteredArtifacts.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="w-12 h-12 rounded-full bg-[rgba(89,238,153,0.08)] border border-[#59EE99]/20 flex items-center justify-center">
-            <Binary className="w-5 h-5 text-[#59EE99]/50" />
+          <div className="w-12 h-12 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center">
+            <Binary className="w-5 h-5 text-[var(--primary)]/50" />
           </div>
-          <p className="text-sm font-mono text-[#D8E4FF]/50">No artifacts recovered</p>
-          <p className="text-xs text-[#D8E4FF]/30">Try enabling additional tiers or selecting a different source</p>
+          <p className="text-sm font-mono text-[var(--text)]/50">No artifacts recovered</p>
+          <p className="text-xs text-[var(--text)]/30">Try enabling additional tiers or selecting a different source</p>
         </div>
       )}
 
@@ -224,7 +223,7 @@ export const RecoveryBrowser: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Candidate List */}
           <div className="lg:col-span-2 space-y-3">
-            <div className="flex items-center justify-between text-xs font-mono text-[#D8E4FF]/50">
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--text)]/50">
               <span>Evidence Candidates ({filteredArtifacts.length} items)</span>
             </div>
 
@@ -241,31 +240,31 @@ export const RecoveryBrowser: React.FC = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2.5">
                         <FileTypeBadge type={art.type} />
-                        <span className="font-mono text-sm font-bold text-[#D8E4FF]">{art.name}</span>
+                        <span className="font-mono text-sm font-bold text-[var(--text)]">{art.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <TierBadge tier={art.tier} />
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-[#D8E4FF]/60 pt-2 border-t border-[rgba(89,238,153,0.08)] mb-3">
+                    <div className="grid grid-cols-3 gap-2 text-[11px] font-mono text-[var(--text)]/60 pt-2 border-t border-[var(--border)]/20 mb-3">
                       <div>
-                        <span className="text-[#D8E4FF]/40 block">Confidence:</span>
+                        <span className="text-[var(--text)]/40 block">Confidence:</span>
                         <ConfidenceBar value={art.confidence} />
                       </div>
                       <div>
-                        <span className="text-[#D8E4FF]/40 block">LBA Offset:</span>
-                        <span className="text-[#D8E4FF]">LBA {art.startLba.toLocaleString()}</span>
+                        <span className="text-[var(--text)]/40 block">LBA Offset:</span>
+                        <span className="text-[var(--text)]">LBA {art.startLba.toLocaleString()}</span>
                       </div>
                       <div>
-                        <span className="text-[#D8E4FF]/40 block">Status:</span>
-                        <span className="text-[#59EE99]">{art.status}</span>
+                        <span className="text-[var(--text)]/40 block">Status:</span>
+                        <span className="text-[var(--primary-text)] font-semibold">{art.status}</span>
                       </div>
                     </div>
 
                     {/* Actions Bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-[rgba(89,238,153,0.06)]">
-                      <span className="text-[10px] font-mono text-[#D8E4FF]/40">
+                    <div className="flex items-center justify-between pt-2 border-t border-[var(--border)]/10">
+                      <span className="text-[10px] font-mono text-[var(--text)]/40">
                         Size: {(art.sizeBytes / 1024).toFixed(1)} KB ({art.blockCount} sectors)
                       </span>
                       <GlowButton

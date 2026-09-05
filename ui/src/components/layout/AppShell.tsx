@@ -10,6 +10,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const { mode, activeScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
   const isForensic = mode === 'forensic';
   const [timeStr, setTimeStr] = useState<string>('');
+  const currentMode = mode === 'sanitization' ? 'sanitize' : 'forensic';
 
   useEffect(() => {
     const updateTime = () => {
@@ -21,6 +22,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-mode', currentMode);
+  }, [currentMode]);
+
   return (
     <div className={`w-full h-screen flex flex-col overflow-hidden relative select-none ${isForensic ? 'forensic-mode' : 'app-bg'}`}>
       <GradientDots />
@@ -29,12 +34,20 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <Header />
 
       {/* Main Container */}
-      <div className="flex-1 flex overflow-hidden z-10 relative">
+      <div
+        data-mode={currentMode}
+        style={{ background: 'var(--bg)', color: 'var(--text)' }}
+        className="flex-1 flex overflow-hidden z-10 relative"
+      >
         {/* Left Navigation Sidebar */}
         <Sidebar />
 
         {/* Center Main Screen Viewport with 960px centering constraint & page transitions */}
-        <main className="flex-1 overflow-y-auto bg-transparent">
+        <main
+          data-mode={currentMode}
+          style={{ background: 'var(--bg)', color: 'var(--text)' }}
+          className="flex-1 overflow-y-auto"
+        >
           <div className="max-w-[960px] mx-auto px-8 py-8">
             <AnimatePresence mode="wait">
               <motion.div
@@ -66,10 +79,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <div>{timeStr || 'UTC'}</div>
       </footer>
 
-      {/* Explicit Mode Switch Confirmation Modal */}
+      {/* Mode Switch Intercept Modal */}
       {pendingModeSwitch === 'sanitization' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4 animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-[#00120B] border border-[#EF4444]/40 rounded-2xl p-6 shadow-[0_0_50px_rgba(239,68,68,0.3)] space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="w-full max-w-lg bg-[var(--surface)] border border-[#EF4444]/40 rounded-2xl p-6 shadow-[0_0_50px_rgba(239,68,68,0.3)] space-y-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
                 <div className="p-2.5 bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/40 rounded-xl">
@@ -79,27 +92,27 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   <h3 className="text-base font-mono font-bold text-[#EF4444] tracking-wide">
                     ATTENTION: ENTERING SANITIZATION MODE
                   </h3>
-                  <p className="text-[11px] text-[#D8E4FF]/40 font-sans">
-                    Part VIII §43 — Destructive Operation Protocol
+                  <p className="text-[11px] text-[var(--text)]/40 font-sans">
+                    Part VIII — Destructive Operation Protocol
                   </p>
                 </div>
               </div>
               <button
                 onClick={cancelModeSwitch}
-                className="text-[#D8E4FF]/40 hover:text-white p-1 rounded-lg hover:bg-[rgba(53,96,90,0.2)]"
+                className="text-[var(--text)]/40 hover:text-[var(--text)] p-1 rounded-lg hover:bg-[var(--primary)]/10"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 rounded-xl bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/30 text-[11px] text-[#D8E4FF]/80 leading-relaxed space-y-2 font-sans">
+            <div className="p-4 rounded-xl bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/30 text-[11px] text-[var(--text)]/80 leading-relaxed space-y-2 font-sans">
               <p>
                 You are transitioning from <strong>Forensic Mode</strong> (where all connected drives are guarded by read-only block source wrappers) to <strong>Sanitization Mode</strong>.
               </p>
               <div className="p-2.5 rounded bg-[rgba(239,68,68,0.15)] border border-[#EF4444]/40 flex items-start space-x-2 text-[10px] font-mono text-[#EF4444]">
                 <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
                 <span>
-                  Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block (§24) and two-phase authorization gate (§43) will remain strictly enforced.
+                  Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block and two-phase authorization gate will remain strictly enforced.
                 </span>
               </div>
             </div>
@@ -107,13 +120,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <div className="flex items-center justify-end space-x-3 pt-2">
               <button
                 onClick={cancelModeSwitch}
-                className="px-3.5 py-1.5 rounded-lg text-[11px] font-mono text-[#D8E4FF]/70 hover:bg-[rgba(53,96,90,0.2)] border border-[#35605A] transition-colors"
+                className="px-3.5 py-1.5 rounded-lg text-[11px] font-mono text-[var(--text)]/70 hover:bg-[var(--primary)]/10 border border-[var(--border)] transition-colors"
               >
                 Cancel (Stay in Forensic Mode)
               </button>
               <button
                 onClick={confirmModeSwitch}
-                className="px-4 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-[#EF4444] hover:bg-[#f55] text-white shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer"
+                className="px-4 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-[#EF4444] hover:bg-[#f55] text-[var(--text)] shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer"
               >
                 <CheckCircle className="w-3.5 h-3.5" />
                 <span>Authorize & Enter Sanitization Mode</span>

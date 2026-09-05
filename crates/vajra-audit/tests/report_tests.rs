@@ -3,7 +3,7 @@
 use chrono::Utc;
 use std::collections::HashMap;
 use tempfile::tempdir;
-use vajra_audit::report::timestamp::encode_rfc3161_request;
+use vajra_audit::report::timestamp::{encode_rfc3161_request, parse_pki_status};
 use vajra_audit::report::*;
 use vajra_case_db::CaseDb;
 
@@ -20,6 +20,47 @@ fn test_encode_rfc3161_request_der_structure() {
         der.windows(oid_bytes.len()).any(|w| w == oid_bytes),
         "DER request must contain SHA-256 AlgorithmIdentifier OID"
     );
+}
+
+#[test]
+fn test_parse_pki_status_rfc3161() {
+    // 1. Granted: status = 0
+    // Root SEQUENCE (len 7): 30 07
+    //   PKIStatusInfo SEQUENCE (len 5): 30 05
+    //     PKIStatus INTEGER (len 1, val 0): 02 01 00
+    //     (optional trailing fields or tokens would follow in real responses)
+    let granted_der = vec![0x30, 0x07, 0x30, 0x05, 0x02, 0x01, 0x00, 0x00, 0x00];
+    assert_eq!(parse_pki_status(&granted_der), Ok(0));
+
+    // 2. GrantedWithMods: status = 1
+    let granted_with_mods_der = vec![0x30, 0x05, 0x30, 0x03, 0x02, 0x01, 0x01];
+    assert_eq!(parse_pki_status(&granted_with_mods_der), Ok(1));
+
+    // 3. Rejection: status = 2 (RFC 3161 §2.4.2 rejection)
+    let rejection_der = vec![0x30, 0x05, 0x30, 0x03, 0x02, 0x01, 0x02];
+    assert_eq!(parse_pki_status(&rejection_der), Ok(2));
+
+    // 4. RevocationWarning: status = 4
+    let warning_der = vec![0x30, 0x05, 0x30, 0x03, 0x02, 0x01, 0x04];
+    assert_eq!(parse_pki_status(&warning_der), Ok(4));
+
+    // 5. Multi-byte length DER encoding (e.g. realistic large TimeStampResp > 128 bytes)
+    let mut large_resp = vec![0x30, 0x82, 0x01, 0x00]; // SEQUENCE len 256
+    large_resp.extend_from_slice(&[0x30, 0x03, 0x02, 0x01, 0x00]); // PKIStatusInfo { status: 0 }
+    large_resp.resize(260, 0xAA); // trailing dummy token bytes
+    assert_eq!(parse_pki_status(&large_resp), Ok(0));
+
+    // 6. Malformed DER: Empty input
+    assert!(parse_pki_status(&[]).is_err());
+
+    // 7. Malformed DER: Not a SEQUENCE root
+    assert!(parse_pki_status(&[0x04, 0x05, 0x30, 0x03, 0x02, 0x01, 0x00]).is_err());
+
+    // 8. Malformed DER: Truncated inside PKIStatusInfo
+    assert!(parse_pki_status(&[0x30, 0x05, 0x30, 0x03, 0x02]).is_err());
+
+    // 9. Malformed DER: Missing INTEGER tag
+    assert!(parse_pki_status(&[0x30, 0x05, 0x30, 0x03, 0x04, 0x01, 0x00]).is_err());
 }
 
 #[test]

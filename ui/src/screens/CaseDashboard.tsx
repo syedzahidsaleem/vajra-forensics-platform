@@ -106,7 +106,7 @@ export const CaseDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-8">
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -135,7 +135,7 @@ export const CaseDashboard: React.FC = () => {
 
       {/* Active Case Hero Card */}
       {activeCase ? (
-        <GlassCard hover={false} className="p-5">
+        <GlassCard hover={false} className="p-5" style={{ border: '1px solid var(--border)', borderRadius: '12px' }}>
           {/* Top row */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
@@ -243,8 +243,8 @@ export const CaseDashboard: React.FC = () => {
         </GlassCard>
       ) : (
         <div className="p-8 rounded-xl border border-dashed border-[rgba(89,238,153,0.1)] text-center space-y-3">
-          <FolderPlus className="w-8 h-8 text-[#D8E4FF]/20 mx-auto" />
-          <p className="text-[12px] font-mono text-[#D8E4FF]/50">No Case Currently Selected</p>
+          <FolderPlus className="w-8 h-8 text-[var(--text)]/30 mx-auto" />
+          <p className="text-[12px] font-mono text-[var(--text)]/60">No Case Currently Selected</p>
           <GlowButton
             variant="primary"
             size="sm"
@@ -271,6 +271,10 @@ export const CaseDashboard: React.FC = () => {
                 hover={true}
                 onClick={() => setActiveCase(c)}
                 className="p-4"
+                style={{
+                  border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
+                  borderRadius: '12px',
+                }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-mono text-[var(--forensic-text-mono)] font-bold">{c.case_id}</span>
@@ -292,15 +296,15 @@ export const CaseDashboard: React.FC = () => {
 
       {/* New Case Modal */}
       {showNewCaseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4">
-          <div className="w-full max-w-md bg-[#00120B] border border-[rgba(89,238,153,0.15)] rounded-xl p-6 space-y-4 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono font-bold text-[#59EE99] uppercase tracking-wider">
+              <h3 className="text-xs font-mono font-bold text-[var(--primary-text)] uppercase tracking-wider">
                 Create Forensic Case
               </h3>
               <button
                 onClick={() => setShowNewCaseModal(false)}
-                className="text-[#D8E4FF]/40 hover:text-white p-1"
+                className="text-[var(--text)]/50 hover:text-[var(--text)] p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -308,48 +312,52 @@ export const CaseDashboard: React.FC = () => {
 
             <form onSubmit={handleCreateCase} className="space-y-3 font-mono text-[11px]">
               <div>
-                <label className="block text-[#D8E4FF]/40 mb-1 text-[10px] uppercase">Case ID</label>
+                <label className="block text-[var(--text)]/60 mb-1 text-[10px] uppercase">Case ID</label>
                 <input
                   type="text"
                   required
                   placeholder="CASE-2026-003"
                   value={newCaseId}
                   onChange={(e) => setNewCaseId(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none focus:border-[#59EE99]/50"
+                  style={{ padding: '10px 14px' }}
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 
               <div>
-                <label className="block text-[#D8E4FF]/40 mb-1 text-[10px] uppercase">Operation Title</label>
+                <label className="block text-[var(--text)]/60 mb-1 text-[10px] uppercase">Operation Title</label>
                 <input
                   type="text"
                   required
                   placeholder="Operation Blue Horizon"
                   value={newCaseName}
                   onChange={(e) => setNewCaseName(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none focus:border-[#59EE99]/50"
+                  style={{ padding: '10px 14px' }}
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 
               <div>
-                <label className="block text-[#D8E4FF]/40 mb-1 text-[10px] uppercase">Lead Examiner ID</label>
+                <label className="block text-[var(--text)]/60 mb-1 text-[10px] uppercase">Lead Examiner ID</label>
                 <input
                   type="text"
                   required
                   value={newInvestigator}
                   onChange={(e) => setNewInvestigator(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none focus:border-[#59EE99]/50"
+                  style={{ padding: '10px 14px' }}
+                  className="w-full font-mono text-[11px]"
                 />
               </div>
 
               <div>
-                <label className="block text-[#D8E4FF]/40 mb-1 text-[10px] uppercase">Judicial Warrant Notes</label>
+                <label className="block text-[var(--text)]/60 mb-1 text-[10px] uppercase">Judicial Warrant Notes</label>
                 <textarea
                   rows={2}
                   placeholder="Judicial warrant reference or context..."
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none focus:border-[#59EE99]/50"
+                  style={{ padding: '10px 14px', boxSizing: 'border-box' }}
+                  className="w-full font-mono text-[11px] leading-relaxed resize-none"
                 />
               </div>
 
@@ -357,7 +365,7 @@ export const CaseDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowNewCaseModal(false)}
-                  className="px-3 py-1.5 rounded text-[#D8E4FF]/50 hover:bg-[rgba(53,96,90,0.2)]"
+                  className="px-3 py-1.5 rounded text-[var(--text)]/60 hover:bg-[var(--border)]/20"
                 >
                   Cancel
                 </button>
@@ -372,50 +380,50 @@ export const CaseDashboard: React.FC = () => {
 
       {/* Custody History Modal */}
       {selectedEvidenceForCustody && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4">
-          <div className="w-full max-w-xl bg-[#00120B] border border-[rgba(89,238,153,0.15)] rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-[#59EE99]" />
-                <span className="font-bold text-[#D8E4FF]">
+                <History className="w-4 h-4 text-[var(--primary-text)]" />
+                <span className="font-bold text-[var(--text)]">
                   Custody Ledger: {selectedEvidenceForCustody.evidence_id}
                 </span>
               </div>
               <button
                 onClick={() => setSelectedEvidenceForCustody(null)}
-                className="text-[#D8E4FF]/40 hover:text-white"
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-3 bg-[rgba(53,96,90,0.12)] rounded-lg space-y-1 text-[10px] text-[#D8E4FF]/60">
-              <div><span className="text-[#D8E4FF]/35">Source:</span> {selectedEvidenceForCustody.source_path}</div>
-              <div><span className="text-[#D8E4FF]/35">Custody Holder:</span> <span className="text-[#59EE99]">{selectedEvidenceForCustody.custody_holder || 'INV-4402-NITYA'}</span></div>
-              <div className="truncate"><span className="text-[#D8E4FF]/35">SHA-256:</span> {selectedEvidenceForCustody.sha256_hash}</div>
+            <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1 text-[10px] text-[var(--text)]/70">
+              <div><span className="text-[var(--text)]/50">Source:</span> {selectedEvidenceForCustody.source_path}</div>
+              <div><span className="text-[var(--text)]/50">Custody Holder:</span> <span className="text-[var(--primary-text)] font-semibold">{selectedEvidenceForCustody.custody_holder || 'INV-4402-NITYA'}</span></div>
+              <div className="truncate"><span className="text-[var(--text)]/50">SHA-256:</span> {selectedEvidenceForCustody.sha256_hash}</div>
             </div>
 
             {loadingCustody ? (
-              <div className="py-6 text-center text-[#D8E4FF]/30">Loading custody log...</div>
+              <div className="py-6 text-center text-[var(--text)]/50">Loading custody log...</div>
             ) : custodyHistory.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                 {custodyHistory.map((ev: CustodyEvent, i: number) => (
-                  <div key={i} className="p-3 bg-[rgba(0,18,11,0.6)] rounded-lg border border-[rgba(89,238,153,0.06)] space-y-1">
+                  <div key={i} className="p-3 bg-[var(--bg)]/40 rounded-lg border border-[var(--border)]/20 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] text-[9px] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">
                         {ev.event_type}
                       </span>
-                      <span className="text-[#D8E4FF]/30 text-[9px]">{ev.timestamp}</span>
+                      <span className="text-[var(--text)]/50 text-[9px]">{ev.timestamp}</span>
                     </div>
-                    <div className="text-[#D8E4FF]/80">
-                      Transfer: <span className="text-[#59EE99]">{ev.operator_from}</span> &rarr; <span className="text-[#AA77A9]">{ev.operator_to}</span>
+                    <div className="text-[var(--text)]/90">
+                      Transfer: <span className="text-[var(--primary-text)] font-semibold">{ev.operator_from}</span> &rarr; <span className="text-[#AA77A9]">{ev.operator_to}</span>
                     </div>
-                    <div className="text-[#D8E4FF]/40 text-[10px]">Location: {ev.location} | Purpose: {ev.purpose}</div>
+                    <div className="text-[var(--text)]/60 text-[10px]">Location: {ev.location} | Purpose: {ev.purpose}</div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="py-6 text-center text-[#D8E4FF]/30">
+              <div className="py-6 text-center text-[var(--text)]/50">
                 Initial acquisition custody record verified. No external transfers recorded.
               </div>
             )}
@@ -423,7 +431,7 @@ export const CaseDashboard: React.FC = () => {
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setSelectedEvidenceForCustody(null)}
-                className="px-3 py-1.5 bg-[rgba(53,96,90,0.2)] text-[#D8E4FF]/70 hover:text-[#D8E4FF] rounded text-[10px]"
+                className="px-3 py-1.5 bg-[var(--border)]/20 text-[var(--text)]/80 hover:text-[var(--text)] rounded text-[10px]"
               >
                 Close Ledger
               </button>

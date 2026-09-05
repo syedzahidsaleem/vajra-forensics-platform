@@ -17,6 +17,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { GlassCard, GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
+import { ShineBorder } from '../components/ui/shine-border';
 
 export const DeviceSelection: React.FC = () => {
   const { devices, refreshDevices, mode, activeCase, setSelectedDevice, setActiveScreen } = useApp();
@@ -88,7 +89,7 @@ export const DeviceSelection: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div data-mode={isForensic ? "forensic" : "sanitize"} style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -133,11 +134,10 @@ export const DeviceSelection: React.FC = () => {
           const isWriteBlocked = device.is_write_blocked;
 
           return (
-            <GlassCard
+            <ShineBorder
               key={device.path}
-              hover={true}
-              danger={!isForensic && isSystem}
-              className="p-5 space-y-4"
+              borderRadius={12}
+              className="h-full"
             >
               {/* Drive Top Row */}
               <div className="flex items-start justify-between">
@@ -222,83 +222,152 @@ export const DeviceSelection: React.FC = () => {
                           Vault Evidence
                         </GlowButton>
                       )}
-                      <GlowButton
-                        variant="primary"
-                        size="sm"
-                        icon={<Disc className="w-3 h-3" />}
-                        onClick={() => handleProceedToAcquisition(device)}
-                      >
-                        Acquire Image
-                      </GlowButton>
-                    </>
+                    </div>
+                    <h3 className="font-medium text-sm text-[var(--text)] font-sans">{device.model}</h3>
+                    <div className="text-[10px] font-mono text-[var(--text)]/50">
+                      S/N: <span className="text-[var(--text)]/80">{device.serial}</span>
+                    </div>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="text-sm font-mono font-bold text-[var(--text)]">
+                      {formatBytes(device.size_bytes)}
+                    </div>
+                    <div className="text-[9px] font-mono text-[var(--text)]/50">
+                      Sector: {device.block_size} B
+                    </div>
+                  </div>
+                </div>
+
+                {/* Safety Badges */}
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[rgba(89,238,153,0.06)] text-[10px] font-mono">
+                  {isSystem ? (
+                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444]">
+                      <AlertOctagon className="w-3 h-3 flex-shrink-0" />
+                      <span>OS BOOT DISK (LOCKED)</span>
+                    </div>
                   ) : (
-                    <GlowButton
-                      disabled={isSystem}
-                      variant="danger"
-                      size="sm"
-                      icon={<Flame className="w-3 h-3" />}
-                      onClick={() => handleProceedToSanitization(device)}
-                    >
-                      Sanitize Device
-                    </GlowButton>
+                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 text-[var(--primary-text)]">
+                      <CheckCircle className="w-3 h-3 flex-shrink-0" />
+                      <span>Secondary Target Disk</span>
+                    </div>
+                  )}
+
+                  {isWriteBlocked ? (
+                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 text-[var(--primary-text)]">
+                      <ShieldCheck className="w-3 h-3 flex-shrink-0" />
+                      <span>Write-Blocker Active</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)]/60">
+                      <ShieldAlert className="w-3 h-3 flex-shrink-0 text-amber-400" />
+                      <span>Direct Device Access</span>
+                    </div>
                   )}
                 </div>
-              </div>
-            </GlassCard>
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between pt-2 border-t border-[rgba(89,238,153,0.06)]">
+                  <GlowButton
+                    variant="ghost"
+                    size="sm"
+                    icon={<Activity className="w-3 h-3" />}
+                    onClick={() => handleInspectDevice(device)}
+                  >
+                    Inspect & Health
+                  </GlowButton>
+
+                  <div className="flex items-center gap-2">
+                    {isForensic ? (
+                      <>
+                        {activeCase && (
+                          <GlowButton
+                            variant="ghost"
+                            size="sm"
+                            icon={<Plus className="w-3 h-3" />}
+                            onClick={() => setRegisteringDevice(device)}
+                          >
+                            Vault Evidence
+                          </GlowButton>
+                        )}
+                        <GlowButton
+                          variant="primary"
+                          size="sm"
+                          icon={<Disc className="w-3 h-3" />}
+                          onClick={() => handleProceedToAcquisition(device)}
+                        >
+                          Acquire Image
+                        </GlowButton>
+                      </>
+                    ) : (
+                      <GlowButton
+                        disabled={isSystem}
+                        variant="danger"
+                        size="sm"
+                        icon={<Flame className="w-3 h-3" />}
+                        onClick={() => handleProceedToSanitization(device)}
+                      >
+                        Sanitize Device
+                      </GlowButton>
+                    )}
+                  </div>
+                </div>
+              </GlassCard>
+            </ShineBorder>
           );
         })}
       </div>
 
       {/* Inspect & Health Modal */}
       {inspectingDevice && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4">
-          <div className="w-full max-w-xl bg-[#00120B] border border-[rgba(89,238,153,0.15)] rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#59EE99]" />
-                <span className="font-bold text-[#D8E4FF]">
+                <Activity className="w-4 h-4 text-[var(--primary-text)]" />
+                <span className="font-bold text-[var(--text)]">
                   Diagnostics: {inspectingDevice.model}
                 </span>
               </div>
               <button
                 onClick={() => setInspectingDevice(null)}
-                className="text-[#D8E4FF]/40 hover:text-white"
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {loadingModal ? (
-              <div className="py-8 text-center text-[#D8E4FF]/30">Reading drive SMART & fingerprint...</div>
+              <div className="py-8 text-center text-[var(--text)]/50">Reading drive SMART & fingerprint...</div>
             ) : (
               <div className="space-y-3">
                 {/* Fingerprint Card */}
                 {fingerprint && (
-                  <div className="p-3 bg-[rgba(53,96,90,0.12)] rounded-lg space-y-1">
-                    <p className="label-muted">Hardware Identity Fingerprint (§23)</p>
-                    <div className="text-[10px] text-[#D8E4FF]/60 truncate">
-                      SHA-256 Digest: <span className="text-[#59EE99]">{fingerprint.sha256_hash}</span>
+                  <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1">
+                    <p className="label-muted">Hardware Identity Fingerprint</p>
+                    <div className="text-[10px] text-[var(--text)]/70 truncate">
+                      SHA-256 Digest: <span className="text-[var(--primary-text)] font-semibold">{fingerprint.sha256_hash}</span>
                     </div>
                   </div>
                 )}
 
                 {/* Health Snapshot */}
                 {health && (
-                  <div className="p-3 bg-[rgba(53,96,90,0.12)] rounded-lg space-y-2">
+                  <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-2">
                     <div className="flex items-center justify-between">
                       <p className="label-muted">SMART / NVMe Health Telemetry</p>
-                      <span className="px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] text-[9px] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">
                         {health.overall_health}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 text-[10px] text-[#D8E4FF]/60">
+                    <div className="grid grid-cols-3 gap-2 text-[10px] text-[var(--text)]/70">
                       <div className="flex items-center gap-1">
-                        <Thermometer className="w-3 h-3 text-[#59EE99]" />
+                        <Thermometer className="w-3 h-3 text-[var(--primary-text)]" />
                         <span>Temp: {health.temperature_celsius}°C</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Cpu className="w-3 h-3 text-[#59EE99]" />
+                        <Cpu className="w-3 h-3 text-[var(--primary-text)]" />
                         <span>Power Hours: {health.power_on_hours}h</span>
                       </div>
                       <div>
@@ -306,7 +375,7 @@ export const DeviceSelection: React.FC = () => {
                       </div>
                     </div>
 
-                    <p className="text-[10px] text-[#D8E4FF]/40 font-sans leading-relaxed pt-1 border-t border-[rgba(89,238,153,0.06)]">
+                    <p className="text-[10px] text-[var(--text)]/60 font-sans leading-relaxed pt-1 border-t border-[var(--border)]/20">
                       {health.recommendation}
                     </p>
                   </div>
@@ -317,7 +386,7 @@ export const DeviceSelection: React.FC = () => {
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setInspectingDevice(null)}
-                className="px-3 py-1.5 bg-[rgba(53,96,90,0.2)] text-[#D8E4FF]/70 hover:text-[#D8E4FF] rounded text-[10px]"
+                className="px-3 py-1.5 bg-[var(--border)]/20 text-[var(--text)]/80 hover:text-[var(--text)] rounded text-[10px]"
               >
                 Close Diagnostics
               </button>
@@ -328,20 +397,20 @@ export const DeviceSelection: React.FC = () => {
 
       {/* Vault Evidence Modal */}
       {registeringDevice && activeCase && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,18,11,0.85)] backdrop-blur-md p-4">
-          <div className="w-full max-w-md bg-[#00120B] border border-[rgba(89,238,153,0.15)] rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-[#59EE99]">Register Evidence Media</span>
+              <span className="font-bold text-[var(--primary-text)]">Register Evidence Media</span>
               <button
                 onClick={() => setRegisteringDevice(null)}
-                className="text-[#D8E4FF]/40 hover:text-white"
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {registeringSuccess ? (
-              <div className="py-6 text-center text-[#59EE99] space-y-1">
+              <div className="py-6 text-center text-[var(--primary-text)] space-y-1">
                 <CheckCircle className="w-6 h-6 mx-auto" />
                 <p>Registered to Case {activeCase.case_id}!</p>
               </div>
@@ -353,7 +422,7 @@ export const DeviceSelection: React.FC = () => {
                     type="text"
                     disabled
                     value={`${activeCase.case_id} (${activeCase.case_name})`}
-                    className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.1)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/50"
+                    className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                   />
                 </div>
 
@@ -363,7 +432,7 @@ export const DeviceSelection: React.FC = () => {
                     type="text"
                     disabled
                     value={`${registeringDevice.path} — ${registeringDevice.model}`}
-                    className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.1)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/50"
+                    className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                   />
                 </div>
 
@@ -374,7 +443,7 @@ export const DeviceSelection: React.FC = () => {
                     placeholder="Seized USB drive from suspect workstation..."
                     value={evidenceDesc}
                     onChange={(e) => setEvidenceDesc(e.target.value)}
-                    className="w-full px-3 py-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.1)] text-[#D8E4FF] outline-none focus:border-[#59EE99]/50"
+                    className="w-full font-mono text-xs"
                   />
                 </div>
 
@@ -382,7 +451,7 @@ export const DeviceSelection: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setRegisteringDevice(null)}
-                    className="px-3 py-1.5 rounded text-[#D8E4FF]/50 hover:bg-[rgba(53,96,90,0.2)]"
+                    className="px-3 py-1.5 rounded text-[var(--text)]/60 hover:bg-[var(--border)]/20"
                   >
                     Cancel
                   </button>

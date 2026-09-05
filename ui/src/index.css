@@ -1,3 +1,4 @@
+@import './globals.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -23,8 +24,8 @@
 html, body, #root {
   width: 100%;
   height: 100%;
-  background-color: var(--onyx);
-  color: var(--lavender);
+  background-color: var(--bg, #00120B);
+  color: var(--text, #D8E4FF);
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
@@ -78,7 +79,7 @@ html, body, #root {
 
 /* Reduce visual noise on all borders */
 * {
-  border-color: rgba(89, 238, 153, 0.06) !important;
+  border-color: rgba(89, 238, 153, 0.06);
 }
 .border-danger {
   border-color: rgba(239, 68, 68, 0.25) !important;
@@ -133,7 +134,8 @@ html, body, #root {
 .label-muted {
   font-size: 10px;
   font-family: monospace;
-  color: rgba(216, 228, 255, 0.35);
+  color: var(--text);
+  opacity: 0.55;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -145,7 +147,7 @@ html, body, #root {
 .value-primary {
   font-size: 12px;
   font-family: monospace;
-  color: #D8E4FF;
+  color: var(--text);
 }
 
 .forensic-mode .value-primary {
@@ -155,7 +157,7 @@ html, body, #root {
 .value-accent {
   font-size: 12px;
   font-family: monospace;
-  color: #59EE99;
+  color: var(--primary);
 }
 
 .forensic-mode .value-accent {
