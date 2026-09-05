@@ -112,7 +112,7 @@ export const DeviceSelection: React.FC = () => {
       </div>
 
       {/* Device List — Horizontal Bars */}
-      <div className="flex flex-col gap-3 w-full">
+      <div className="flex flex-col gap-4 w-full">
         {devices.map((device: DeviceDescriptor) => {
           const isSystem = device.is_system_disk;
           const isWriteBlocked = device.is_write_blocked;
@@ -121,92 +121,95 @@ export const DeviceSelection: React.FC = () => {
           return (
             <div
               key={device.path}
-              style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
-              className="w-full p-3.5 px-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex items-center justify-between gap-3 sm:gap-4 shadow-sm min-w-0"
+              style={{ border: '1px solid var(--border)', borderRadius: '16px' }}
+              className="w-full p-5 sm:p-6 bg-[var(--surface)] text-[var(--text)] rounded-2xl shadow-sm transition-all duration-200 hover:border-[var(--primary)]/40 flex flex-col xl:flex-row xl:items-center justify-between gap-5"
             >
               {/* Left: Drive Info + Capacity */}
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                <div className="space-y-0.5 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className={`font-mono text-xs font-bold shrink-0 ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
+              <div className="flex items-center gap-5 sm:gap-6 shrink-0 min-w-0">
+                {/* Identity & Hardware Specs */}
+                <div className="space-y-1.5 min-w-[240px] sm:min-w-[280px]">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <span className={`font-mono text-sm font-bold tracking-tight ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
                       {devInfo.primary}
                     </span>
-                    <span className="font-mono text-[10px] text-[var(--text)]/50 shrink-0">
+                    <span className="font-mono text-xs text-[var(--text)]/50">
                       {devInfo.raw}
                     </span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono shrink-0 ${isForensic ? 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/40'}`}>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium ${isForensic ? 'bg-[rgba(13,184,211,0.12)] text-[var(--forensic-text-secondary)] border border-[var(--forensic-border)]/40' : 'bg-[rgba(53,96,90,0.2)] text-[#D8E4FF]/60 border border-[rgba(89,238,153,0.1)]'}`}>
                         {device.bus_type}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-baseline gap-2 min-w-0">
-                    <h3 className={`font-medium text-xs font-sans truncate max-w-[150px] sm:max-w-[200px] ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                  <div className="flex items-baseline gap-2.5 flex-wrap">
+                    <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                       {device.model}
                     </h3>
-                    <span className={`text-[10px] font-mono shrink-0 ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/35'}`}>
-                      S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
+                    <span className={`text-xs font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/40'}`}>
+                      S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)] font-semibold' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
                     </span>
                   </div>
                 </div>
 
-                <div className="pl-3 border-l border-[var(--border)]/20 shrink-0 font-mono text-xs">
-                  <div className={`font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                {/* Capacity & Sector Geometry Stat Block */}
+                <div className="pl-5 border-l border-[var(--border)]/30 shrink-0 font-mono">
+                  <div className={`text-base sm:text-lg font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                     {formatBytes(device.size_bytes)}
                   </div>
-                  <div className={`text-[9px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/30'}`}>
+                  <div className={`text-[11px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/40'}`}>
                     Sector: {device.block_size} B
                   </div>
                 </div>
               </div>
 
-              {/* Middle: Safety Badges */}
-              <div className="flex items-center gap-1.5 text-[10px] font-mono shrink-0">
-                {isSystem ? (
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444] whitespace-nowrap">
-                    <AlertOctagon className="w-3 h-3 flex-shrink-0" />
-                    <span>OS BOOT DISK (LOCKED §24)</span>
-                  </div>
-                ) : (
-                  <div className={`flex items-center gap-1.5 px-2 py-1 rounded border whitespace-nowrap ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
-                    <CheckCircle className="w-3 h-3 flex-shrink-0" />
-                    <span>Secondary Target Disk</span>
-                  </div>
-                )}
+              {/* Right: Badges & Buttons */}
+              <div className="flex items-center justify-between xl:justify-end gap-4 sm:gap-6 flex-wrap xl:flex-nowrap pt-3 xl:pt-0 border-t border-[var(--border)]/20 xl:border-t-0">
+                {/* Safety & Access Badges */}
+                <div className="flex items-center gap-2 text-xs font-mono shrink-0">
+                  {isSystem ? (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[#EF4444]/30 text-[#EF4444] whitespace-nowrap shadow-sm">
+                      <AlertOctagon className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span className="font-semibold text-[11px]">OS BOOT DISK (LOCKED §24)</span>
+                    </div>
+                  ) : (
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
+                      <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span className="text-[11px]">Secondary Target Disk</span>
+                    </div>
+                  )}
 
-                {isWriteBlocked ? (
-                  <div className={`flex items-center gap-1.5 px-2 py-1 rounded border whitespace-nowrap ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
-                    <ShieldCheck className="w-3 h-3 flex-shrink-0" />
-                    <span>Write-Blocker Active</span>
-                  </div>
-                ) : (
-                  <div className={`flex items-center gap-1.5 px-2 py-1 rounded border whitespace-nowrap ${isForensic ? 'bg-[rgba(15,36,48,0.5)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/40'}`}>
-                    <ShieldAlert className="w-3 h-3 flex-shrink-0 text-amber-400" />
-                    <span>Direct Device Access</span>
-                  </div>
-                )}
-              </div>
+                  {isWriteBlocked ? (
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
+                      <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
+                      <span className="text-[11px]">Write-Blocker Active</span>
+                    </div>
+                  ) : (
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(15,36,48,0.6)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] border-[rgba(89,238,153,0.1)] text-[#D8E4FF]/50'}`}>
+                      <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
+                      <span className="text-[11px]">Direct Device Access</span>
+                    </div>
+                  )}
+                </div>
 
-              {/* Right: Action Buttons */}
-              <div className="flex items-center gap-2 shrink-0">
-                <GlowButton
-                  variant="ghost"
-                  size="sm"
-                  icon={<Activity className="w-3 h-3" />}
-                  onClick={() => handleInspectDevice(device)}
-                >
-                  Inspect & Health
-                </GlowButton>
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <GlowButton
+                    variant="ghost"
+                    size="sm"
+                    icon={<Activity className="w-3.5 h-3.5" />}
+                    onClick={() => handleInspectDevice(device)}
+                  >
+                    Inspect & Health
+                  </GlowButton>
 
-                <div className="flex items-center gap-2">
                   {isForensic ? (
                     <>
                       {activeCase && (
                         <GlowButton
                           variant="ghost"
                           size="sm"
-                          icon={<Plus className="w-3 h-3" />}
+                          icon={<Plus className="w-3.5 h-3.5" />}
                           onClick={() => setRegisteringDevice(device)}
                         >
                           Vault Evidence
@@ -215,7 +218,7 @@ export const DeviceSelection: React.FC = () => {
                       <GlowButton
                         variant="primary"
                         size="sm"
-                        icon={<Disc className="w-3 h-3" />}
+                        icon={<Disc className="w-3.5 h-3.5" />}
                         onClick={() => handleProceedToAcquisition(device)}
                       >
                         Acquire Image
@@ -226,7 +229,7 @@ export const DeviceSelection: React.FC = () => {
                       disabled={isSystem}
                       variant="danger"
                       size="sm"
-                      icon={<Flame className="w-3 h-3" />}
+                      icon={<Flame className="w-3.5 h-3.5" />}
                       onClick={() => handleProceedToSanitization(device)}
                     >
                       Sanitize Device
