@@ -202,7 +202,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
               </span>
               <ChevronDown
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  isExpanded ? 'rotate-0' : '-rotate-90'
+                  isExpanded ? 'rotate-180' : 'rotate-0'
                 }`}
               />
             </div>
