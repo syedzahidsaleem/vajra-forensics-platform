@@ -1,11 +1,11 @@
 :root {
   /* Sanitize mode — dark theme (muted deep maroon palette) */
-  --sanitize-bg-dark: #2A0D12;
-  --sanitize-surface-dark: #3D171E;
+  --sanitize-bg-dark: #0D0304;
+  --sanitize-surface-dark: #1E070B;
   --sanitize-text-dark: #F5E9E2;
-  --sanitize-primary-dark: #A83B45;
+  --sanitize-primary-dark: #A8283A;
   --sanitize-primary-hover-dark: #8F2E38;
-  --sanitize-border-dark: #E3B5A4;
+  --sanitize-border-dark: rgba(239, 68, 68, 0.25);
   --sanitize-primary-text-dark: #FF6B7A;
 
   /* Sanitize mode — light theme (muted maroon family) */
@@ -17,13 +17,13 @@
   --sanitize-border-light: #E3B5A4;
   --sanitize-primary-text-light: #80222B;  /* darker maroon, readable on light bg */
 
-  /* Forensic mode — dark theme (from provided palette) */
-  --forensic-bg-dark: #2B193D;
-  --forensic-surface-dark: #2C365E;
+  /* Forensic mode — dark theme (teal-tinted palette matching ombre gradient) */
+  --forensic-bg-dark: #071a20;
+  --forensic-surface-dark: #0b2832;
   --forensic-text-dark: #EDE7EA;
   --forensic-primary-dark: #4B8F8C;
   --forensic-primary-hover-dark: #5FA8A4;
-  --forensic-border-dark: #C5979D;
+  --forensic-border-dark: rgba(15, 174, 135, 0.25);
   --forensic-primary-text-dark: #59EE99;   /* bright teal/green on dark bg */
 
   /* Forensic mode — light theme (derived tint, same hue family) */
@@ -53,28 +53,31 @@
   --sanitize-text-mono: var(--sanitize-text-dark);
   --sanitize-accent: var(--sanitize-primary-text-dark);
   --sanitize-border: var(--sanitize-border-dark);
-  --sanitize-navbar-bg: #120202;
+  --sanitize-navbar-bg: #000000;
   --sanitize-bg-gradient: linear-gradient(
     135deg,
-    #150609 0%,
-    #2A0D12 25%,
-    #5A1E28 55%,
-    #8F2E38 75%,
+    #0D0304 0%,
+    #1F070B 20%,
+    #4A0F16 45%,
+    #7A1620 65%,
+    #A8283A 85%,
     #C4707A 100%
   );
   --sanitize-page-bg: linear-gradient(
     135deg,
-    rgba(21, 6, 9, 0.25) 0%,
-    rgba(42, 13, 18, 0.3) 25%,
-    rgba(21, 6, 9, 0.45) 55%,
-    rgba(21, 6, 9, 0.6) 75%,
-    rgba(21, 6, 9, 0.7) 100%
+    rgba(13, 3, 4, 0.2) 0%,
+    rgba(31, 7, 11, 0.25) 20%,
+    rgba(13, 3, 4, 0.4) 45%,
+    rgba(13, 3, 4, 0.55) 65%,
+    rgba(13, 3, 4, 0.65) 85%,
+    rgba(13, 3, 4, 0.72) 100%
   ), linear-gradient(
     135deg,
-    #150609 0%,
-    #2A0D12 25%,
-    #5A1E28 55%,
-    #8F2E38 75%,
+    #0D0304 0%,
+    #1F070B 20%,
+    #4A0F16 45%,
+    #7A1620 65%,
+    #A8283A 85%,
     #C4707A 100%
   );
 }
@@ -115,7 +118,7 @@
   --forensic-text-mono: var(--forensic-text-dark);
   --forensic-accent: var(--forensic-primary-text-dark);
   --forensic-border: var(--forensic-border-dark);
-  --forensic-navbar-bg: #0F2430;
+  --forensic-navbar-bg: #000000;
   --forensic-bg-gradient: linear-gradient(
     135deg,
     #071a20 0%,
@@ -170,7 +173,7 @@
   --primary-hover: var(--forensic-primary-hover-dark);
   --border: var(--forensic-border-dark);
   --primary-text: var(--forensic-primary-text-dark);
-  --forensic-navbar-bg: #0F2430;
+  --forensic-navbar-bg: #000000;
   --forensic-bg-gradient: linear-gradient(
     135deg,
     #071a20 0%,

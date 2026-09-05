@@ -46,8 +46,8 @@ export const Sidebar: React.FC = () => {
     <aside
       className={`w-[180px] h-full flex flex-col py-4 select-none shrink-0 z-30 ${
         isForensic
-          ? 'bg-[var(--forensic-navbar-bg)] border-r border-[var(--forensic-border)]'
-          : 'bg-[var(--sanitize-navbar-bg)] border-r border-[var(--sanitize-border)]'
+          ? 'bg-[var(--surface)] border-r border-[var(--forensic-border)]'
+          : 'bg-[var(--surface)] border-r border-[var(--sanitize-border)]'
       }`}
     >
       {/* Section label — Static Text Label */}
@@ -59,8 +59,8 @@ export const Sidebar: React.FC = () => {
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
       </div>
 
-      {/* Nav links — Flat Button Style */}
-      <nav className="space-y-1 px-2">
+      {/* Navigation items */}
+      <nav className="flex-1 space-y-1 px-2">
         {currentNav.map((item) => {
           const isActive = activeScreen === item.id;
           return (
@@ -75,8 +75,8 @@ export const Sidebar: React.FC = () => {
                       ? 'bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] font-semibold border border-[var(--forensic-border)]'
                       : 'bg-[rgba(255,59,59,0.15)] text-[var(--sanitize-accent)] font-semibold border border-[var(--sanitize-border)]'
                     : isForensic
-                    ? 'text-[var(--forensic-text-secondary)] hover:bg-[rgba(15,36,48,0.5)] hover:text-[var(--forensic-text-primary)] border border-transparent'
-                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[rgba(60,6,8,0.4)] hover:text-[var(--sanitize-text-primary)] border border-transparent'
+                    ? 'text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
+                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--sanitize-text-primary)] border border-transparent'
                 }
               `}
             >

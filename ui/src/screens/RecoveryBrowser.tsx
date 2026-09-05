@@ -162,7 +162,10 @@ export const RecoveryBrowser: React.FC = () => {
       />
 
       {/* Tier Filter Tabs */}
-      <div className="flex items-center justify-between gap-4 bg-[rgba(15,36,48,0.45)] p-2 rounded-xl border border-[var(--forensic-border)]">
+      <div
+        style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+        className="flex items-center justify-between gap-4 p-2 rounded-xl"
+      >
         <div className="flex items-center gap-1.5 font-mono text-xs">
           {(['All', 'Tier 1', 'Tier 2', 'Tier 3'] as const).map((tier) => (
             <button
@@ -171,7 +174,7 @@ export const RecoveryBrowser: React.FC = () => {
               onClick={() => setSelectedTier(tier)}
               className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer font-bold ${
                 selectedTier === tier
-                  ? 'bg-[var(--forensic-accent)] text-[#0F2430] shadow-[0_0_12px_rgba(13,184,211,0.35)]'
+                  ? 'bg-[var(--forensic-accent)] text-[#071a20] shadow-[0_0_12px_rgba(13,184,211,0.35)]'
                   : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:bg-[rgba(13,184,211,0.1)]'
               }`}
             >
@@ -361,7 +364,10 @@ export const RecoveryBrowser: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[10px] text-[var(--forensic-text-secondary)] leading-relaxed font-mono space-y-1">
+                <div
+                  style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                  className="p-3 rounded-xl text-[10px] text-[var(--forensic-text-secondary)] leading-relaxed font-mono space-y-1"
+                >
                   <span className="text-[var(--forensic-accent)] font-bold block">Recovery Provenance & Explainability:</span>
                   All 6 independent validation signals evaluated. No corrupt extents or broken clusters detected.
                 </div>

@@ -188,7 +188,10 @@ export const AcquisitionWizard: React.FC = () => {
           </div>
 
           {targetDevice && (
-            <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-2 text-xs font-mono">
+            <div
+              className="p-4 rounded-xl space-y-2 text-xs font-mono"
+              style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+            >
               <div className="flex items-center justify-between">
                 <div className="text-[var(--text)]/70 font-bold">Selected Source Inspection:</div>
                 <div className="flex items-center gap-1.5 font-mono">
@@ -256,8 +259,9 @@ export const AcquisitionWizard: React.FC = () => {
                   className={`p-4 rounded-xl border cursor-pointer transition-all ${
                     profile === p.id
                       ? 'bg-[var(--primary)]/15 border-[var(--primary)] text-[var(--text)] font-medium shadow-[0_0_15px_rgba(0,0,0,0.2)]'
-                      : 'bg-[var(--bg)]/40 border-[var(--border)]/30 text-[var(--text)]/70 hover:border-[var(--border)]/60'
+                      : 'border-[var(--border)]/40 text-[var(--text)]/70 hover:border-[var(--border)]/70'
                   }`}
+                  style={profile !== p.id ? { background: 'color-mix(in srgb, var(--surface) 45%, transparent)' } : undefined}
                 >
                   <div className="font-mono font-bold text-sm text-[var(--text)] mb-1">{p.title}</div>
                   <div className="text-[11px] font-sans leading-relaxed">{p.desc}</div>
@@ -275,8 +279,9 @@ export const AcquisitionWizard: React.FC = () => {
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   format === 'E01'
                     ? 'bg-[var(--primary)]/15 border-[var(--primary)] text-[var(--text)] font-medium shadow-[0_0_15px_rgba(0,0,0,0.2)]'
-                    : 'bg-[var(--bg)]/40 border-[var(--border)]/30 text-[var(--text)]/70 hover:border-[var(--border)]/60'
+                    : 'border-[var(--border)]/40 text-[var(--text)]/70 hover:border-[var(--border)]/70'
                 }`}
+                style={format !== 'E01' ? { background: 'color-mix(in srgb, var(--surface) 45%, transparent)' } : undefined}
               >
                 <div className="font-mono font-bold text-sm text-[var(--text)] mb-1">
                   E01 (Expert Witness Format)
@@ -291,8 +296,9 @@ export const AcquisitionWizard: React.FC = () => {
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   format === 'RAW'
                     ? 'bg-[var(--primary)]/15 border-[var(--primary)] text-[var(--text)] font-medium shadow-[0_0_15px_rgba(0,0,0,0.2)]'
-                    : 'bg-[var(--bg)]/40 border-[var(--border)]/30 text-[var(--text)]/70 hover:border-[var(--border)]/60'
+                    : 'border-[var(--border)]/40 text-[var(--text)]/70 hover:border-[var(--border)]/70'
                 }`}
+                style={format !== 'RAW' ? { background: 'color-mix(in srgb, var(--surface) 45%, transparent)' } : undefined}
               >
                 <div className="font-mono font-bold text-sm text-[var(--text)] mb-1">
                   RAW / DD (Flat Binary Stream)
@@ -374,7 +380,10 @@ export const AcquisitionWizard: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-3 font-mono text-xs">
+          <div
+            className="p-4 rounded-xl space-y-3 font-mono text-xs"
+            style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+          >
             <div className="text-[var(--text)]/80 font-bold">Cryptographic Integrity Hashing</div>
             <div className="flex items-center space-x-6">
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -457,7 +466,10 @@ export const AcquisitionWizard: React.FC = () => {
 
             {/* Progress Bar */}
             <div className="space-y-1.5">
-              <div className="w-full h-3 bg-[var(--bg)]/70 rounded-full overflow-hidden p-0.5 border border-[var(--border)]/30">
+              <div
+                className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[var(--border)]/40"
+                style={{ background: 'color-mix(in srgb, var(--surface) 60%, black)' }}
+              >
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${
                     progress.state === 'completed'
@@ -471,28 +483,40 @@ export const AcquisitionWizard: React.FC = () => {
 
             {/* Telemetry Metrics */}
             <div className="grid grid-cols-4 gap-3 font-mono text-xs">
-              <div className="p-3 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30">
+              <div
+                className="p-3 rounded-xl"
+                style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+              >
                 <div className="text-[var(--text)]/50 text-[10px]">Current Throughput</div>
                 <div className="text-base font-bold text-[var(--primary-text)]">
                   {progress.current_speed_mbps.toFixed(1)} MB/s
                 </div>
               </div>
 
-              <div className="p-3 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30">
+              <div
+                className="p-3 rounded-xl"
+                style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+              >
                 <div className="text-[var(--text)]/50 text-[10px]">Elapsed Time</div>
                 <div className="text-base font-bold text-[var(--text)]">
                   {Math.floor(progress.elapsed_seconds / 60)}m {progress.elapsed_seconds % 60}s
                 </div>
               </div>
 
-              <div className="p-3 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30">
+              <div
+                className="p-3 rounded-xl"
+                style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+              >
                 <div className="text-[var(--text)]/50 text-[10px]">Estimated Remaining</div>
                 <div className="text-base font-bold text-[var(--text)]">
                   {progress.state === 'completed' ? '0s' : `${progress.estimated_remaining_seconds}s`}
                 </div>
               </div>
 
-              <div className="p-3 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30">
+              <div
+                className="p-3 rounded-xl"
+                style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+              >
                 <div className="text-[var(--text)]/50 text-[10px]">Bad Sectors Detected</div>
                 <div className="text-base font-bold text-emerald-400">
                   {progress.bad_sectors_count} (0 LBA errors)
@@ -501,7 +525,10 @@ export const AcquisitionWizard: React.FC = () => {
             </div>
 
             {/* Bad Sector Map Visualization */}
-            <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-2 font-mono text-xs">
+            <div
+              className="p-4 rounded-xl space-y-2 font-mono text-xs"
+              style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+            >
               <div className="flex items-center justify-between text-[var(--text)]/80 font-bold">
                 <span className="flex items-center space-x-1.5">
                   <Activity className="w-4 h-4 text-[var(--primary-text)]" />

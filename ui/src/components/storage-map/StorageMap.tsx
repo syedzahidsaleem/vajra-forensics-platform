@@ -98,7 +98,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
         let status = isAllocated ? 'allocated' : 'unallocated';
         let colorClass = isAllocated
           ? 'bg-[rgba(13,184,211,0.35)] border-[rgba(13,184,211,0.5)] hover:border-[#0DB8D3]'
-          : 'bg-[rgba(15,36,48,0.7)] border-[rgba(13,184,211,0.15)] hover:border-[rgba(13,184,211,0.4)]';
+          : 'bg-[var(--surface)]/50 border-[var(--border)]/30 hover:border-[var(--primary)]/50';
 
         if (isBadSector) {
           status = 'bad_sector';
@@ -178,7 +178,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
                 <span>Allocated</span>
               </div>
               <div className="flex items-center gap-1 text-[var(--forensic-text-secondary)]">
-                <span className="w-2.5 h-2.5 rounded-sm bg-[rgba(15,36,48,0.7)] border border-[rgba(13,184,211,0.2)] inline-block" />
+                <span className="w-2.5 h-2.5 rounded-sm bg-[var(--surface)]/50 border border-[var(--border)]/30 inline-block" />
                 <span>Unallocated Slack</span>
               </div>
               <div className="flex items-center gap-1 text-[var(--forensic-text-secondary)]">
@@ -214,7 +214,10 @@ export const StorageMap: React.FC<StorageMapProps> = ({
       {isExpanded && (
         <>
           {/* Grid Canvas */}
-          <div className="grid grid-cols-16 sm:grid-cols-32 gap-1 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border)]/20 mb-2">
+          <div
+            style={{ background: 'color-mix(in srgb, var(--surface) 40%, transparent)' }}
+            className="grid grid-cols-16 sm:grid-cols-32 gap-1 p-2 rounded-lg border border-[var(--border)]/20 mb-2"
+          >
             {segments.map((seg) => (
               <button
                 key={seg.index}

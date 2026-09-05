@@ -323,13 +323,16 @@ export const SanitizationConsole: React.FC = () => {
 
           {/* OS Boot Disk Block */}
           {isSystemDisk && (
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-[rgba(239,68,68,0.06)] border border-[#EF4444]/20">
-              <span className="text-[#EF4444]/70 text-sm shrink-0 mt-0.5">⊘</span>
+            <div
+              style={{ background: 'color-mix(in srgb, #EF4444 12%, transparent)', border: '1px solid rgba(239, 68, 68, 0.35)' }}
+              className="flex items-start gap-3 p-4 rounded-lg"
+            >
+              <span className="text-[#EF4444] text-sm shrink-0 mt-0.5 font-bold">⊘</span>
               <div>
-                <p className="text-[11px] font-mono text-[#EF4444]/80 mb-0.5">
+                <p className="text-[11px] font-mono text-[#EF4444] font-bold mb-0.5">
                   OS Boot Disk — Hard Block
                 </p>
-                <p className="text-[10px] font-mono text-[var(--text)]/50">
+                <p className="text-[10px] font-mono text-[var(--text)]/70">
                   Destructive operations are structurally refused on system disks.
                   Select a secondary target device to proceed.
                 </p>
@@ -452,7 +455,10 @@ export const SanitizationConsole: React.FC = () => {
 
           <div className="space-y-3 font-mono text-[11px]">
             <p className="text-[var(--text)]/70">Type the exact displayed serial number to unlock execution:</p>
-            <div className="p-2.5 rounded bg-[var(--surface)] border border-[#EF4444]/30 text-center text-sm font-bold text-[#EF4444] tracking-widest">
+            <div
+              style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)', border: '1px solid rgba(239, 68, 68, 0.35)' }}
+              className="p-2.5 rounded text-center text-sm font-bold text-[#EF4444] tracking-widest"
+            >
               {targetDevice?.serial}
             </div>
 
@@ -572,7 +578,10 @@ export const SanitizationConsole: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-2.5 bg-[var(--surface)] rounded-lg font-mono text-[10px] text-[var(--text)]/50 space-y-0.5">
+          <div
+            style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+            className="p-2.5 rounded-lg font-mono text-[10px] text-[var(--text)]/60 space-y-0.5"
+          >
             <p className="label-muted">Ed25519 Digital Signature</p>
             <p className="text-[#59EE99] font-mono truncate">{certificate.digital_signature}</p>
           </div>

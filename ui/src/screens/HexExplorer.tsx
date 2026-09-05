@@ -259,7 +259,10 @@ export const HexExplorer: React.FC = () => {
         {/* 16-Byte Hex Virtualized Table (Hero Viewport) */}
         <div className="xl:col-span-3 rounded-xl border border-[var(--border)]/30 bg-[var(--surface)] shadow-md overflow-hidden flex flex-col font-mono text-xs">
           {/* Integrated Fragment Provenance Overlay Strip */}
-          <div className="px-4 py-2.5 bg-[var(--bg)]/40 border-b border-[var(--border)]/20 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+          <div
+            className="px-4 py-2.5 border-b border-[var(--border)]/20 flex flex-wrap items-center justify-between gap-3 text-xs font-mono"
+            style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)' }}
+          >
             <div className="flex items-center gap-2 text-[var(--text)]/80">
               <Layers className="w-3.5 h-3.5 text-cyan-400" />
               <span className="font-semibold text-[11px]">Bifragment Reconstruction Provenance:</span>
@@ -355,7 +358,10 @@ export const HexExplorer: React.FC = () => {
         </div>
 
         {/* Hex Table Status Footer */}
-        <div className="px-4 py-2 bg-[var(--bg)]/40 border-t border-[var(--border)]/20 flex flex-wrap items-center justify-between text-[10px] text-[var(--text)]/50 select-none font-mono">
+        <div
+          className="px-4 py-2 border-t border-[var(--border)]/20 flex flex-wrap items-center justify-between text-[10px] text-[var(--text)]/50 select-none font-mono"
+          style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)' }}
+        >
           <span>Sector Size: 512 Bytes · LBA {currentLba.toLocaleString()}</span>
           <span>Range: 0x00000000 — 0x000001FF</span>
           <span className="text-[var(--primary-text)] font-semibold">Forensic Read-Only Invariant</span>

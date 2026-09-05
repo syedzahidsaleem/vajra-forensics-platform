@@ -136,7 +136,10 @@ export const DeviceSelection: React.FC = () => {
                     </span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
-                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${isForensic ? 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(255,59,59,0.12)] text-[var(--sanitize-text-secondary)]'}`}>
+                      <span
+                        style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}
+                      >
                         {device.bus_type}
                       </span>
                     )}
@@ -162,24 +165,36 @@ export const DeviceSelection: React.FC = () => {
               {/* Middle Row: Safety Badges */}
               <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[var(--border)]/20 text-[10px] font-mono">
                 {isSystem ? (
-                  <div className="flex items-center gap-1.5 p-2 rounded-lg bg-[rgba(239,68,68,0.1)] border border-[#EF4444]/30 text-[#EF4444]">
+                  <div
+                    style={{ background: 'color-mix(in srgb, #EF4444 14%, transparent)', border: '1px solid rgba(239, 68, 68, 0.35)' }}
+                    className="flex items-center gap-1.5 p-2 rounded-lg text-[#EF4444]"
+                  >
                     <AlertOctagon className="w-3.5 h-3.5 flex-shrink-0" />
                     <span className="font-semibold text-[10px]">OS BOOT DISK (LOCKED §24)</span>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-1.5 p-2 rounded-lg border ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(255,59,59,0.08)] border-[var(--sanitize-border)] text-[var(--sanitize-accent)]'}`}>
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className={`flex items-center gap-1.5 p-2 rounded-lg ${isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'}`}
+                  >
                     <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
                     <span>Secondary Target Disk</span>
                   </div>
                 )}
 
                 {isWriteBlocked ? (
-                  <div className={`flex items-center gap-1.5 p-2 rounded-lg border ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(255,59,59,0.08)] border-[var(--sanitize-border)] text-[var(--sanitize-accent)]'}`}>
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className={`flex items-center gap-1.5 p-2 rounded-lg ${isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'}`}
+                  >
                     <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
                     <span>Write-Blocker Active</span>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-1.5 p-2 rounded-lg border ${isForensic ? 'bg-[rgba(15,36,48,0.6)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(30,4,6,0.6)] border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)]'}`}>
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className={`flex items-center gap-1.5 p-2 rounded-lg ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}
+                  >
                     <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
                     <span>Direct Device Access</span>
                   </div>
@@ -262,7 +277,10 @@ export const DeviceSelection: React.FC = () => {
               <div className="space-y-3">
                 {/* Fingerprint Card */}
                 {fingerprint && (
-                  <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1">
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className="p-3 rounded-lg space-y-1"
+                  >
                     <p className="label-muted">Hardware Identity Fingerprint</p>
                     <div className="text-[10px] text-[var(--text)]/70 truncate">
                       SHA-256 Digest: <span className="text-[var(--primary-text)] font-semibold">{fingerprint.sha256_hash}</span>
@@ -272,7 +290,10 @@ export const DeviceSelection: React.FC = () => {
 
                 {/* Health Snapshot */}
                 {health && (
-                  <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-2">
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className="p-3 rounded-lg space-y-2"
+                  >
                     <div className="flex items-center justify-between">
                       <p className="label-muted">SMART / NVMe Health Telemetry</p>
                       <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">

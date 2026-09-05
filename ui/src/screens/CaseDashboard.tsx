@@ -175,7 +175,10 @@ export const CaseDashboard: React.FC = () => {
           {evidenceList.length > 0 ? (
             <div className="overflow-hidden rounded-lg border border-[var(--forensic-border)]">
               <table className="w-full text-left text-[11px] font-mono">
-                <thead className="bg-[rgba(15,36,48,0.7)] text-[var(--forensic-text-secondary)]">
+                <thead
+                  style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)' }}
+                  className="text-[var(--forensic-text-secondary)] border-b border-[var(--forensic-border)]"
+                >
                   <tr>
                     <th className="py-2.5 px-3">Evidence ID</th>
                     <th className="py-2.5 px-3">Type</th>
@@ -389,7 +392,10 @@ export const CaseDashboard: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1 text-[10px] text-[var(--text)]/70">
+            <div
+              style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+              className="p-3 rounded-lg space-y-1 text-[10px] text-[var(--text)]/70"
+            >
               <div><span className="text-[var(--text)]/50">Source:</span> {selectedEvidenceForCustody.source_path}</div>
               <div><span className="text-[var(--text)]/50">Custody Holder:</span> <span className="text-[var(--primary-text)] font-semibold">{selectedEvidenceForCustody.custody_holder || 'INV-4402-NITYA'}</span></div>
               <div className="truncate"><span className="text-[var(--text)]/50">SHA-256:</span> {selectedEvidenceForCustody.sha256_hash}</div>
@@ -400,7 +406,11 @@ export const CaseDashboard: React.FC = () => {
             ) : custodyHistory.length > 0 ? (
               <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
                 {custodyHistory.map((ev: CustodyEvent, i: number) => (
-                  <div key={i} className="p-3 bg-[var(--bg)]/40 rounded-lg border border-[var(--border)]/20 space-y-1">
+                  <div
+                    key={i}
+                    style={{ background: 'color-mix(in srgb, var(--surface) 40%, transparent)', border: '1px solid var(--border)' }}
+                    className="p-3 rounded-lg space-y-1"
+                  >
                     <div className="flex items-center justify-between">
                       <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">
                         {ev.event_type}

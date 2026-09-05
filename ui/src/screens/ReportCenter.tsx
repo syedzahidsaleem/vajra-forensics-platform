@@ -255,7 +255,10 @@ export const ReportCenter: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="w-full max-w-3xl bg-[var(--surface)] text-[var(--text)] rounded-2xl shadow-2xl overflow-hidden my-8 border border-[var(--border)]/30">
             {/* Document Header Toolbar */}
-            <div className="bg-[var(--bg)] text-[var(--text)] p-4 flex items-center justify-between border-b border-[var(--border)]/20">
+            <div
+              className="text-[var(--text)] p-4 flex items-center justify-between border-b border-[var(--border)]/20"
+              style={{ background: 'color-mix(in srgb, var(--surface) 75%, black)' }}
+            >
               <div className="flex items-center space-x-2">
                 <FileCheck className="w-5 h-5 text-cyan-400" />
                 <span className="font-mono font-bold text-sm">Official Forensic Evidence Report</span>
@@ -296,7 +299,10 @@ export const ReportCenter: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 bg-[var(--bg)]/40 p-4 rounded-xl border border-[var(--border)]/20 text-xs font-mono">
+              <div
+                className="grid grid-cols-2 gap-4 p-4 rounded-xl text-xs font-mono"
+                style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+              >
                 <div>
                   <span className="text-[var(--text)]/60 block uppercase text-[10px] tracking-wider font-bold">Case Identifier:</span>
                   <span className="font-bold text-[var(--text)]">{viewingReport.case_id}</span>
@@ -317,7 +323,10 @@ export const ReportCenter: React.FC = () => {
 
               <div className="space-y-3">
                 <h3 className="font-bold text-sm text-[var(--text)] border-b border-[var(--border)]/20 pb-1">Report Narrative & Findings</h3>
-                <div className="p-4 bg-[var(--bg)]/40 rounded-xl border border-[var(--border)]/20 text-xs text-[var(--text)]/80 leading-relaxed font-mono whitespace-pre-wrap">
+                <div
+                  className="p-4 rounded-xl text-xs text-[var(--text)]/80 leading-relaxed font-mono whitespace-pre-wrap"
+                  style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+                >
                   {viewingReport.title}
                   {'\n\n'}
                   Procedural chain of custody and cryptographic verification executed in strict compliance with ISO/IEC 27037 and Vajra Forensic Standard.
@@ -325,7 +334,10 @@ export const ReportCenter: React.FC = () => {
               </div>
 
               {/* Local File Location Box */}
-              <div className="p-4 rounded-xl bg-[var(--bg)]/80 text-[var(--text)] font-mono text-xs space-y-2 border border-[var(--border)]/20">
+              <div
+                className="p-4 rounded-xl text-[var(--text)] font-mono text-xs space-y-2"
+                style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)', border: '1px solid var(--border)' }}
+              >
                 <div className="text-cyan-400 font-bold flex items-center gap-1.5">
                   <FileText className="w-4 h-4" />
                   <span>On-Disk Storage Location on Your Laptop:</span>
@@ -427,7 +439,10 @@ export const ReportCenter: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-3.5 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30 text-xs font-mono space-y-1">
+            <div
+              className="p-3.5 rounded-xl text-xs font-mono space-y-1"
+              style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
+            >
               <div className="text-[var(--text)]/60">Target Report: <span className="text-[var(--text)] font-bold">{verifyingReport.report_id}</span></div>
               <div className="text-[var(--text)]/60">Classification: <span className="text-[var(--text)]">{verifyingReport.report_type}</span></div>
             </div>
@@ -454,7 +469,8 @@ export const ReportCenter: React.FC = () => {
                   {verifyResult.checks.map((c: VerificationCheckResult, idx: number) => (
                     <div
                       key={idx}
-                      className="p-3 bg-[var(--bg)]/40 rounded-xl border border-[var(--border)]/20 flex items-start space-x-3"
+                      className="p-3 rounded-xl flex items-start space-x-3"
+                      style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
                     >
                       <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
