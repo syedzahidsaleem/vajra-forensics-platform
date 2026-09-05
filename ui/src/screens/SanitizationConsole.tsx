@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import StorageMap from '../storage-map/StorageMap';
 import { GlassCard, GlowButton, useToast } from '../components/ui/vajra-components';
+import { formatDevicePath } from '../lib/utils';
 
 export const SanitizationConsole: React.FC = () => {
   const { devices, selectedDevice, activeCase, setActiveScreen } = useApp();
@@ -263,11 +264,14 @@ export const SanitizationConsole: React.FC = () => {
                   onChange={(e) => setTargetPath(e.target.value)}
                   className="w-full font-mono text-xs cursor-pointer"
                 >
-                  {devices.map((d: DeviceDescriptor) => (
-                    <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
-                      {d.path} — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
-                    </option>
-                  ))}
+                  {devices.map((d: DeviceDescriptor) => {
+                    const devInfo = formatDevicePath(d.path);
+                    return (
+                      <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
+                        {devInfo.primary} ({devInfo.raw}) — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
@@ -284,6 +288,10 @@ export const SanitizationConsole: React.FC = () => {
 
             {targetDevice && (
               <div className="space-y-4 pt-3 border-t border-[var(--border)]/15">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-mono text-xs font-bold text-[var(--text)]">{formatDevicePath(targetDevice.path).primary}</span>
+                  <span className="font-mono text-[10px] text-[var(--text)]/50">({formatDevicePath(targetDevice.path).raw})</span>
+                </div>
                 <div className="grid grid-cols-3 gap-6">
                   <div>
                     <p className="label-muted mb-1">Model</p>
@@ -351,7 +359,7 @@ export const SanitizationConsole: React.FC = () => {
           </div>
 
           <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
-            Verify that you have physically identified the drive attached to <strong>{targetPath}</strong> ({targetDevice?.model}, Serial: <strong>{targetDevice?.serial}</strong>).
+            Verify that you have physically identified the drive attached to <strong>{formatDevicePath(targetPath).primary} ({formatDevicePath(targetPath).raw})</strong> ({targetDevice?.model}, Serial: <strong>{targetDevice?.serial}</strong>).
           </p>
 
           <div className="flex justify-between pt-3 border-t border-[rgba(239,68,68,0.15)]">
@@ -417,7 +425,7 @@ export const SanitizationConsole: React.FC = () => {
           </div>
 
           <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
-            Per safety engineering standards, this confirmation is deliberately separated from the initial check. All data, partitions, and filesystems on <strong>{targetPath}</strong> will be permanently erased.
+            Per safety engineering standards, this confirmation is deliberately separated from the initial check. All data, partitions, and filesystems on <strong>{formatDevicePath(targetPath).primary} ({formatDevicePath(targetPath).raw})</strong> will be permanently erased.
           </p>
 
           <div className="flex justify-between pt-3 border-t border-[rgba(239,68,68,0.15)]">

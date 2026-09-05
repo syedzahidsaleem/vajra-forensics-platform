@@ -11,9 +11,11 @@ import {
 } from 'lucide-react';
 import StorageMap from '../components/storage-map/StorageMap';
 import { useApp } from '../context/AppContext';
+import { formatDevicePath } from '../lib/utils';
 
 export const HexExplorer: React.FC = () => {
   const { selectedDevice, targetHexLba, setTargetHexLba } = useApp();
+  const devInfo = formatDevicePath(selectedDevice?.path || '\\\\.\\PhysicalDrive0');
   const [currentLba, setCurrentLba] = useState<number>(targetHexLba || 2048);
   const [inputLba, setInputLba] = useState<string>(String(targetHexLba || 2048));
   const [selectedByteOffset, setSelectedByteOffset] = useState<number | null>(0);
@@ -104,9 +106,14 @@ export const HexExplorer: React.FC = () => {
           <h1 className="text-lg font-sans font-medium text-[var(--text)]">
             Hex Data & Raw Sector Explorer
           </h1>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] border border-[var(--primary-text)]/30 font-semibold">
-            {selectedDevice?.path || '\\\\.\\PhysicalDrive0'}
-          </span>
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 font-mono">
+            <span className="text-xs font-bold text-[var(--primary-text)]">
+              {devInfo.primary}
+            </span>
+            <span className="text-[10px] text-[var(--text)]/50">
+              {devInfo.raw}
+            </span>
+          </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--surface)] text-[var(--text)]/60 border border-[var(--border)]/30">
             Sector #{currentLba.toLocaleString()}
           </span>

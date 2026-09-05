@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Layers, Database, Info, ChevronDown } from 'lucide-react';
+import { formatDevicePath } from '../../lib/utils';
 
 export interface StorageRegion {
   startLba: number;
@@ -32,6 +33,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
   collapsible = true,
   defaultCollapsed = false,
 }) => {
+  const devInfo = formatDevicePath(sourcePath);
   const [isExpanded, setIsExpanded] = useState(!defaultCollapsed);
   const [hoveredBlock, setHoveredBlock] = useState<{
     index: number;
@@ -142,9 +144,14 @@ export const StorageMap: React.FC<StorageMapProps> = ({
           <span className={`text-xs font-semibold uppercase tracking-wider ${isSanitizing ? 'text-slate-300' : 'text-[var(--forensic-text-primary)]'}`}>
             LBA Block Allocation & Sector Map (§32)
           </span>
-          <span className={`text-[11px] font-mono px-2 py-0.5 rounded border ${isSanitizing ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-mono)] border-[var(--forensic-border)]'}`}>
-            {sourcePath}
-          </span>
+          <div className={`flex items-center gap-1.5 text-[11px] font-mono px-2 py-0.5 rounded border ${isSanitizing ? 'bg-slate-800 border-slate-700' : 'bg-[rgba(13,184,211,0.1)] border-[var(--forensic-border)]'}`}>
+            <span className={`font-bold ${isSanitizing ? 'text-slate-200' : 'text-[var(--forensic-text-primary)]'}`}>
+              {devInfo.primary}
+            </span>
+            <span className={`text-[9px] ${isSanitizing ? 'text-slate-400' : 'text-[var(--text)]/50'}`}>
+              ({devInfo.raw})
+            </span>
+          </div>
         </div>
 
         {/* Legend + Expand Chevron */}

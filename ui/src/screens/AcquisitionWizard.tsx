@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   RotateCcw,
 } from 'lucide-react';
+import { formatDevicePath } from '../lib/utils';
 
 export const AcquisitionWizard: React.FC = () => {
   const { devices, selectedDevice, setActiveScreen } = useApp();
@@ -170,11 +171,14 @@ export const AcquisitionWizard: React.FC = () => {
                 onChange={(e) => setSourcePath(e.target.value)}
                 className="w-full font-mono text-xs cursor-pointer"
               >
-                {devices.map((d: DeviceDescriptor) => (
-                  <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
-                    {d.path} — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
-                  </option>
-                ))}
+                {devices.map((d: DeviceDescriptor) => {
+                  const devInfo = formatDevicePath(d.path);
+                  return (
+                    <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
+                      {devInfo.primary} ({devInfo.raw}) — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
+                    </option>
+                  );
+                })}
               </select>
             </div>
 
@@ -192,7 +196,13 @@ export const AcquisitionWizard: React.FC = () => {
 
           {targetDevice && (
             <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-2 text-xs font-mono">
-              <div className="text-[var(--text)]/70 font-bold">Selected Source Inspection:</div>
+              <div className="flex items-center justify-between">
+                <div className="text-[var(--text)]/70 font-bold">Selected Source Inspection:</div>
+                <div className="flex items-center gap-1.5 font-mono">
+                  <span className="font-bold text-[var(--primary-text)]">{formatDevicePath(targetDevice.path).primary}</span>
+                  <span className="text-[10px] text-[var(--text)]/50">({formatDevicePath(targetDevice.path).raw})</span>
+                </div>
+              </div>
               <div className="grid grid-cols-3 gap-2 text-[var(--text)]/80">
                 <div>Model: <span className="text-[var(--primary-text)] font-semibold">{targetDevice.model}</span></div>
                 <div>Serial: <span className="text-[var(--text)]">{targetDevice.serial}</span></div>
@@ -440,7 +450,7 @@ export const AcquisitionWizard: React.FC = () => {
                   </span>
                 </div>
                 <div className="text-xs font-mono text-[var(--text)]/60">
-                  Target: <span className="text-[var(--text)]">{targetDevice?.model} ({sourcePath})</span> &rarr; {format} Container
+                  Target: <span className="text-[var(--text)]">{targetDevice?.model} ({formatDevicePath(sourcePath).primary} • {formatDevicePath(sourcePath).raw})</span> &rarr; {format} Container
                 </div>
               </div>
 

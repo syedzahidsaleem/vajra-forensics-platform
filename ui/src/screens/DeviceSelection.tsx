@@ -17,7 +17,7 @@ import {
   Cpu,
 } from 'lucide-react';
 import { GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
-import { ShineBorder } from '../components/ui/shine-border';
+import { formatDevicePath } from '../lib/utils';
 
 export const DeviceSelection: React.FC = () => {
   const { devices, refreshDevices, mode, activeCase, setSelectedDevice, setActiveScreen } = useApp();
@@ -132,19 +132,23 @@ export const DeviceSelection: React.FC = () => {
         {devices.map((device: DeviceDescriptor) => {
           const isSystem = device.is_system_disk;
           const isWriteBlocked = device.is_write_blocked;
+          const devInfo = formatDevicePath(device.path);
 
           return (
-            <ShineBorder
+            <div
               key={device.path}
-              borderRadius={12}
-              className="h-full"
+              style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
+              className="p-4 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col justify-between gap-3 h-full shadow-sm"
             >
               {/* Drive Top Row */}
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`font-mono text-[11px] font-bold ${isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#59EE99]'}`}>
-                      {device.path}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`font-mono text-xs font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
+                      {devInfo.primary}
+                    </span>
+                    <span className="font-mono text-[10px] text-[var(--text)]/50">
+                      {devInfo.raw}
                     </span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
@@ -161,7 +165,7 @@ export const DeviceSelection: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <div className={`text-sm font-mono font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                     {formatBytes(device.size_bytes)}
                   </div>
@@ -244,7 +248,7 @@ export const DeviceSelection: React.FC = () => {
                   )}
                 </div>
               </div>
-            </ShineBorder>
+            </div>
           );
         })}
       </div>
@@ -362,7 +366,7 @@ export const DeviceSelection: React.FC = () => {
                   <input
                     type="text"
                     disabled
-                    value={`${registeringDevice.path} — ${registeringDevice.model}`}
+                    value={`${formatDevicePath(registeringDevice.path).primary} (${registeringDevice.path}) — ${registeringDevice.model}`}
                     className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                   />
                 </div>

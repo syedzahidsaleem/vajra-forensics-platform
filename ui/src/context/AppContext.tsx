@@ -22,6 +22,9 @@ interface AppContextType {
   targetHexLba: number;
   setTargetHexLba: (lba: number) => void;
   jumpToHexLba: (lba: number) => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -35,6 +38,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [devices, setDevices] = useState<DeviceDescriptor[]>([]);
   const [pendingModeSwitch, setPendingModeSwitch] = useState<AppMode | null>(null);
   const [targetHexLba, setTargetHexLba] = useState<number>(2048);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('vajra_sidebar_open');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('vajra_sidebar_open', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   const refreshCases = async () => {
     try {
@@ -126,6 +149,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         targetHexLba,
         setTargetHexLba,
         jumpToHexLba,
+        sidebarOpen,
+        setSidebarOpen,
+        toggleSidebar,
       }}
     >
       {children}

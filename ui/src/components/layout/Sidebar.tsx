@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { ScreenId } from '../../types';
 import {
@@ -9,7 +9,6 @@ import {
   Binary,
   FileText,
   AlertTriangle,
-  ChevronDown,
 } from 'lucide-react';
 
 interface NavItem {
@@ -19,29 +18,12 @@ interface NavItem {
 }
 
 export const Sidebar: React.FC = () => {
-  const { mode, activeScreen, setActiveScreen, setMode } = useApp();
+  const { mode, activeScreen, setActiveScreen, setMode, sidebarOpen } = useApp();
   const isForensic = mode === 'forensic';
 
-  const [isWorkflowsOpen, setIsWorkflowsOpen] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem('vajra_sidebar_workflows_expanded');
-      return saved !== null ? saved === 'true' : true;
-    } catch {
-      return true;
-    }
-  });
-
-  const toggleWorkflows = () => {
-    setIsWorkflowsOpen((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('vajra_sidebar_workflows_expanded', String(next));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  };
+  if (!sidebarOpen) {
+    return null;
+  }
 
   const forensicNav: NavItem[] = [
     { id: 'dashboard', label: 'Case Dashboard', icon: <LayoutDashboard className="w-3.5 h-3.5 shrink-0" /> },
@@ -68,26 +50,13 @@ export const Sidebar: React.FC = () => {
           : 'bg-[rgba(0,18,11,0.6)] border-r border-[rgba(89,238,153,0.04)]'
       }`}
     >
-      {/* Section label — Collapsible Accordion Header */}
-      <button
-        type="button"
-        onClick={toggleWorkflows}
-        className={`w-full flex items-center justify-between px-4 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] transition-colors cursor-pointer group ${
-          isForensic ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'text-[#D8E4FF]/25 hover:text-[var(--text)]'
-        }`}
-        title={isWorkflowsOpen ? 'Collapse Workflows' : 'Expand Workflows'}
-      >
-        <span className="truncate">{isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}</span>
-        <ChevronDown
-          className={`w-3 h-3 shrink-0 text-[var(--text)]/40 group-hover:text-[var(--text)] transition-transform duration-200 ${
-            isWorkflowsOpen ? 'rotate-0' : '-rotate-90'
-          }`}
-        />
-      </button>
+      {/* Section label — Static Text Label */}
+      <div className="px-3 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] text-[var(--text)]/40 font-semibold select-none">
+        {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
+      </div>
 
-      {/* Nav links */}
-      {isWorkflowsOpen && (
-        <nav className="space-y-0.5">
+      {/* Nav links — Flat Button Style */}
+      <nav className="space-y-1 px-2">
         {currentNav.map((item) => {
           const isActive = activeScreen === item.id;
           return (
@@ -95,37 +64,22 @@ export const Sidebar: React.FC = () => {
               key={item.id}
               onClick={() => setActiveScreen(item.id)}
               className={`
-                w-full flex items-center gap-3 px-4 py-2.5 text-[11px] font-sans text-left transition-all duration-150 cursor-pointer
+                w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-sans text-left transition-colors cursor-pointer
                 ${
                   isActive
-                    ? isForensic
-                      ? 'text-[var(--forensic-accent)] bg-[rgba(13,184,211,0.12)] border-l-2 border-[var(--forensic-accent)] shadow-[-4px_0_12px_rgba(13,184,211,0.2)] font-medium'
-                      : 'text-[#59EE99] bg-[rgba(89,238,153,0.05)] border-l-2 border-[#59EE99] shadow-[-4px_0_12px_rgba(89,238,153,0.1)] font-medium'
-                    : isForensic
-                    ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:bg-[rgba(13,184,211,0.06)] border-l-2 border-transparent'
-                    : 'text-[#D8E4FF]/45 hover:text-[#D8E4FF]/75 hover:bg-[rgba(89,238,153,0.03)] border-l-2 border-transparent'
+                    ? 'bg-[var(--surface)] text-[var(--primary-text)] font-semibold border border-[var(--border)]/40'
+                    : 'text-[var(--text)]/70 hover:bg-[var(--surface)]/50 hover:text-[var(--text)] border border-transparent'
                 }
               `}
             >
-              <span
-                className={
-                  isActive
-                    ? isForensic
-                      ? 'text-[var(--forensic-accent)]'
-                      : 'text-[#59EE99]'
-                    : isForensic
-                    ? 'text-[var(--forensic-text-secondary)]'
-                    : 'text-[#D8E4FF]/40'
-                }
-              >
+              <span className={isActive ? 'text-[var(--primary-text)]' : 'text-[var(--text)]/50'}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
             </button>
           );
         })}
-        </nav>
-      )}
+      </nav>
 
       {/* Bottom section — Safety Engine & Slim Switch Button */}
       <div className="mt-auto px-4 pb-2">

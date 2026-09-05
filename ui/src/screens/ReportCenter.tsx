@@ -228,7 +228,7 @@ export const ReportCenter: React.FC = () => {
           Six Standardized Forensic Report Types
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch">
           {(Object.keys(reportTypeMeta) as ReportType[]).map((type) => {
             const meta = reportTypeMeta[type];
             return (
@@ -240,12 +240,14 @@ export const ReportCenter: React.FC = () => {
                   setSelectedType(type);
                   setShowGenModal(true);
                 }}
-                className="cursor-pointer report-type-card h-full"
+                className="cursor-pointer report-type-card w-full h-full flex flex-col justify-between"
               >
-                <div className="p-3.5 space-y-1.5 h-full rounded-[12px] bg-transparent cursor-pointer">
-                  <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
-                  <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
-                  <div className="text-[10px] font-mono text-[var(--primary-text)] font-semibold pt-1">Click to generate &rarr;</div>
+                <div className="p-3.5 w-full h-full flex flex-col justify-between rounded-[12px] bg-transparent cursor-pointer box-border">
+                  <div className="space-y-1.5">
+                    <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
+                    <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
+                  </div>
+                  <div className="text-[10px] font-mono text-[var(--primary-text)] font-semibold pt-2">Click to generate &rarr;</div>
                 </div>
               </ShineBorder>
             );
