@@ -54,6 +54,7 @@
   --sanitize-accent: var(--sanitize-primary-text-dark);
   --sanitize-border: var(--sanitize-border-dark);
   --sanitize-navbar-bg: #000000;
+  --sanitize-sidebar-bg: #000000;
   --sanitize-bg-gradient: linear-gradient(
     135deg,
     #0D0304 0%,
@@ -98,6 +99,7 @@
   --sanitize-accent: var(--sanitize-primary-text-light);
   --sanitize-border: var(--sanitize-border-light);
   --sanitize-navbar-bg: var(--sanitize-surface-light);
+  --sanitize-sidebar-bg: var(--sanitize-surface-light);
   --sanitize-page-bg: var(--sanitize-bg-light);
   --sanitize-bg-gradient: var(--sanitize-bg-light);
 }
@@ -119,6 +121,7 @@
   --forensic-accent: var(--forensic-primary-text-dark);
   --forensic-border: var(--forensic-border-dark);
   --forensic-navbar-bg: #000000;
+  --forensic-sidebar-bg: #000000;
   --forensic-bg-gradient: linear-gradient(
     135deg,
     #071a20 0%,
@@ -160,12 +163,13 @@
   --forensic-accent: var(--forensic-primary-text-light);
   --forensic-border: var(--forensic-border-light);
   --forensic-navbar-bg: var(--forensic-surface-light);
+  --forensic-sidebar-bg: var(--forensic-surface-light);
   --forensic-page-bg: var(--forensic-bg-light);
   --forensic-bg-gradient: var(--forensic-bg-light);
 }
 
 /* Default fallback when theme is dark but mode isn't explicitly set */
-:root[data-theme="dark"], html[data-theme="dark"] {
+:root[data-theme="dark"]:not([data-mode="sanitize"]), html[data-theme="dark"]:not([data-mode="sanitize"]) {
   --bg: var(--forensic-bg-dark);
   --surface: var(--forensic-surface-dark);
   --text: var(--forensic-text-dark);
@@ -174,6 +178,7 @@
   --border: var(--forensic-border-dark);
   --primary-text: var(--forensic-primary-text-dark);
   --forensic-navbar-bg: #000000;
+  --forensic-sidebar-bg: #000000;
   --forensic-bg-gradient: linear-gradient(
     135deg,
     #071a20 0%,
@@ -199,7 +204,7 @@
   );
 }
 
-:root[data-theme="light"], html[data-theme="light"] {
+:root[data-theme="light"]:not([data-mode="sanitize"]), html[data-theme="light"]:not([data-mode="sanitize"]) {
   --bg: var(--forensic-bg-light);
   --surface: var(--forensic-surface-light);
   --text: var(--forensic-text-light);
@@ -207,6 +212,8 @@
   --primary-hover: var(--forensic-primary-hover-light);
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
+  --forensic-navbar-bg: var(--forensic-surface-light);
+  --forensic-sidebar-bg: var(--forensic-surface-light);
   --forensic-page-bg: var(--forensic-bg-light);
   --forensic-bg-gradient: var(--forensic-bg-light);
 }
