@@ -39,9 +39,19 @@ export const Sidebar: React.FC = () => {
   const currentNav = isForensic ? forensicNav : sanitizationNav;
 
   return (
-    <aside className="w-[180px] h-full flex flex-col bg-[rgba(0,18,11,0.6)] border-r border-[rgba(89,238,153,0.04)] py-4 select-none shrink-0 z-30">
+    <aside
+      className={`w-[180px] h-full flex flex-col py-4 select-none shrink-0 z-30 ${
+        isForensic
+          ? 'bg-[rgba(15,36,48,0.45)] border-r border-[var(--forensic-border)]'
+          : 'bg-[rgba(0,18,11,0.6)] border-r border-[rgba(89,238,153,0.04)]'
+      }`}
+    >
       {/* Section label */}
-      <p className="px-4 mb-3 text-[9px] font-mono text-[#D8E4FF]/25 uppercase tracking-[0.15em]">
+      <p
+        className={`px-4 mb-3 text-[9px] font-mono uppercase tracking-[0.15em] ${
+          isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/25'
+        }`}
+      >
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
       </p>
 
@@ -57,12 +67,26 @@ export const Sidebar: React.FC = () => {
                 w-full flex items-center gap-3 px-4 py-2.5 text-[11px] font-sans text-left transition-all duration-150 cursor-pointer
                 ${
                   isActive
-                    ? 'text-[#59EE99] bg-[rgba(89,238,153,0.05)] border-l-2 border-[#59EE99] shadow-[-4px_0_12px_rgba(89,238,153,0.1)] font-medium'
+                    ? isForensic
+                      ? 'text-[var(--forensic-accent)] bg-[rgba(13,184,211,0.12)] border-l-2 border-[var(--forensic-accent)] shadow-[-4px_0_12px_rgba(13,184,211,0.2)] font-medium'
+                      : 'text-[#59EE99] bg-[rgba(89,238,153,0.05)] border-l-2 border-[#59EE99] shadow-[-4px_0_12px_rgba(89,238,153,0.1)] font-medium'
+                    : isForensic
+                    ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:bg-[rgba(13,184,211,0.06)] border-l-2 border-transparent'
                     : 'text-[#D8E4FF]/45 hover:text-[#D8E4FF]/75 hover:bg-[rgba(89,238,153,0.03)] border-l-2 border-transparent'
                 }
               `}
             >
-              <span className={isActive ? 'text-[#59EE99]' : 'text-[#D8E4FF]/40'}>
+              <span
+                className={
+                  isActive
+                    ? isForensic
+                      ? 'text-[var(--forensic-accent)]'
+                      : 'text-[#59EE99]'
+                    : isForensic
+                    ? 'text-[var(--forensic-text-secondary)]'
+                    : 'text-[#D8E4FF]/40'
+                }
+              >
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
@@ -77,13 +101,13 @@ export const Sidebar: React.FC = () => {
           <span
             className={`w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${
               isForensic
-                ? 'bg-[#59EE99] shadow-[0_0_5px_#59EE99]'
+                ? 'bg-[var(--forensic-accent)] shadow-[0_0_5px_var(--forensic-accent)]'
                 : 'bg-[#EF4444] shadow-[0_0_5px_#EF4444]'
             }`}
           />
           <span
             className={`text-[9px] font-mono uppercase tracking-wider ${
-              isForensic ? 'text-[#59EE99]/70' : 'text-[#EF4444]/70'
+              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#EF4444]/70'
             }`}
           >
             {isForensic ? 'Safety Active' : 'Sanitizer Armed'}
@@ -97,7 +121,7 @@ export const Sidebar: React.FC = () => {
             ${
               isForensic
                 ? 'border-[#EF4444]/30 text-[#EF4444]/70 hover:border-[#EF4444]/60 hover:text-[#EF4444] hover:bg-[rgba(239,68,68,0.05)]'
-                : 'border-[#59EE99]/30 text-[#59EE99]/70 hover:border-[#59EE99]/60 hover:text-[#59EE99] hover:bg-[rgba(89,238,153,0.05)]'
+                : 'border-[var(--forensic-accent)]/30 text-[var(--forensic-accent)] hover:border-[var(--forensic-accent)] hover:bg-[rgba(13,184,211,0.1)]'
             }
           `}
         >

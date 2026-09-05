@@ -93,14 +93,20 @@ export const DeviceSelection: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
               {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
+            <span
+              className={`text-[10px] font-mono px-2 py-0.5 rounded ${
+                isForensic
+                  ? 'bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]'
+                  : 'bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15'
+              }`}
+            >
               §23, §24
             </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className={`text-[11px] font-sans ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/30'}`}>
             {isForensic
               ? 'Real-time hardware enumeration, SMART/NVMe telemetry, write-blocker detection, and SHA-256 fingerprinting.'
               : 'Target disk verification and strict OS-disk hard refusal (§24) prior to sanitization gate.'}
@@ -137,51 +143,55 @@ export const DeviceSelection: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-[11px] text-[#59EE99] font-bold">{device.path}</span>
+                    <span className={`font-mono text-[11px] font-bold ${isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#59EE99]'}`}>
+                      {device.path}
+                    </span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
-                      <span className="px-1.5 py-0.5 rounded bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/40 text-[9px] font-mono">
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${isForensic ? 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/40'}`}>
                         {device.bus_type}
                       </span>
                     )}
                   </div>
-                  <h3 className="font-medium text-sm text-[#D8E4FF] font-sans">{device.model}</h3>
-                  <div className="text-[10px] font-mono text-[#D8E4FF]/35">
-                    S/N: <span className="text-[#D8E4FF]/70">{device.serial}</span>
+                  <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                    {device.model}
+                  </h3>
+                  <div className={`text-[10px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/35'}`}>
+                    S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <div className="text-sm font-mono font-bold text-[#D8E4FF]">
+                  <div className={`text-sm font-mono font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                     {formatBytes(device.size_bytes)}
                   </div>
-                  <div className="text-[9px] font-mono text-[#D8E4FF]/30">
+                  <div className={`text-[9px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/30'}`}>
                     Sector: {device.block_size} B
                   </div>
                 </div>
               </div>
 
               {/* Safety Badges */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[rgba(89,238,153,0.06)] text-[10px] font-mono">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[rgba(13,184,211,0.15)] text-[10px] font-mono">
                 {isSystem ? (
                   <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444]">
                     <AlertOctagon className="w-3 h-3 flex-shrink-0" />
                     <span>OS BOOT DISK (LOCKED §24)</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(89,238,153,0.08)] border border-[#59EE99]/20 text-[#59EE99]">
+                  <div className={`flex items-center gap-1.5 p-1.5 rounded border ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
                     <CheckCircle className="w-3 h-3 flex-shrink-0" />
                     <span>Secondary Target Disk</span>
                   </div>
                 )}
 
                 {isWriteBlocked ? (
-                  <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(89,238,153,0.08)] border border-[#59EE99]/20 text-[#59EE99]">
+                  <div className={`flex items-center gap-1.5 p-1.5 rounded border ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
                     <ShieldCheck className="w-3 h-3 flex-shrink-0" />
                     <span>Write-Blocker Active</span>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(53,96,90,0.15)] border border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/40">
+                  <div className={`flex items-center gap-1.5 p-1.5 rounded border ${isForensic ? 'bg-[rgba(15,36,48,0.5)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/40'}`}>
                     <ShieldAlert className="w-3 h-3 flex-shrink-0 text-amber-400" />
                     <span>Direct Device Access</span>
                   </div>

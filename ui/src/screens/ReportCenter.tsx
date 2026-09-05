@@ -125,21 +125,21 @@ export const ReportCenter: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
               Report Center & Independent Verifier
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
               §41, §42
             </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
             Generate and export the 6 court-admissible forensic report types and execute independent tamper verification.
           </p>
         </div>
 
         <button
           onClick={() => setShowGenModal(true)}
-          className="flex items-center gap-2 px-3 py-1.5 bg-[#59EE99] text-[#00120B] font-mono text-[11px] font-semibold rounded-md shadow-[0_0_12px_rgba(89,238,153,0.2)] hover:bg-[#6fffaa] transition-all cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 bg-[var(--forensic-accent)] text-[#0F2430] font-mono text-[11px] font-semibold rounded-md shadow-[0_0_12px_rgba(13,184,211,0.35)] hover:bg-[#0DB8D3]/90 transition-all cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Generate New Report</span>

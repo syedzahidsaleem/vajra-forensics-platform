@@ -90,15 +90,15 @@ export const StorageMap: React.FC<StorageMapProps> = ({
 
         let status = isAllocated ? 'allocated' : 'unallocated';
         let colorClass = isAllocated
-          ? 'bg-cyan-700/80 border-cyan-500/40 hover:border-cyan-300'
-          : 'bg-slate-800 border-slate-700 hover:border-slate-500';
+          ? 'bg-[rgba(13,184,211,0.35)] border-[rgba(13,184,211,0.5)] hover:border-[#0DB8D3]'
+          : 'bg-[rgba(15,36,48,0.7)] border-[rgba(13,184,211,0.15)] hover:border-[rgba(13,184,211,0.4)]';
 
         if (isBadSector) {
           status = 'bad_sector';
           colorClass = 'bg-rose-600 border-rose-400 animate-pulse';
         } else if (isHighlighted) {
           status = 'artifact';
-          colorClass = 'bg-emerald-500 border-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.6)] ring-2 ring-emerald-400';
+          colorClass = 'bg-[#0DB8D3] border-[#C9E8F5] shadow-[0_0_10px_rgba(13,184,211,0.6)] ring-2 ring-[#0DB8D3]';
         }
 
         return { index: i, startLba, endLba, status, colorClass };
@@ -120,17 +120,17 @@ export const StorageMap: React.FC<StorageMapProps> = ({
       className={`rounded-xl border p-4 transition-all duration-200 ${
         isSanitizing
           ? 'bg-zinc-950/80 border-amber-900/40 shadow-lg shadow-amber-950/20'
-          : 'bg-slate-900/80 border-slate-800 shadow-lg'
+          : 'glass shadow-lg'
       } ${className}`}
     >
       {/* Header & Meta */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <Layers className={`w-4 h-4 ${isSanitizing ? 'text-amber-500' : 'text-cyan-400'}`} />
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+          <Layers className={`w-4 h-4 ${isSanitizing ? 'text-amber-500' : 'text-[#0DB8D3]'}`} />
+          <span className={`text-xs font-semibold uppercase tracking-wider ${isSanitizing ? 'text-slate-300' : 'text-[var(--forensic-text-primary)]'}`}>
             LBA Block Allocation & Sector Map (§32)
           </span>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+          <span className={`text-[11px] font-mono px-2 py-0.5 rounded border ${isSanitizing ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-mono)] border-[var(--forensic-border)]'}`}>
             {sourcePath}
           </span>
         </div>
@@ -154,20 +154,20 @@ export const StorageMap: React.FC<StorageMapProps> = ({
             </>
           ) : (
             <>
-              <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-sm bg-cyan-700 border border-cyan-500 inline-block" />
+              <div className="flex items-center gap-1 text-[var(--forensic-text-secondary)]">
+                <span className="w-2.5 h-2.5 rounded-sm bg-[rgba(13,184,211,0.4)] border border-[#0DB8D3] inline-block" />
                 <span>Allocated</span>
               </div>
-              <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-sm bg-slate-800 border border-slate-700 inline-block" />
+              <div className="flex items-center gap-1 text-[var(--forensic-text-secondary)]">
+                <span className="w-2.5 h-2.5 rounded-sm bg-[rgba(15,36,48,0.7)] border border-[rgba(13,184,211,0.2)] inline-block" />
                 <span>Unallocated Slack</span>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-[var(--forensic-text-secondary)]">
                 <span className="w-2.5 h-2.5 rounded-sm bg-rose-600 border border-rose-400 inline-block" />
                 <span>Bad Sector</span>
               </div>
-              <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 border border-emerald-300 inline-block" />
+              <div className="flex items-center gap-1 text-[var(--forensic-text-secondary)]">
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#0DB8D3] border border-[#C9E8F5] inline-block" />
                 <span>Target Artifact</span>
               </div>
             </>

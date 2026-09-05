@@ -116,14 +116,14 @@ export const AcquisitionWizard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
               Forensic Evidence Acquisition Wizard
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
               §19, §20
             </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
             Bit-stream physical/logical imaging, E01 Expert Witness compression, bad-sector retry engine, and dual-phase rolling hash verification.
           </p>
         </div>
@@ -140,15 +140,15 @@ export const AcquisitionWizard: React.FC = () => {
               <div
                 className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap transition-all ${
                   step === s.num
-                    ? 'bg-[rgba(89,238,153,0.1)] text-[#59EE99] border border-[#59EE99]/30 font-bold'
+                    ? 'bg-[rgba(13,184,211,0.18)] text-[var(--forensic-accent)] border border-[var(--forensic-border)] font-bold'
                     : step > s.num
-                    ? 'bg-[rgba(89,238,153,0.05)] text-[#59EE99]/50'
-                    : 'text-[#D8E4FF]/20'
+                    ? 'bg-[rgba(13,184,211,0.08)] text-[var(--forensic-text-mono)]'
+                    : 'text-[var(--forensic-text-secondary)] opacity-40'
                 }`}
               >
                 {s.num}. {s.label}
               </div>
-              {i < 3 && <div className="w-3 h-px bg-[rgba(216,228,255,0.08)] shrink-0" />}
+              {i < 3 && <div className="w-3 h-px bg-[var(--forensic-border)] shrink-0" />}
             </React.Fragment>
           ))}
         </div>

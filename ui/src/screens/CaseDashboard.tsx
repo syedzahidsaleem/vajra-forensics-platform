@@ -111,14 +111,14 @@ export const CaseDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
               Evidence Vault
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
               §17, §22
             </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
             AES-256 SQLCipher encrypted case metadata and custody registry
           </p>
         </div>
@@ -139,20 +139,20 @@ export const CaseDashboard: React.FC = () => {
           {/* Top row */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <span className="text-[11px] font-mono text-[#59EE99] font-bold">
+              <span className="text-[11px] font-mono text-[var(--forensic-text-mono)] font-bold">
                 {activeCase.case_id}
               </span>
-              <span className="text-[12px] font-sans text-[#D8E4FF]/80 font-medium">
+              <span className="text-[12px] font-sans text-[var(--forensic-text-primary)] font-medium">
                 {activeCase.case_name}
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.12)] text-[#59EE99] uppercase tracking-wider">
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] uppercase tracking-wider border border-[var(--forensic-border)]">
                 {activeCase.status}
               </span>
             </div>
             {activeCase.status === 'Active' && (
               <button
                 onClick={() => handleCloseCase(activeCase.case_id)}
-                className="text-[10px] font-mono text-[#D8E4FF]/30 hover:text-[#EF4444]/70 transition-colors cursor-pointer"
+                className="text-[10px] font-mono text-[var(--forensic-text-secondary)] hover:text-[#EF4444] transition-colors cursor-pointer"
               >
                 Close Case
               </button>
@@ -160,13 +160,13 @@ export const CaseDashboard: React.FC = () => {
           </div>
 
           {/* Dimmed Metadata Line */}
-          <p className="text-[10px] font-mono text-[#D8E4FF]/30 mb-5">
+          <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)] opacity-80 mb-5">
             {activeCase.investigator_id} · {activeCase.created_at} · {evidenceList.length} evidence item{evidenceList.length === 1 ? '' : 's'} · SQLCipher AES-256
           </p>
 
           {/* Evidence Table Header */}
-          <div className="flex items-center justify-between mb-3 pt-4 border-t border-[rgba(89,238,153,0.06)]">
-            <span className="text-[10px] font-mono text-[#D8E4FF]/40 uppercase tracking-wider">
+          <div className="flex items-center justify-between mb-3 pt-4 border-t border-[var(--forensic-border)]">
+            <span className="text-[10px] font-mono text-[var(--forensic-text-secondary)] uppercase tracking-wider">
               Registered Evidence Media ({evidenceList.length})
             </span>
             <GlowButton
@@ -181,9 +181,9 @@ export const CaseDashboard: React.FC = () => {
 
           {/* Simplified 4-Column Table */}
           {evidenceList.length > 0 ? (
-            <div className="overflow-hidden rounded-lg border border-[rgba(89,238,153,0.06)]">
+            <div className="overflow-hidden rounded-lg border border-[var(--forensic-border)]">
               <table className="w-full text-left text-[11px] font-mono">
-                <thead className="bg-[rgba(0,18,11,0.6)] text-[#D8E4FF]/35">
+                <thead className="bg-[rgba(15,36,48,0.7)] text-[var(--forensic-text-secondary)]">
                   <tr>
                     <th className="py-2.5 px-3">Evidence ID</th>
                     <th className="py-2.5 px-3">Type</th>
@@ -191,19 +191,19 @@ export const CaseDashboard: React.FC = () => {
                     <th className="py-2.5 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[rgba(89,238,153,0.04)]">
+                <tbody className="divide-y divide-[var(--forensic-border)]">
                   {evidenceList.map((item) => (
-                    <tr key={item.evidence_id} className="hover:bg-[rgba(89,238,153,0.02)] transition-colors">
+                    <tr key={item.evidence_id} className="hover:bg-[rgba(13,184,211,0.05)] transition-colors">
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-[#59EE99] font-bold">{item.evidence_id}</span>
+                          <span className="text-[var(--forensic-text-mono)] font-bold">{item.evidence_id}</span>
                           <button
                             onClick={() => copyHash(item.sha256_hash, item.evidence_id)}
                             title={`Copy SHA-256: ${item.sha256_hash}`}
-                            className="text-[#D8E4FF]/30 hover:text-[#59EE99] transition-colors p-0.5"
+                            className="text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-accent)] transition-colors p-0.5"
                           >
                             {copiedId === item.evidence_id ? (
-                              <Check className="w-3 h-3 text-[#59EE99]" />
+                              <Check className="w-3 h-3 text-[var(--forensic-accent)]" />
                             ) : (
                               <Copy className="w-3 h-3" />
                             )}
@@ -213,17 +213,17 @@ export const CaseDashboard: React.FC = () => {
                       <td className="py-2.5 px-3">
                         <FileTypeBadge type={item.media_type} />
                       </td>
-                      <td className="py-2.5 px-3 text-[#D8E4FF]/70 font-sans">{item.description}</td>
+                      <td className="py-2.5 px-3 text-[var(--forensic-text-primary)] font-sans">{item.description}</td>
                       <td className="py-2.5 px-3 text-right space-x-2">
                         <button
                           onClick={() => handleOpenCustodyModal(item)}
-                          className="px-2 py-1 rounded bg-[rgba(53,96,90,0.15)] text-[#D8E4FF]/60 hover:text-[#D8E4FF] text-[10px] font-mono border border-[rgba(89,238,153,0.08)] cursor-pointer"
+                          className="px-2 py-1 rounded bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
                         >
                           Custody Log
                         </button>
                         <button
                           onClick={() => setActiveScreen('acquisition')}
-                          className="px-2 py-1 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] hover:bg-[rgba(89,238,153,0.2)] text-[10px] font-mono border border-[#59EE99]/20 cursor-pointer"
+                          className="px-2 py-1 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] hover:bg-[rgba(13,184,211,0.25)] text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
                         >
                           Acquire
                         </button>
@@ -234,7 +234,7 @@ export const CaseDashboard: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="py-8 text-center text-[11px] font-mono text-[#D8E4FF]/30">
+            <div className="py-8 text-center text-[11px] font-mono text-[var(--forensic-text-secondary)]">
               {loadingEvidence
                 ? 'Loading evidence registry...'
                 : 'No evidence items registered under this case.'}
@@ -257,7 +257,7 @@ export const CaseDashboard: React.FC = () => {
 
       {/* All Cases Section — 2 Column Minimal Cards Grid */}
       <div className="space-y-3">
-        <p className="text-[10px] font-mono text-[#D8E4FF]/30 uppercase tracking-widest">
+        <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)] uppercase tracking-widest">
           All Cases ({cases.length})
         </p>
 
@@ -273,15 +273,15 @@ export const CaseDashboard: React.FC = () => {
                 className="p-4"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-mono text-[#59EE99] font-bold">{c.case_id}</span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99]">
+                  <span className="text-[11px] font-mono text-[var(--forensic-text-mono)] font-bold">{c.case_id}</span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
                     {c.status}
                   </span>
                 </div>
-                <p className="text-[12px] font-sans text-[#D8E4FF]/80 mb-1 truncate">
+                <p className="text-[12px] font-sans text-[var(--forensic-text-primary)] mb-1 truncate">
                   {c.case_name}
                 </p>
-                <p className="text-[10px] font-mono text-[#D8E4FF]/30">
+                <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)]">
                   {c.investigator_id} · {c.created_at.split(' ')[0]}
                 </p>
               </GlassCard>

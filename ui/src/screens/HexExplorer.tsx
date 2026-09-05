@@ -102,14 +102,14 @@ export const HexExplorer: React.FC = () => {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[#D8E4FF]">
+            <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
               Hex Data & Raw Sector Explorer
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
               §32
             </span>
           </div>
-          <p className="text-[11px] text-[#D8E4FF]/30 font-sans">
+          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
             Raw byte inspection, sector boundary mapping, fragment provenance overlay, and colored block storage visualization.
           </p>
         </div>
@@ -125,25 +125,25 @@ export const HexExplorer: React.FC = () => {
               setTargetHexLba(next);
             }}
             disabled={currentLba <= 0}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-600 disabled:opacity-40"
+            className="p-2 rounded-lg bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] disabled:opacity-40"
             title="Previous Sector"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
 
           <div className="relative flex items-center">
-            <span className="absolute left-3 text-xs font-mono text-cyan-400 font-bold">LBA:</span>
+            <span className="absolute left-3 text-xs font-mono text-[var(--forensic-accent)] font-bold">LBA:</span>
             <input
               type="text"
               value={inputLba}
               onChange={(e) => setInputLba(e.target.value)}
-              className="pl-12 pr-3 py-1.5 w-32 rounded-lg bg-slate-900 border border-slate-800 text-white font-mono text-xs font-bold focus:outline-none focus:border-cyan-500"
+              className="pl-12 pr-3 py-1.5 w-32 rounded-lg bg-[rgba(15,36,48,0.7)] border border-[var(--forensic-border)] text-[var(--forensic-text-primary)] font-mono text-xs font-bold focus:outline-none focus:border-[var(--forensic-accent)]"
             />
           </div>
 
           <button
             type="submit"
-            className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs font-bold flex items-center gap-1.5 shadow-md shadow-cyan-950"
+            className="px-3 py-1.5 rounded-lg bg-[var(--forensic-accent)] text-[#0F2430] hover:bg-[#0DB8D3]/90 font-mono text-xs font-bold flex items-center gap-1.5 shadow-md"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Jump</span>
@@ -157,7 +157,7 @@ export const HexExplorer: React.FC = () => {
               setInputLba(String(next));
               setTargetHexLba(next);
             }}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:border-slate-600"
+            className="p-2 rounded-lg bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]"
             title="Next Sector"
           >
             <ArrowRight className="w-4 h-4" />
@@ -166,10 +166,10 @@ export const HexExplorer: React.FC = () => {
           <button
             type="button"
             onClick={handleCopyHex}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+            className="p-2 rounded-lg bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]"
             title="Copy Raw Hex Dump"
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-4 h-4 text-[var(--forensic-accent)]" /> : <Copy className="w-4 h-4" />}
           </button>
         </form>
       </div>

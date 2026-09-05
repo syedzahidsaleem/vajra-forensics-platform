@@ -7,7 +7,8 @@ import { GradientDots } from '../ui/gradient-dots';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { activeScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
+  const { mode, activeScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
+  const isForensic = mode === 'forensic';
   const [timeStr, setTimeStr] = useState<string>('');
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   }, []);
 
   return (
-    <div className="app-bg w-full h-screen flex flex-col overflow-hidden relative select-none">
+    <div className={`w-full h-screen flex flex-col overflow-hidden relative select-none ${isForensic ? 'forensic-mode' : 'app-bg'}`}>
       <GradientDots />
 
       {/* Top Application Header */}
@@ -51,10 +52,16 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       </div>
 
       {/* Bottom Status Bar Footer */}
-      <footer className="h-5 px-6 border-t border-[rgba(89,238,153,0.04)] bg-[rgba(0,18,11,0.9)] flex items-center justify-between font-mono text-[9px] text-[#D8E4FF]/25 z-40">
+      <footer
+        className={`h-5 px-6 flex items-center justify-between font-mono text-[9px] z-40 ${
+          isForensic
+            ? 'bg-[var(--forensic-navbar-bg)] border-t border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]'
+            : 'border-t border-[rgba(89,238,153,0.04)] bg-[rgba(0,18,11,0.9)] text-[#D8E4FF]/25'
+        }`}
+      >
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#59EE99] opacity-50" />
-          <span>AIRGAP VERIFIED</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#59EE99] opacity-75 shadow-[0_0_4px_#59EE99]" />
+          <span className={isForensic ? 'text-[var(--forensic-text-primary)] font-bold' : ''}>AIRGAP VERIFIED</span>
         </div>
         <div>{timeStr || 'UTC'}</div>
       </footer>
