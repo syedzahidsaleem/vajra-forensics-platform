@@ -53,7 +53,30 @@
   --sanitize-text-mono: var(--sanitize-text-dark);
   --sanitize-accent: var(--sanitize-primary-text-dark);
   --sanitize-border: var(--sanitize-border-dark);
-  --sanitize-navbar-bg: var(--sanitize-surface-dark);
+  --sanitize-navbar-bg: #120202;
+  --sanitize-bg-gradient: linear-gradient(
+    135deg,
+    #150609 0%,
+    #2A0D12 25%,
+    #5A1E28 55%,
+    #8F2E38 75%,
+    #C4707A 100%
+  );
+  --sanitize-page-bg: linear-gradient(
+    135deg,
+    rgba(21, 6, 9, 0.25) 0%,
+    rgba(42, 13, 18, 0.3) 25%,
+    rgba(21, 6, 9, 0.45) 55%,
+    rgba(21, 6, 9, 0.6) 75%,
+    rgba(21, 6, 9, 0.7) 100%
+  ), linear-gradient(
+    135deg,
+    #150609 0%,
+    #2A0D12 25%,
+    #5A1E28 55%,
+    #8F2E38 75%,
+    #C4707A 100%
+  );
 }
 
 [data-mode="sanitize"][data-theme="light"],
@@ -72,6 +95,8 @@
   --sanitize-accent: var(--sanitize-primary-text-light);
   --sanitize-border: var(--sanitize-border-light);
   --sanitize-navbar-bg: var(--sanitize-surface-light);
+  --sanitize-page-bg: var(--sanitize-bg-light);
+  --sanitize-bg-gradient: var(--sanitize-bg-light);
 }
 
 [data-mode="forensic"],

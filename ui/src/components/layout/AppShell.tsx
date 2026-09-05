@@ -28,7 +28,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   return (
     <div
       className={`w-full h-screen flex flex-col overflow-hidden relative select-none ${isForensic ? 'forensic-mode' : 'sanitize-mode'}`}
-      style={{ background: isForensic ? 'var(--forensic-page-bg, var(--bg))' : 'var(--bg)', color: 'var(--text)' }}
+      style={{ background: isForensic ? 'var(--forensic-page-bg, var(--bg))' : 'var(--sanitize-page-bg, var(--bg))', color: 'var(--text)' }}
     >
       {/* Top Application Header */}
       <Header />

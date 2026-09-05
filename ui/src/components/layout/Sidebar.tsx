@@ -47,7 +47,7 @@ export const Sidebar: React.FC = () => {
       className={`w-[180px] h-full flex flex-col py-4 select-none shrink-0 z-30 ${
         isForensic
           ? 'bg-[var(--forensic-navbar-bg)] border-r border-[var(--forensic-border)]'
-          : 'bg-[rgba(18,2,2,0.75)] border-r border-[var(--sanitize-border)]'
+          : 'bg-[var(--sanitize-navbar-bg)] border-r border-[var(--sanitize-border)]'
       }`}
     >
       {/* Section label — Static Text Label */}
