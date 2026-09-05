@@ -222,7 +222,7 @@ export function GlassCard({
         bg-[var(--surface)]/70
         backdrop-blur-sm
         ${selected
-          ? 'shadow-[0_0_0_1px_var(--primary),0_0_20px_var(--primary)]'
+          ? 'shadow-sm'
           : danger
           ? 'shadow-[0_0_12px_rgba(239,68,68,0.1)]'
           : ''

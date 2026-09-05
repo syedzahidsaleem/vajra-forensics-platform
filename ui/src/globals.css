@@ -259,7 +259,7 @@
 }
 
 /* ==========================================================================
-   Report Type & Case Card Hover Lift & Primary Shadow
+   Report Type & Case Card Hover Pop-Up Lift (No Glow)
    ========================================================================== */
 .report-type-card,
 .case-card {
@@ -271,5 +271,5 @@
 .report-type-card:hover,
 .case-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 25%, transparent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
