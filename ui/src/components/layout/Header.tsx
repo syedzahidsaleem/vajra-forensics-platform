@@ -21,13 +21,13 @@ export const Header: React.FC = () => {
       {/* Center: Mode Badge */}
       <div className="flex items-center">
         {isForensic ? (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/30 text-[var(--primary)] font-mono text-[10px] tracking-widest uppercase">
+          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/30 text-[var(--primary-text)] font-mono text-[10px] tracking-widest uppercase">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_6px_var(--primary)]" />
             Forensic Mode
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[#D44D5C]/15 border border-[#D44D5C]/30 text-[#D44D5C] font-mono text-[10px] tracking-widest uppercase animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#D44D5C] shadow-[0_0_6px_#D44D5C]" />
+          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[var(--primary)]/15 border border-[var(--primary)]/30 text-[var(--primary-text)] font-mono text-[10px] tracking-widest uppercase animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_6px_var(--primary)]" />
             Sanitization Mode
           </div>
         )}
@@ -40,7 +40,7 @@ export const Header: React.FC = () => {
           onClick={toggleTheme}
           aria-label="Toggle Theme"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          className="p-1.5 rounded-md border border-[var(--border)]/30 text-[var(--text)]/70 hover:text-[var(--primary)] hover:border-[var(--primary)]/50 bg-[var(--surface)] transition-colors cursor-pointer flex items-center justify-center"
+          className="p-1.5 rounded-md border border-[var(--border)]/30 text-[var(--text)]/70 hover:text-[var(--primary-text)] hover:border-[var(--primary)]/50 bg-[var(--surface)] transition-colors cursor-pointer flex items-center justify-center"
         >
           {theme === 'dark' ? (
             <Sun className="w-3.5 h-3.5 text-amber-400" />
@@ -55,7 +55,7 @@ export const Header: React.FC = () => {
             onClick={() => setMode('forensic')}
             className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
               isForensic
-                ? 'bg-[var(--primary)]/20 text-[var(--primary)] font-bold'
+                ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold'
                 : 'text-[var(--text)]/50 hover:text-[var(--text)]'
             }`}
           >
@@ -65,7 +65,7 @@ export const Header: React.FC = () => {
             onClick={() => setMode('sanitization')}
             className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
               !isForensic
-                ? 'bg-[#D44D5C]/25 text-[#D44D5C] font-bold'
+                ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold'
                 : 'text-[var(--text)]/50 hover:text-[var(--text)]'
             }`}
           >

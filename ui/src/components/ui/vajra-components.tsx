@@ -280,10 +280,10 @@ export function FileTypeBadge({ type }: { type: string }) {
 ───────────────────────────────────────── */
 export function TierBadge({ tier }: { tier: 'Tier1Metadata' | 'Tier2Signature' | 'Tier3Fragmented' | string }) {
   const config = {
-    Tier1Metadata:   { label: 'Tier 1', color: '#59EE99', bg: 'rgba(89,238,153,0.15)' },
+    Tier1Metadata:   { label: 'Tier 1', color: 'var(--primary-text)', bg: 'color-mix(in srgb, var(--primary-text) 15%, transparent)' },
     Tier2Signature:  { label: 'Tier 2', color: '#AA77A9', bg: 'rgba(170,119,169,0.15)' },
     Tier3Fragmented: { label: 'Tier 3', color: 'var(--text)', bg: 'var(--surface)' },
-    'Tier 1 (Metadata)': { label: 'Tier 1', color: '#59EE99', bg: 'rgba(89,238,153,0.15)' },
+    'Tier 1 (Metadata)': { label: 'Tier 1', color: 'var(--primary-text)', bg: 'color-mix(in srgb, var(--primary-text) 15%, transparent)' },
     'Tier 2 (Structural Carving)': { label: 'Tier 2', color: '#AA77A9', bg: 'rgba(170,119,169,0.15)' },
     'Tier 3 (Bifragment Reconstructed)': { label: 'Tier 3', color: 'var(--text)', bg: 'var(--surface)' },
   }[tier] ?? { label: tier, color: 'var(--text)', bg: 'var(--surface)' };
@@ -430,7 +430,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const variantStyles: Record<ToastVariant, string> = {
     success:
-      'border-[#59EE99]/40 bg-[rgba(89,238,153,0.08)] text-[#59EE99]',
+      'border-[var(--primary-text)]/40 bg-[var(--primary-text)]/10 text-[var(--primary-text)]',
     danger:
       'border-[#EF4444]/40 bg-[rgba(239,68,68,0.08)] text-[#EF4444]',
     info: 'border-[#AA77A9]/40 bg-[rgba(170,119,169,0.08)] text-[var(--text)]',
@@ -547,7 +547,7 @@ export function SectionHeader({
           {tags?.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] border border-[#59EE99]/20"
+              className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] border border-[var(--primary-text)]/30 font-semibold"
             >
               {tag}
             </span>

@@ -6,6 +6,7 @@
   --sanitize-primary-dark: #A83B45;
   --sanitize-primary-hover-dark: #8F2E38;
   --sanitize-border-dark: #E3B5A4;
+  --sanitize-primary-text-dark: #FF6B7A;
 
   /* Sanitize mode — light theme (muted maroon family) */
   --sanitize-bg-light: #FBF1EF;
@@ -14,6 +15,7 @@
   --sanitize-primary-light: #A83B45;
   --sanitize-primary-hover-light: #8F2E38;
   --sanitize-border-light: #E3B5A4;
+  --sanitize-primary-text-light: #80222B;  /* darker maroon, readable on light bg */
 
   /* Forensic mode — dark theme (from provided palette) */
   --forensic-bg-dark: #2B193D;
@@ -22,6 +24,7 @@
   --forensic-primary-dark: #4B8F8C;
   --forensic-primary-hover-dark: #5FA8A4;
   --forensic-border-dark: #C5979D;
+  --forensic-primary-text-dark: #59EE99;   /* bright teal/green on dark bg */
 
   /* Forensic mode — light theme (derived tint, same hue family) */
   --forensic-bg-light: #F2F4F6;
@@ -30,6 +33,7 @@
   --forensic-primary-light: #4B8F8C;
   --forensic-primary-hover-light: #3A716E;
   --forensic-border-light: #C5979D;
+  --forensic-primary-text-light: #2A6B68;  /* darker teal, readable on light bg */
 }
 
 /* Scoped mode + theme custom properties */
@@ -43,6 +47,7 @@
   --primary: var(--sanitize-primary-dark);
   --primary-hover: var(--sanitize-primary-hover-dark);
   --border: var(--sanitize-border-dark);
+  --primary-text: var(--sanitize-primary-text-dark);
 }
 
 [data-mode="sanitize"][data-theme="light"],
@@ -54,6 +59,7 @@
   --primary: var(--sanitize-primary-light);
   --primary-hover: var(--sanitize-primary-hover-light);
   --border: var(--sanitize-border-light);
+  --primary-text: var(--sanitize-primary-text-light);
 }
 
 [data-mode="forensic"],
@@ -66,6 +72,7 @@
   --primary: var(--forensic-primary-dark);
   --primary-hover: var(--forensic-primary-hover-dark);
   --border: var(--forensic-border-dark);
+  --primary-text: var(--forensic-primary-text-dark);
 }
 
 [data-mode="forensic"][data-theme="light"],
@@ -77,6 +84,7 @@
   --primary: var(--forensic-primary-light);
   --primary-hover: var(--forensic-primary-hover-light);
   --border: var(--forensic-border-light);
+  --primary-text: var(--forensic-primary-text-light);
 }
 
 /* Default fallback when theme is dark but mode isn't explicitly set */
@@ -87,6 +95,7 @@
   --primary: var(--forensic-primary-dark);
   --primary-hover: var(--forensic-primary-hover-dark);
   --border: var(--forensic-border-dark);
+  --primary-text: var(--forensic-primary-text-dark);
 }
 
 :root[data-theme="light"], html[data-theme="light"] {
@@ -96,6 +105,7 @@
   --primary: var(--forensic-primary-light);
   --primary-hover: var(--forensic-primary-hover-light);
   --border: var(--forensic-border-light);
+  --primary-text: var(--forensic-primary-text-light);
 }
 
 /* Fallback mappings for legacy color variables */
@@ -104,6 +114,7 @@
   --surface-base: var(--surface);
   --lavender: var(--text);
   --dark-slate: var(--border);
+  --light-green: var(--primary-text);
 }
 
 [data-theme="dark"] {
@@ -111,6 +122,7 @@
   --surface-base: var(--surface);
   --lavender: var(--text);
   --dark-slate: var(--border);
+  --light-green: #59EE99;
 }
 
 /* Page wrapper element styling */
@@ -214,34 +226,36 @@
 /* ==========================================================================
    Themed Input, Select, and Textarea Elements
    ========================================================================== */
-input:not([type="checkbox"]):not([type="radio"]),
-select,
-textarea {
-  background: var(--surface);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 14px;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
 
-input::placeholder,
-textarea::placeholder {
-  color: var(--text);
-  opacity: 0.5;
-}
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text);
+    opacity: 0.5;
+  }
 
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
-}
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
+  }
 
-select option {
-  background: var(--surface);
-  color: var(--text);
+  select option {
+    background: var(--surface);
+    color: var(--text);
+  }
 }
 
 /* ==========================================================================

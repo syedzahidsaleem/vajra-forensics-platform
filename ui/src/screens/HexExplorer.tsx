@@ -129,12 +129,20 @@ export const HexExplorer: React.FC = () => {
           </button>
 
           <div className="relative flex items-center">
-            <span className="absolute left-3 text-xs font-mono text-[var(--primary)] font-bold">LBA:</span>
+            <span className="absolute left-3 text-xs font-mono text-[var(--primary-text)] font-bold pointer-events-none select-none">
+              LBA:
+            </span>
             <input
               type="text"
               value={inputLba}
               onChange={(e) => setInputLba(e.target.value)}
-              className="pl-12 pr-3 w-32 font-mono text-xs font-bold"
+              style={{
+                fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+                lineHeight: 1.5,
+                padding: '8px 12px 8px 52px',
+                boxSizing: 'border-box',
+              }}
+              className="w-36 font-mono text-xs font-bold"
             />
           </div>
 
@@ -211,7 +219,7 @@ export const HexExplorer: React.FC = () => {
         <div className="xl:col-span-3 rounded-xl border border-[var(--border)]/30 bg-[var(--surface)] p-4 font-mono text-xs overflow-x-auto">
           {/* Header Row */}
           <div className="grid grid-cols-24 gap-1 text-[11px] text-[var(--text)]/50 pb-2 border-b border-[var(--border)]/20 font-bold select-none">
-            <div className="col-span-3 text-[var(--primary)]">Offset (h)</div>
+            <div className="col-span-3 text-[var(--primary-text)]">Offset (h)</div>
             <div className="col-span-13 grid grid-cols-16 gap-1 text-center">
               {Array.from({ length: 16 }, (_, i) => (
                 <span key={i}>{i.toString(16).toUpperCase().padStart(2, '0')}</span>
@@ -285,7 +293,7 @@ export const HexExplorer: React.FC = () => {
         {/* Byte Inspector Side Panel */}
         <div className="space-y-4">
           <div className="p-5 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-4 font-mono text-xs">
-            <div className="flex items-center gap-2 text-[var(--primary)] font-bold pb-2 border-b border-[var(--border)]/20">
+            <div className="flex items-center gap-2 text-[var(--primary-text)] font-bold pb-2 border-b border-[var(--border)]/20">
               <Binary className="w-4 h-4" />
               <span>Byte Inspector & Types</span>
             </div>
@@ -301,7 +309,7 @@ export const HexExplorer: React.FC = () => {
 
                 <div className="flex justify-between">
                   <span className="text-[var(--text)]/60">Hex Value:</span>
-                  <span className="text-[var(--primary)] font-bold">
+                  <span className="text-[var(--primary-text)] font-bold">
                     0x{selectedByteVal.toString(16).toUpperCase().padStart(2, '0')}
                   </span>
                 </div>
@@ -354,10 +362,10 @@ export const HexExplorer: React.FC = () => {
 
           <div className="p-4 rounded-xl bg-[var(--surface)]/60 border border-[var(--border)]/30 text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">
             <div className="flex items-center gap-1.5 font-bold text-[var(--text)]/90 font-mono mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-[var(--primary)]" />
+              <Sparkles className="w-3.5 h-3.5 text-[var(--primary-text)]" />
               <span>Forensic Significance</span>
             </div>
-            Raw disk sector viewing operates strictly under <code className="text-[var(--primary)] font-mono">ReadOnlyBlockSource</code> type invariants.
+            Raw disk sector viewing operates strictly under <code className="text-[var(--primary-text)] font-mono">ReadOnlyBlockSource</code> type invariants.
           </div>
         </div>
       </div>

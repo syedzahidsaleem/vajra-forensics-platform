@@ -181,7 +181,7 @@ export const RecoveryBrowser: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-[var(--primary)]">
+        <div className="flex items-center gap-2 text-xs font-mono text-[var(--primary-text)]">
           <Filter className="w-3.5 h-3.5" />
           <span>Active Filter: {selectedTier}</span>
         </div>
@@ -200,7 +200,7 @@ export const RecoveryBrowser: React.FC = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <OrbitalSpinner size={40} />
           <div className="text-center">
-            <p className="text-sm font-mono text-[var(--primary)]">Running recovery pipeline...</p>
+            <p className="text-sm font-mono text-[var(--primary-text)]">Running recovery pipeline...</p>
             <p className="text-xs text-[var(--text)]/40 mt-1">
               Scanning Tier 1 metadata → Tier 2 signatures → Tier 3 fragments
             </p>
@@ -259,7 +259,7 @@ export const RecoveryBrowser: React.FC = () => {
                       </div>
                       <div>
                         <span className="text-[var(--text)]/40 block">Status:</span>
-                        <span className="text-[var(--primary)]">{art.status}</span>
+                        <span className="text-[var(--primary-text)] font-semibold">{art.status}</span>
                       </div>
                     </div>
 
@@ -289,11 +289,11 @@ export const RecoveryBrowser: React.FC = () => {
           {/* 6-Signal Confidence Inspector */}
           <GlassCard hover={false} className="h-fit space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]/20">
-              <div className="flex items-center gap-2 text-[var(--primary)] font-mono font-bold text-xs">
+              <div className="flex items-center gap-2 text-[var(--primary-text)] font-mono font-bold text-xs">
                 <Sparkles className="w-4 h-4" />
                 <span>6-Signal Confidence Breakdown</span>
               </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--primary)]">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-semibold">
                 Verified
               </span>
             </div>
@@ -355,7 +355,7 @@ export const RecoveryBrowser: React.FC = () => {
             </div>
 
             <div className="p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)]/20 text-[10px] text-[var(--text)]/60 leading-relaxed font-mono space-y-1">
-              <span className="text-[var(--primary)] font-bold block">Recovery Provenance & Explainability:</span>
+              <span className="text-[var(--primary-text)] font-bold block">Recovery Provenance & Explainability:</span>
               All 6 independent validation signals evaluated. No corrupt extents or broken clusters detected.
             </div>
 

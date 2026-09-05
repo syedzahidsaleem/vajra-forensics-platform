@@ -139,7 +139,7 @@ export const DeviceSelection: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[11px] text-[#59EE99] font-bold">{device.path}</span>
+                      <span className="font-mono text-[11px] text-[var(--primary-text)] font-bold">{device.path}</span>
                       <FileTypeBadge type={device.media_type} />
                       {device.bus_type && (
                         <span className="px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--text)]/60 text-[9px] font-mono">
@@ -171,14 +171,14 @@ export const DeviceSelection: React.FC = () => {
                       <span>OS BOOT DISK (LOCKED)</span>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(89,238,153,0.08)] border border-[#59EE99]/20 text-[#59EE99]">
+                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 text-[var(--primary-text)]">
                       <CheckCircle className="w-3 h-3 flex-shrink-0" />
                       <span>Secondary Target Disk</span>
                     </div>
                   )}
 
                   {isWriteBlocked ? (
-                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(89,238,153,0.08)] border border-[#59EE99]/20 text-[#59EE99]">
+                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 text-[var(--primary-text)]">
                       <ShieldCheck className="w-3 h-3 flex-shrink-0" />
                       <span>Write-Blocker Active</span>
                     </div>
@@ -248,7 +248,7 @@ export const DeviceSelection: React.FC = () => {
           <div className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#59EE99]" />
+                <Activity className="w-4 h-4 text-[var(--primary-text)]" />
                 <span className="font-bold text-[var(--text)]">
                   Diagnostics: {inspectingDevice.model}
                 </span>
@@ -270,7 +270,7 @@ export const DeviceSelection: React.FC = () => {
                   <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1">
                     <p className="label-muted">Hardware Identity Fingerprint</p>
                     <div className="text-[10px] text-[var(--text)]/70 truncate">
-                      SHA-256 Digest: <span className="text-[#59EE99]">{fingerprint.sha256_hash}</span>
+                      SHA-256 Digest: <span className="text-[var(--primary-text)] font-semibold">{fingerprint.sha256_hash}</span>
                     </div>
                   </div>
                 )}
@@ -280,18 +280,18 @@ export const DeviceSelection: React.FC = () => {
                   <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-2">
                     <div className="flex items-center justify-between">
                       <p className="label-muted">SMART / NVMe Health Telemetry</p>
-                      <span className="px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] text-[9px] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">
                         {health.overall_health}
                       </span>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 text-[10px] text-[var(--text)]/70">
                       <div className="flex items-center gap-1">
-                        <Thermometer className="w-3 h-3 text-[#59EE99]" />
+                        <Thermometer className="w-3 h-3 text-[var(--primary-text)]" />
                         <span>Temp: {health.temperature_celsius}°C</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Cpu className="w-3 h-3 text-[#59EE99]" />
+                        <Cpu className="w-3 h-3 text-[var(--primary-text)]" />
                         <span>Power Hours: {health.power_on_hours}h</span>
                       </div>
                       <div>
@@ -324,7 +324,7 @@ export const DeviceSelection: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-[#59EE99]">Register Evidence Media</span>
+              <span className="font-bold text-[var(--primary-text)]">Register Evidence Media</span>
               <button
                 onClick={() => setRegisteringDevice(null)}
                 className="text-[var(--text)]/50 hover:text-[var(--text)]"
@@ -334,7 +334,7 @@ export const DeviceSelection: React.FC = () => {
             </div>
 
             {registeringSuccess ? (
-              <div className="py-6 text-center text-[#59EE99] space-y-1">
+              <div className="py-6 text-center text-[var(--primary-text)] space-y-1">
                 <CheckCircle className="w-6 h-6 mx-auto" />
                 <p>Registered to Case {activeCase.case_id}!</p>
               </div>

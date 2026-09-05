@@ -82,8 +82,8 @@ export const Sidebar: React.FC = () => {
             }`}
           />
           <span
-            className={`text-[9px] font-mono uppercase tracking-wider ${
-              isForensic ? 'text-[#59EE99]/70' : 'text-[#EF4444]/70'
+            className={`text-[9px] font-mono uppercase tracking-wider font-semibold ${
+              isForensic ? 'text-[var(--primary-text)]' : 'text-[#EF4444]'
             }`}
           >
             {isForensic ? 'Safety Active' : 'Sanitizer Armed'}
@@ -97,7 +97,7 @@ export const Sidebar: React.FC = () => {
             ${
               isForensic
                 ? 'border-[#EF4444]/30 text-[#EF4444]/70 hover:border-[#EF4444]/60 hover:text-[#EF4444] hover:bg-[rgba(239,68,68,0.05)]'
-                : 'border-[#59EE99]/30 text-[#59EE99]/70 hover:border-[#59EE99]/60 hover:text-[#59EE99] hover:bg-[rgba(89,238,153,0.05)]'
+                : 'border-[var(--primary-text)]/30 text-[var(--primary-text)] hover:border-[var(--primary-text)]/60 hover:text-[var(--primary-text)] hover:bg-[var(--primary-text)]/10'
             }
           `}
         >

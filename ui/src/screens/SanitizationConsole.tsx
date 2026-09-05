@@ -229,7 +229,7 @@ export const SanitizationConsole: React.FC = () => {
                 i + 1 === gateStep
                   ? 'bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/30 font-bold'
                   : i + 1 < gateStep
-                  ? 'bg-[rgba(89,238,153,0.08)] text-[#59EE99]/50'
+                  ? 'bg-[var(--primary-text)]/10 text-[var(--primary-text)]'
                   : 'text-[var(--text)]/30'
               }`}
             >
@@ -293,7 +293,7 @@ export const SanitizationConsole: React.FC = () => {
                   </div>
                   <div>
                     <p className="label-muted mb-1">Serial</p>
-                    <p className="text-[12px] font-mono text-[#59EE99] font-bold">{targetDevice.serial}</p>
+                    <p className="text-[12px] font-mono text-[var(--primary-text)] font-bold">{targetDevice.serial}</p>
                   </div>
                   <div>
                     <p className="label-muted mb-1">Capacity</p>
@@ -376,7 +376,7 @@ export const SanitizationConsole: React.FC = () => {
               <p className="label-muted">Decision Engine Recommendation</p>
               <h2 className="text-sm font-mono font-bold text-[var(--text)] mt-0.5">{recommendation.recommended_method}</h2>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99]">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] font-semibold">
               Assurance: {recommendation.assurance_level}
             </span>
           </div>
@@ -526,9 +526,9 @@ export const SanitizationConsole: React.FC = () => {
         <GlassCard hover={false} className="p-5 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]/15">
             <div className="flex items-center gap-2.5">
-              <CheckCircle className="w-5 h-5 text-[#59EE99]" />
+              <CheckCircle className="w-5 h-5 text-[var(--primary-text)]" />
               <div>
-                <h2 className="text-xs font-mono font-bold text-[#59EE99]">
+                <h2 className="text-xs font-mono font-bold text-[var(--primary-text)]">
                   Sanitization Certificate Generated
                 </h2>
                 <p className="text-[10px] font-mono text-[var(--text)]/50">
@@ -536,7 +536,7 @@ export const SanitizationConsole: React.FC = () => {
                 </p>
               </div>
             </div>
-            <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99]">
+            <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] font-bold">
               VERIFIED & SIGNED
             </span>
           </div>
@@ -545,17 +545,17 @@ export const SanitizationConsole: React.FC = () => {
             <div className="space-y-1 text-[var(--text)]/70">
               <p className="label-muted mb-1">Execution Record</p>
               <div>Model: <span className="text-[var(--text)]">{certificate.device_fingerprint.model}</span></div>
-              <div>Serial: <span className="text-[#59EE99]">{certificate.device_fingerprint.serial}</span></div>
-              <div>Method: <span className="text-[#59EE99]">{certificate.method_applied}</span></div>
+              <div>Serial: <span className="text-[var(--primary-text)] font-bold">{certificate.device_fingerprint.serial}</span></div>
+              <div>Method: <span className="text-[var(--primary-text)] font-bold">{certificate.method_applied}</span></div>
               <div>Operator: <span className="text-[var(--text)]">{certificate.operator_id}</span></div>
             </div>
 
             <div className="space-y-1">
               <p className="label-muted mb-1">5-Layer Verification</p>
-              <ul className="space-y-1 text-[10px] text-[#59EE99]">
+              <ul className="space-y-1 text-[10px] text-[var(--primary-text)]">
                 {certificate.layers_verified.map((layer: string, idx: number) => (
                   <li key={idx} className="flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3 text-[#59EE99] shrink-0" />
+                    <CheckCircle className="w-3 h-3 text-[var(--primary-text)] shrink-0" />
                     <span className="truncate">{layer}</span>
                   </li>
                 ))}

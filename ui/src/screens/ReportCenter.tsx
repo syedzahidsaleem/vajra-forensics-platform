@@ -150,7 +150,7 @@ export const ReportCenter: React.FC = () => {
       {/* Reports Grid */}
       <div className="space-y-3">
         <h2 className="text-base font-bold font-mono text-[var(--text)] flex items-center space-x-2">
-          <FileText className="w-4 h-4 text-[var(--primary)]" />
+          <FileText className="w-4 h-4 text-[var(--primary-text)]" />
           <span>Recorded Reports for {activeCase?.case_id || 'Active Case'}</span>
           <span className="text-xs text-[var(--text)]/50">({reports.length})</span>
         </h2>
@@ -166,7 +166,7 @@ export const ReportCenter: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-mono font-bold text-xs text-[var(--primary)]">{r.report_id}</span>
+                      <span className="font-mono font-bold text-xs text-[var(--primary-text)]">{r.report_id}</span>
                       <span className="px-2 py-0.5 rounded bg-[var(--border)]/20 text-[var(--text)]/80 border border-[var(--border)]/30 text-[10px] font-mono">
                         {r.report_type}
                       </span>
@@ -190,7 +190,7 @@ export const ReportCenter: React.FC = () => {
                 <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[var(--border)]/20">
                   <button
                     onClick={() => handleVerify(r)}
-                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary)]/15 hover:bg-[var(--primary)]/25 border border-[var(--primary)]/40 text-[var(--primary)] text-xs font-mono transition-colors cursor-pointer"
+                    className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary-text)]/10 hover:bg-[var(--primary-text)]/20 border border-[var(--primary-text)]/30 text-[var(--primary-text)] text-xs font-mono transition-colors cursor-pointer"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>Verify</span>
@@ -247,7 +247,7 @@ export const ReportCenter: React.FC = () => {
                 <div className="p-3.5 space-y-1.5 h-full rounded-[12px] bg-transparent cursor-pointer">
                   <div className="font-mono font-bold text-xs text-[var(--text)]">{meta.title}</div>
                   <p className="text-[11px] font-sans text-[var(--text)]/60 leading-relaxed">{meta.desc}</p>
-                  <div className="text-[10px] font-mono text-[var(--primary)] pt-1">Click to generate &rarr;</div>
+                  <div className="text-[10px] font-mono text-[var(--primary-text)] font-semibold pt-1">Click to generate &rarr;</div>
                 </div>
               </ShineBorder>
             );
@@ -349,7 +349,7 @@ export const ReportCenter: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
           <div className="w-full max-w-lg bg-[var(--surface)] border border-[var(--border)]/30 rounded-2xl p-6 shadow-2xl space-y-4 text-[var(--text)]">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-mono font-bold text-[var(--primary)] flex items-center space-x-2">
+              <h3 className="text-base font-mono font-bold text-[var(--primary-text)] flex items-center space-x-2">
                 <FileCheck className="w-5 h-5" />
                 <span>Generate Forensic Report</span>
               </h3>

@@ -154,7 +154,7 @@ export const AcquisitionWizard: React.FC = () => {
       {/* Step 1: Source & Case Selection */}
       {step === 1 && (
         <div className="p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-5 text-[var(--text)]">
-          <div className="flex items-center space-x-2 text-[var(--primary)] font-mono font-bold text-sm">
+          <div className="flex items-center space-x-2 text-[var(--primary-text)] font-mono font-bold text-sm">
             <HardDrive className="w-4 h-4" />
             <span>Step 1: Select Source Storage Media & Evidence Record</span>
           </div>
@@ -191,7 +191,7 @@ export const AcquisitionWizard: React.FC = () => {
             <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-2 text-xs font-mono">
               <div className="text-[var(--text)]/70 font-bold">Selected Source Inspection:</div>
               <div className="grid grid-cols-3 gap-2 text-[var(--text)]/80">
-                <div>Model: <span className="text-[var(--primary)] font-semibold">{targetDevice.model}</span></div>
+                <div>Model: <span className="text-[var(--primary-text)] font-semibold">{targetDevice.model}</span></div>
                 <div>Serial: <span className="text-[var(--text)]">{targetDevice.serial}</span></div>
                 <div>Capacity: <span className="text-emerald-400 font-bold">{formatBytes(targetDevice.size_bytes)}</span></div>
               </div>
@@ -218,7 +218,7 @@ export const AcquisitionWizard: React.FC = () => {
       {/* Step 2: Profile & Image Format */}
       {step === 2 && (
         <div className="p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-5 text-[var(--text)]">
-          <div className="flex items-center space-x-2 text-[var(--primary)] font-mono font-bold text-sm">
+          <div className="flex items-center space-x-2 text-[var(--primary-text)] font-mono font-bold text-sm">
             <Disc className="w-4 h-4" />
             <span>Step 2: Choose Acquisition Profile & Forensic Image Container</span>
           </div>
@@ -318,7 +318,7 @@ export const AcquisitionWizard: React.FC = () => {
       {/* Step 3: Hashing & Output Options */}
       {step === 3 && (
         <div className="p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-5 text-[var(--text)]">
-          <div className="flex items-center space-x-2 text-[var(--primary)] font-mono font-bold text-sm">
+          <div className="flex items-center space-x-2 text-[var(--primary-text)] font-mono font-bold text-sm">
             <Hash className="w-4 h-4" />
             <span>Step 3: Verification Hashing & Destination Options</span>
           </div>
@@ -421,7 +421,7 @@ export const AcquisitionWizard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <div className="flex items-center space-x-3">
-                  <span className="font-mono text-lg font-bold text-[var(--primary)]">
+                  <span className="font-mono text-lg font-bold text-[var(--primary-text)]">
                     {progress.state === 'completed'
                       ? 'Acquisition Completed Successfully'
                       : 'Live Imaging in Progress...'}
@@ -430,7 +430,7 @@ export const AcquisitionWizard: React.FC = () => {
                     className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase ${
                       progress.state === 'completed'
                         ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60'
-                        : 'bg-[var(--primary)]/15 text-[var(--primary)] border border-[var(--primary)]/40 animate-pulse'
+                        : 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] border border-[var(--primary-text)]/40 animate-pulse'
                     }`}
                   >
                     {progress.state}
@@ -467,7 +467,7 @@ export const AcquisitionWizard: React.FC = () => {
             <div className="grid grid-cols-4 gap-3 font-mono text-xs">
               <div className="p-3 bg-[var(--bg)]/50 rounded-xl border border-[var(--border)]/30">
                 <div className="text-[var(--text)]/50 text-[10px]">Current Throughput</div>
-                <div className="text-base font-bold text-[var(--primary)]">
+                <div className="text-base font-bold text-[var(--primary-text)]">
                   {progress.current_speed_mbps.toFixed(1)} MB/s
                 </div>
               </div>
@@ -498,7 +498,7 @@ export const AcquisitionWizard: React.FC = () => {
             <div className="p-4 rounded-xl bg-[var(--bg)]/50 border border-[var(--border)]/30 space-y-2 font-mono text-xs">
               <div className="flex items-center justify-between text-[var(--text)]/80 font-bold">
                 <span className="flex items-center space-x-1.5">
-                  <Activity className="w-4 h-4 text-[var(--primary)]" />
+                  <Activity className="w-4 h-4 text-[var(--primary-text)]" />
                   <span>Sector Map & LBA Block Visualization</span>
                 </span>
                 <span className="text-[10px] text-[var(--text)]/50">64 Sector Chunks</span>

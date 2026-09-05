@@ -136,13 +136,13 @@ export const CaseDashboard: React.FC = () => {
           {/* Top row */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <span className="text-[11px] font-mono text-[#59EE99] font-bold">
+              <span className="text-[11px] font-mono text-[var(--primary-text)] font-bold">
                 {activeCase.case_id}
               </span>
               <span className="text-[12px] font-sans text-[var(--text)]/90 font-medium">
                 {activeCase.case_name}
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.12)] text-[#59EE99] uppercase tracking-wider">
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] uppercase tracking-wider font-semibold">
                 {activeCase.status}
               </span>
             </div>
@@ -193,14 +193,14 @@ export const CaseDashboard: React.FC = () => {
                     <tr key={item.evidence_id} className="hover:bg-[var(--border)]/10 transition-colors">
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-[#59EE99] font-bold">{item.evidence_id}</span>
+                          <span className="text-[var(--primary-text)] font-bold">{item.evidence_id}</span>
                           <button
                             onClick={() => copyHash(item.sha256_hash, item.evidence_id)}
                             title={`Copy SHA-256: ${item.sha256_hash}`}
-                            className="text-[var(--text)]/50 hover:text-[#59EE99] transition-colors p-0.5"
+                            className="text-[var(--text)]/50 hover:text-[var(--primary-text)] transition-colors p-0.5"
                           >
                             {copiedId === item.evidence_id ? (
-                              <Check className="w-3 h-3 text-[#59EE99]" />
+                              <Check className="w-3 h-3 text-[var(--primary-text)]" />
                             ) : (
                               <Copy className="w-3 h-3" />
                             )}
@@ -220,7 +220,7 @@ export const CaseDashboard: React.FC = () => {
                         </button>
                         <button
                           onClick={() => setActiveScreen('acquisition')}
-                          className="px-2 py-1 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] hover:bg-[rgba(89,238,153,0.2)] text-[10px] font-mono border border-[#59EE99]/20 cursor-pointer"
+                          className="px-2 py-1 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] hover:bg-[var(--primary-text)]/20 text-[10px] font-mono border border-[var(--primary-text)]/30 cursor-pointer"
                         >
                           Acquire
                         </button>
@@ -274,8 +274,8 @@ export const CaseDashboard: React.FC = () => {
                 }}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-mono text-[#59EE99] font-bold">{c.case_id}</span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99]">
+                  <span className="text-[11px] font-mono text-[var(--primary-text)] font-bold">{c.case_id}</span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] font-semibold">
                     {c.status}
                   </span>
                 </div>
@@ -296,7 +296,7 @@ export const CaseDashboard: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-6 space-y-4 shadow-2xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-mono font-bold text-[#59EE99] uppercase tracking-wider">
+              <h3 className="text-xs font-mono font-bold text-[var(--primary-text)] uppercase tracking-wider">
                 Create Forensic Case
               </h3>
               <button
@@ -381,7 +381,7 @@ export const CaseDashboard: React.FC = () => {
           <div className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-[#59EE99]" />
+                <History className="w-4 h-4 text-[var(--primary-text)]" />
                 <span className="font-bold text-[var(--text)]">
                   Custody Ledger: {selectedEvidenceForCustody.evidence_id}
                 </span>
@@ -396,7 +396,7 @@ export const CaseDashboard: React.FC = () => {
 
             <div className="p-3 bg-[var(--bg)]/50 rounded-lg space-y-1 text-[10px] text-[var(--text)]/70">
               <div><span className="text-[var(--text)]/50">Source:</span> {selectedEvidenceForCustody.source_path}</div>
-              <div><span className="text-[var(--text)]/50">Custody Holder:</span> <span className="text-[#59EE99]">{selectedEvidenceForCustody.custody_holder || 'INV-4402-NITYA'}</span></div>
+              <div><span className="text-[var(--text)]/50">Custody Holder:</span> <span className="text-[var(--primary-text)] font-semibold">{selectedEvidenceForCustody.custody_holder || 'INV-4402-NITYA'}</span></div>
               <div className="truncate"><span className="text-[var(--text)]/50">SHA-256:</span> {selectedEvidenceForCustody.sha256_hash}</div>
             </div>
 
@@ -407,13 +407,13 @@ export const CaseDashboard: React.FC = () => {
                 {custodyHistory.map((ev: CustodyEvent, i: number) => (
                   <div key={i} className="p-3 bg-[var(--bg)]/40 rounded-lg border border-[var(--border)]/20 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="px-1.5 py-0.5 rounded bg-[rgba(89,238,153,0.1)] text-[#59EE99] text-[9px] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">
                         {ev.event_type}
                       </span>
                       <span className="text-[var(--text)]/50 text-[9px]">{ev.timestamp}</span>
                     </div>
                     <div className="text-[var(--text)]/90">
-                      Transfer: <span className="text-[#59EE99]">{ev.operator_from}</span> &rarr; <span className="text-[#AA77A9]">{ev.operator_to}</span>
+                      Transfer: <span className="text-[var(--primary-text)] font-semibold">{ev.operator_from}</span> &rarr; <span className="text-[#AA77A9]">{ev.operator_to}</span>
                     </div>
                     <div className="text-[var(--text)]/60 text-[10px]">Location: {ev.location} | Purpose: {ev.purpose}</div>
                   </div>
