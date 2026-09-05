@@ -93,16 +93,11 @@ export const DeviceSelection: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-3">
             <h1 className="text-lg font-sans font-medium text-[var(--text)]">
               {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
             </h1>
           </div>
-          <p className="text-[11px] text-[var(--text)]/50 font-sans">
-            {isForensic
-              ? 'Real-time hardware enumeration, SMART/NVMe telemetry, write-blocker detection, and SHA-256 fingerprinting.'
-              : 'Target disk verification and strict OS-disk hard refusal prior to sanitization gate.'}
-          </p>
         </div>
 
         <GlowButton

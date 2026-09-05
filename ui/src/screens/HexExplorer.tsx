@@ -101,14 +101,11 @@ export const HexExplorer: React.FC = () => {
       {/* Header & Title */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-3">
             <h1 className="text-lg font-sans font-medium text-[var(--text)]">
               Hex Data & Raw Sector Explorer
             </h1>
           </div>
-          <p className="text-[11px] text-[var(--text)]/50 font-sans">
-            Raw byte inspection, sector boundary mapping, fragment provenance overlay, and colored block storage visualization.
-          </p>
         </div>
 
         {/* LBA Navigation Bar */}

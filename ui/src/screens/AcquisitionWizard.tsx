@@ -115,14 +115,11 @@ export const AcquisitionWizard: React.FC = () => {
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-3">
             <h1 className="text-lg font-sans font-medium text-[var(--text)]">
               Forensic Evidence Acquisition Wizard
             </h1>
           </div>
-          <p className="text-[11px] text-[var(--text)]/50 font-sans">
-            Bit-stream physical/logical imaging, E01 Expert Witness compression, bad-sector retry engine, and dual-phase rolling hash verification.
-          </p>
         </div>
 
         {/* Step Indicator */}

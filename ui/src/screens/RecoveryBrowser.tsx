@@ -147,7 +147,6 @@ export const RecoveryBrowser: React.FC = () => {
       {/* Page Header */}
       <SectionHeader
         title="Recovery Browser & Artifact Inspector"
-        subtitle="Browse recovered files across Tier-1 (metadata), Tier-2 (carving), and Tier-3 (bifragment reconstruction) with 6-signal confidence breakdowns."
         tags={['FORENSIC READ-ONLY']}
         actions={
           <GlowButton
