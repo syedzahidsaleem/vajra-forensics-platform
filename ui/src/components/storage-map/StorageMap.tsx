@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Layers, Database, Info } from 'lucide-react';
+import { Layers, Database, Info, ChevronDown } from 'lucide-react';
 
 export interface StorageRegion {
   startLba: number;
@@ -17,6 +17,8 @@ export interface StorageMapProps {
   highlightArtifact?: { startLba: number; blockCount: number; name?: string } | null;
   onRegionClick?: (startLba: number, blockCount: number) => void;
   className?: string;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
 }
 
 export const StorageMap: React.FC<StorageMapProps> = ({
@@ -27,7 +29,10 @@ export const StorageMap: React.FC<StorageMapProps> = ({
   highlightArtifact,
   onRegionClick,
   className = '',
+  collapsible = true,
+  defaultCollapsed = false,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(!defaultCollapsed);
   const [hoveredBlock, setHoveredBlock] = useState<{
     index: number;
     startLba: number;
@@ -117,14 +122,21 @@ export const StorageMap: React.FC<StorageMapProps> = ({
 
   return (
     <div
-      className={`rounded-xl border p-4 transition-all duration-200 ${
+      className={`rounded-xl border transition-all duration-200 shadow-md ${
+        isExpanded ? 'p-4' : 'px-4 py-2.5'
+      } ${
         isSanitizing
-          ? 'bg-zinc-950/80 border-amber-900/40 shadow-lg shadow-amber-950/20'
-          : 'glass shadow-lg'
+          ? 'bg-zinc-950/80 border-amber-900/40 shadow-amber-950/20'
+          : 'glass'
       } ${className}`}
     >
-      {/* Header & Meta */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+      {/* Header & Meta (Clickable if collapsible) */}
+      <div
+        onClick={collapsible ? () => setIsExpanded(!isExpanded) : undefined}
+        className={`flex flex-wrap items-center justify-between gap-2 ${
+          collapsible ? 'cursor-pointer select-none group' : ''
+        } ${isExpanded ? 'mb-3' : ''}`}
+      >
         <div className="flex items-center gap-2">
           <Layers className={`w-4 h-4 ${isSanitizing ? 'text-amber-500' : 'text-[#0DB8D3]'}`} />
           <span className={`text-xs font-semibold uppercase tracking-wider ${isSanitizing ? 'text-slate-300' : 'text-[var(--forensic-text-primary)]'}`}>
@@ -135,7 +147,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
           </span>
         </div>
 
-        {/* Legend */}
+        {/* Legend + Expand Chevron */}
         <div className="flex items-center gap-3 text-[11px] font-medium text-[var(--text)]/70">
           {isSanitizing ? (
             <>
@@ -172,55 +184,79 @@ export const StorageMap: React.FC<StorageMapProps> = ({
               </div>
             </>
           )}
+
+          {collapsible && (
+            <div
+              className="flex items-center gap-1.5 pl-3 border-l border-[var(--border)]/30 text-xs font-mono text-[var(--primary-text)] group-hover:brightness-110"
+              title={isExpanded ? 'Collapse Block Map' : 'Expand Block Map'}
+            >
+              <span className="text-[10px] tracking-wider uppercase font-semibold">
+                {isExpanded ? 'Collapse' : 'Expand'}
+              </span>
+              <ChevronDown
+                className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  isExpanded ? 'rotate-0' : '-rotate-90'
+                }`}
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Grid Canvas */}
-      <div className="grid grid-cols-16 sm:grid-cols-32 gap-1 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border)]/20 mb-2">
-        {segments.map((seg) => (
-          <button
-            key={seg.index}
-            type="button"
-            onClick={() => handleCellClick(seg.startLba, seg.endLba, seg.index)}
-            onMouseEnter={() =>
-              setHoveredBlock({
-                index: seg.index,
-                startLba: seg.startLba,
-                endLba: seg.endLba,
-                status: seg.status,
-              })
-            }
-            onMouseLeave={() => setHoveredBlock(null)}
-            className={`h-4.5 rounded-[2px] border transition-all duration-100 cursor-pointer ${
-              seg.colorClass
-            } ${selectedBlockIndex === seg.index ? 'ring-2 ring-[var(--primary)] scale-110 z-10' : ''}`}
-            title={`LBA ${seg.startLba.toLocaleString()} - ${seg.endLba.toLocaleString()} (${seg.status})`}
-          />
-        ))}
-      </div>
-
-      {/* Interactive Telemetry Tooltip / Footer */}
-      <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text)]/70 px-1">
-        <div className="flex items-center gap-2">
-          <Database className="w-3.5 h-3.5 text-[var(--text)]/50" />
-          <span>LBA Range: 0 .. {totalBlocks.toLocaleString()}</span>
-        </div>
-
-        {hoveredBlock ? (
-          <div className="flex items-center gap-2 text-[var(--text)]">
-            <Info className="w-3 h-3 text-cyan-400" />
-            <span>
-              Segment #{hoveredBlock.index}: LBA [{hoveredBlock.startLba.toLocaleString()} ..{' '}
-              {hoveredBlock.endLba.toLocaleString()}]
-            </span>
-            <span className="capitalize px-1.5 py-0.2 rounded bg-[var(--surface)] text-[10px] text-amber-500 dark:text-amber-300 font-sans border border-[var(--border)]/30">
-              {hoveredBlock.status.replace('_', ' ')}
-            </span>
+      {/* Expandable Content: Grid Canvas & Telemetry */}
+      {isExpanded && (
+        <>
+          {/* Grid Canvas */}
+          <div className="grid grid-cols-16 sm:grid-cols-32 gap-1 p-2 rounded-lg bg-[var(--bg)]/40 border border-[var(--border)]/20 mb-2">
+            {segments.map((seg) => (
+              <button
+                key={seg.index}
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCellClick(seg.startLba, seg.endLba, seg.index);
+                }}
+                onMouseEnter={() =>
+                  setHoveredBlock({
+                    index: seg.index,
+                    startLba: seg.startLba,
+                    endLba: seg.endLba,
+                    status: seg.status,
+                  })
+                }
+                onMouseLeave={() => setHoveredBlock(null)}
+                className={`h-4.5 rounded-[2px] border transition-all duration-100 cursor-pointer ${
+                  seg.colorClass
+                } ${selectedBlockIndex === seg.index ? 'ring-2 ring-[var(--primary)] scale-110 z-10' : ''}`}
+                title={`LBA ${seg.startLba.toLocaleString()} - ${seg.endLba.toLocaleString()} (${seg.status})`}
+              />
+            ))}
           </div>
-        ) : (
-          <span className="text-[var(--text)]/40 italic">Hover or click block to inspect sector provenance</span>
-        )}
-      </div>
+
+          {/* Interactive Telemetry Tooltip / Footer */}
+          <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text)]/70 px-1">
+            <div className="flex items-center gap-2">
+              <Database className="w-3.5 h-3.5 text-[var(--text)]/50" />
+              <span>LBA Range: 0 .. {totalBlocks.toLocaleString()}</span>
+            </div>
+
+            {hoveredBlock ? (
+              <div className="flex items-center gap-2 text-[var(--text)]">
+                <Info className="w-3 h-3 text-cyan-400" />
+                <span>
+                  Segment #{hoveredBlock.index}: LBA [{hoveredBlock.startLba.toLocaleString()} ..{' '}
+                  {hoveredBlock.endLba.toLocaleString()}]
+                </span>
+                <span className="capitalize px-1.5 py-0.2 rounded bg-[var(--surface)] text-[10px] text-amber-500 dark:text-amber-300 font-sans border border-[var(--border)]/30">
+                  {hoveredBlock.status.replace('_', ' ')}
+                </span>
+              </div>
+            ) : (
+              <span className="text-[var(--text)]/40 italic">Hover or click block to inspect sector provenance</span>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };

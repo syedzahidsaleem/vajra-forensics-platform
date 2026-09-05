@@ -97,87 +97,28 @@ export const HexExplorer: React.FC = () => {
   };
 
   return (
-    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
-      {/* Header & Title */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
-              Hex Data & Raw Sector Explorer
-            </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
-              §32
-            </span>
-          </div>
-          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
-            Raw byte inspection, sector boundary mapping, fragment provenance overlay, and colored block storage visualization.
-          </p>
+    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-5">
+      {/* Header & Device Context */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-sans font-medium text-[var(--text)]">
+            Hex Data & Raw Sector Explorer
+          </h1>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] border border-[var(--primary-text)]/30 font-semibold">
+            {selectedDevice?.path || '\\\\.\\PhysicalDrive0'}
+          </span>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--surface)] text-[var(--text)]/60 border border-[var(--border)]/30">
+            Sector #{currentLba.toLocaleString()}
+          </span>
         </div>
-
-        {/* LBA Navigation Bar */}
-        <form onSubmit={handleJumpLba} className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              const next = Math.max(0, currentLba - 1);
-              setCurrentLba(next);
-              setInputLba(String(next));
-              setTargetHexLba(next);
-            }}
-            disabled={currentLba <= 0}
-            className="p-2 rounded-lg bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] disabled:opacity-40"
-            title="Previous Sector"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-
-          <div className="relative flex items-center">
-            <span className="absolute left-3 text-xs font-mono text-[var(--forensic-accent)] font-bold">LBA:</span>
-            <input
-              type="text"
-              value={inputLba}
-              onChange={(e) => setInputLba(e.target.value)}
-              className="pl-12 pr-3 py-1.5 w-32 rounded-lg bg-[rgba(15,36,48,0.7)] border border-[var(--forensic-border)] text-[var(--forensic-text-primary)] font-mono text-xs font-bold focus:outline-none focus:border-[var(--forensic-accent)]"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="px-3 py-1.5 rounded-lg bg-[var(--forensic-accent)] text-[#0F2430] hover:bg-[#0DB8D3]/90 font-mono text-xs font-bold flex items-center gap-1.5 shadow-md"
-          >
-            <Search className="w-3.5 h-3.5" />
-            <span>Jump</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              const next = currentLba + 1;
-              setCurrentLba(next);
-              setInputLba(String(next));
-              setTargetHexLba(next);
-            }}
-            className="p-2 rounded-lg bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]"
-            title="Next Sector"
-          >
-            <ArrowRight className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            onClick={handleCopyHex}
-            className="p-2 rounded-lg bg-[rgba(15,36,48,0.6)] border border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]"
-            title="Copy Raw Hex Dump"
-          >
-            {copied ? <Check className="w-4 h-4 text-[var(--forensic-accent)]" /> : <Copy className="w-4 h-4" />}
-          </button>
-        </form>
       </div>
 
-      {/* Synchronized Storage Map */}
+      {/* Collapsible Storage Map Accordion (Collapsed by default) */}
       <StorageMap
         sourcePath={selectedDevice?.path || '\\\\.\\PhysicalDrive0'}
         mode="forensic"
+        collapsible={true}
+        defaultCollapsed={true}
         highlightArtifact={{ startLba: currentLba, blockCount: 1, name: `Sector LBA ${currentLba}` }}
         onRegionClick={(start) => {
           setCurrentLba(start);
@@ -186,42 +127,163 @@ export const HexExplorer: React.FC = () => {
         }}
       />
 
-      {/* Fragment Provenance Overlay Legend */}
-      <div className="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        <div className="flex items-center gap-2 text-[var(--text)]/80">
-          <Layers className="w-4 h-4 text-cyan-400" />
-          <span className="font-bold">Bifragment Reconstruction Provenance Overlay:</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-4 text-[11px]">
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-emerald-500/30 border border-emerald-400" />
-            <span className="text-emerald-400">Fragment 1 [LBA 2048..2247]</span>
+      {/* Hex Navigation & Controls Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 py-1">
+        {/* Left: LBA Jump & Quick Navigation */}
+        <form onSubmit={handleJumpLba} className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center bg-[var(--surface)] rounded-lg border border-[var(--border)]/40 p-0.5 shadow-sm">
+            <button
+              type="button"
+              onClick={() => {
+                const next = Math.max(0, currentLba - 1);
+                setCurrentLba(next);
+                setInputLba(String(next));
+                setTargetHexLba(next);
+              }}
+              disabled={currentLba <= 0}
+              className="p-1.5 rounded hover:bg-[var(--border)]/20 text-[var(--text)]/80 hover:text-[var(--text)] disabled:opacity-30 cursor-pointer transition-colors"
+              title="Previous Sector (LBA - 1)"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </button>
+
+            <div className="relative flex items-center px-1">
+              <span className="text-xs font-mono text-[var(--primary-text)] font-bold pr-1 select-none pointer-events-none">
+                LBA:
+              </span>
+              <input
+                type="text"
+                value={inputLba}
+                onChange={(e) => setInputLba(e.target.value)}
+                style={{
+                  fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+                  lineHeight: 1.4,
+                  padding: '4px 8px',
+                  boxSizing: 'border-box',
+                }}
+                className="w-24 font-mono text-xs font-bold bg-transparent border-0 focus:ring-0 text-[var(--text)]"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                const next = currentLba + 1;
+                setCurrentLba(next);
+                setInputLba(String(next));
+                setTargetHexLba(next);
+              }}
+              className="p-1.5 rounded hover:bg-[var(--border)]/20 text-[var(--text)]/80 hover:text-[var(--text)] cursor-pointer transition-colors"
+              title="Next Sector (LBA + 1)"
+            >
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-amber-500/30 border border-amber-400" />
-            <span className="text-amber-400">Gap Region [100 Sectors]</span>
+
+          <button
+            type="submit"
+            className="px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all"
+          >
+            <Search className="w-3.5 h-3.5" />
+            <span>Jump</span>
+          </button>
+
+          {/* Quick Preset Bookmarks */}
+          <div className="flex items-center gap-1.5 pl-1">
+            <span className="text-[10px] font-mono text-[var(--text)]/40 uppercase">Presets:</span>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentLba(2048);
+                setInputLba('2048');
+                setTargetHexLba(2048);
+              }}
+              className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
+                currentLba === 2048
+                  ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold border border-[var(--primary-text)]/30'
+                  : 'text-[var(--text)]/60 hover:text-[var(--text)] hover:bg-[var(--surface)]'
+              }`}
+            >
+              2048 (PDF)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setCurrentLba(65400);
+                setInputLba('65400');
+                setTargetHexLba(65400);
+              }}
+              className={`px-2 py-0.5 rounded text-[10px] font-mono transition-all cursor-pointer ${
+                currentLba === 65400
+                  ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold border border-[var(--primary-text)]/30'
+                  : 'text-[var(--text)]/60 hover:text-[var(--text)] hover:bg-[var(--surface)]'
+              }`}
+            >
+              65400 (JPEG)
+            </button>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded bg-cyan-500/30 border border-cyan-400" />
-            <span className="text-cyan-400">Fragment 2 [LBA 2348..2547]</span>
-          </div>
+        </form>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleCopyHex}
+            className="px-3 py-1.5 rounded-lg bg-[var(--surface)] border border-[var(--border)]/40 text-[var(--text)]/80 hover:text-[var(--text)] hover:border-[var(--border)]/70 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+            title="Copy Raw Hex Dump"
+          >
+            {copied ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400 font-semibold">Copied Dump!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5" />
+                <span>Copy Hex</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
       {/* Hex Dump & Byte Inspector Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        {/* 16-Byte Hex Virtualized Table */}
-        <div className="xl:col-span-3 rounded-xl border border-[var(--border)]/30 bg-[var(--surface)] p-4 font-mono text-xs overflow-x-auto">
-          {/* Header Row */}
-          <div className="grid grid-cols-24 gap-1 text-[11px] text-[var(--text)]/50 pb-2 border-b border-[var(--border)]/20 font-bold select-none">
-            <div className="col-span-3 text-[var(--primary-text)]">Offset (h)</div>
-            <div className="col-span-13 grid grid-cols-16 gap-1 text-center">
-              {Array.from({ length: 16 }, (_, i) => (
-                <span key={i}>{i.toString(16).toUpperCase().padStart(2, '0')}</span>
-              ))}
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-5 items-start">
+        {/* 16-Byte Hex Virtualized Table (Hero Viewport) */}
+        <div className="xl:col-span-3 rounded-xl border border-[var(--border)]/30 bg-[var(--surface)] shadow-md overflow-hidden flex flex-col font-mono text-xs">
+          {/* Integrated Fragment Provenance Overlay Strip */}
+          <div className="px-4 py-2.5 bg-[var(--bg)]/40 border-b border-[var(--border)]/20 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+            <div className="flex items-center gap-2 text-[var(--text)]/80">
+              <Layers className="w-3.5 h-3.5 text-cyan-400" />
+              <span className="font-semibold text-[11px]">Bifragment Reconstruction Provenance:</span>
             </div>
-            <div className="col-span-8 text-center text-[var(--text)]/60">Decoded Text</div>
+            <div className="flex flex-wrap items-center gap-3 text-[10px]">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500/30 border border-emerald-400 inline-block" />
+                <span className="text-emerald-400 font-medium">Frag 1 [LBA 2048..2247]</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm bg-amber-500/30 border border-amber-400 inline-block" />
+                <span className="text-amber-400 font-medium">Gap [100 Sectors]</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-sm bg-cyan-500/30 border border-cyan-400 inline-block" />
+                <span className="text-cyan-400 font-medium">Frag 2 [LBA 2348..2547]</span>
+              </div>
+            </div>
           </div>
+
+          <div className="p-4 overflow-x-auto">
+            {/* Header Row */}
+            <div className="grid grid-cols-24 gap-1 text-[11px] text-[var(--text)]/50 pb-2 border-b border-[var(--border)]/20 font-bold select-none">
+              <div className="col-span-3 text-[var(--primary-text)]">Offset (h)</div>
+              <div className="col-span-13 grid grid-cols-16 gap-1 text-center">
+                {Array.from({ length: 16 }, (_, i) => (
+                  <span key={i}>{i.toString(16).toUpperCase().padStart(2, '0')}</span>
+                ))}
+              </div>
+              <div className="col-span-8 text-center text-[var(--text)]/60">Decoded Text</div>
+            </div>
 
           {/* Data Rows */}
           <div className="divide-y divide-[var(--border)]/10 pt-1">
@@ -285,7 +347,15 @@ export const HexExplorer: React.FC = () => {
           </div>
         </div>
 
-        {/* Byte Inspector Side Panel */}
+        {/* Hex Table Status Footer */}
+        <div className="px-4 py-2 bg-[var(--bg)]/40 border-t border-[var(--border)]/20 flex flex-wrap items-center justify-between text-[10px] text-[var(--text)]/50 select-none font-mono">
+          <span>Sector Size: 512 Bytes · LBA {currentLba.toLocaleString()}</span>
+          <span>Range: 0x00000000 — 0x000001FF</span>
+          <span className="text-[var(--primary-text)] font-semibold">Forensic Read-Only Invariant</span>
+        </div>
+      </div>
+
+      {/* Byte Inspector Side Panel */}
         <div className="space-y-4">
           <div className="p-5 rounded-xl bg-[var(--surface)] border border-[var(--border)]/30 space-y-4 font-mono text-xs">
             <div className="flex items-center gap-2 text-[var(--primary-text)] font-bold pb-2 border-b border-[var(--border)]/20">

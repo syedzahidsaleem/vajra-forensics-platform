@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ScreenId } from '../../types';
 import {
@@ -9,6 +9,7 @@ import {
   Binary,
   FileText,
   AlertTriangle,
+  ChevronDown,
 } from 'lucide-react';
 
 interface NavItem {
@@ -20,6 +21,27 @@ interface NavItem {
 export const Sidebar: React.FC = () => {
   const { mode, activeScreen, setActiveScreen, setMode } = useApp();
   const isForensic = mode === 'forensic';
+
+  const [isWorkflowsOpen, setIsWorkflowsOpen] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('vajra_sidebar_workflows_expanded');
+      return saved !== null ? saved === 'true' : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const toggleWorkflows = () => {
+    setIsWorkflowsOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('vajra_sidebar_workflows_expanded', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   const forensicNav: NavItem[] = [
     { id: 'dashboard', label: 'Case Dashboard', icon: <LayoutDashboard className="w-3.5 h-3.5 shrink-0" /> },
@@ -46,17 +68,26 @@ export const Sidebar: React.FC = () => {
           : 'bg-[rgba(0,18,11,0.6)] border-r border-[rgba(89,238,153,0.04)]'
       }`}
     >
-      {/* Section label */}
-      <p
-        className={`px-4 mb-3 text-[9px] font-mono uppercase tracking-[0.15em] ${
-          isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/25'
+      {/* Section label — Collapsible Accordion Header */}
+      <button
+        type="button"
+        onClick={toggleWorkflows}
+        className={`w-full flex items-center justify-between px-4 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] transition-colors cursor-pointer group ${
+          isForensic ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'text-[#D8E4FF]/25 hover:text-[var(--text)]'
         }`}
+        title={isWorkflowsOpen ? 'Collapse Workflows' : 'Expand Workflows'}
       >
-        {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
-      </p>
+        <span className="truncate">{isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}</span>
+        <ChevronDown
+          className={`w-3 h-3 shrink-0 text-[var(--text)]/40 group-hover:text-[var(--text)] transition-transform duration-200 ${
+            isWorkflowsOpen ? 'rotate-0' : '-rotate-90'
+          }`}
+        />
+      </button>
 
       {/* Nav links */}
-      <nav className="space-y-0.5">
+      {isWorkflowsOpen && (
+        <nav className="space-y-0.5">
         {currentNav.map((item) => {
           const isActive = activeScreen === item.id;
           return (
@@ -93,7 +124,8 @@ export const Sidebar: React.FC = () => {
             </button>
           );
         })}
-      </nav>
+        </nav>
+      )}
 
       {/* Bottom section — Safety Engine & Slim Switch Button */}
       <div className="mt-auto px-4 pb-2">
