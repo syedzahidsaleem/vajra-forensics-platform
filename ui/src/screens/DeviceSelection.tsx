@@ -93,25 +93,9 @@ export const DeviceSelection: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
-              {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
-            </h1>
-            <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded ${
-                isForensic
-                  ? 'bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]'
-                  : 'bg-[rgba(89,238,153,0.08)] text-[#59EE99]/70 border border-[#59EE99]/15'
-              }`}
-            >
-              §23, §24
-            </span>
-          </div>
-          <p className={`text-[11px] font-sans ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/30'}`}>
-            {isForensic
-              ? 'Real-time hardware enumeration, SMART/NVMe telemetry, write-blocker detection, and SHA-256 fingerprinting.'
-              : 'Target disk verification and strict OS-disk hard refusal (§24) prior to sanitization gate.'}
-          </p>
+          <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+            {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
+          </h1>
         </div>
 
         <GlowButton
@@ -127,8 +111,8 @@ export const DeviceSelection: React.FC = () => {
         </GlowButton>
       </div>
 
-      {/* Device Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Device List — Horizontal Bars */}
+      <div className="flex flex-col gap-3 w-full">
         {devices.map((device: DeviceDescriptor) => {
           const isSystem = device.is_system_disk;
           const isWriteBlocked = device.is_write_blocked;
@@ -138,11 +122,11 @@ export const DeviceSelection: React.FC = () => {
             <div
               key={device.path}
               style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
-              className="p-4 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col justify-between gap-3 h-full shadow-sm"
+              className="p-4 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 shadow-sm w-full"
             >
-              {/* Drive Top Row */}
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
+              {/* Left: Drive Info + Capacity */}
+              <div className="flex items-center gap-4 min-w-0 flex-1">
+                <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className={`font-mono text-xs font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
                       {devInfo.primary}
@@ -157,15 +141,17 @@ export const DeviceSelection: React.FC = () => {
                       </span>
                     )}
                   </div>
-                  <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
-                    {device.model}
-                  </h3>
-                  <div className={`text-[10px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/35'}`}>
-                    S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
+                  <div className="flex items-baseline gap-2.5 flex-wrap">
+                    <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                      {device.model}
+                    </h3>
+                    <span className={`text-[10px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/35'}`}>
+                      S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)]' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
+                    </span>
                   </div>
                 </div>
 
-                <div className="text-right shrink-0">
+                <div className="pl-3 border-l border-[var(--border)]/20 shrink-0">
                   <div className={`text-sm font-mono font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
                     {formatBytes(device.size_bytes)}
                   </div>
@@ -175,35 +161,35 @@ export const DeviceSelection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Safety Badges */}
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[rgba(13,184,211,0.15)] text-[10px] font-mono">
+              {/* Middle: Safety Badges */}
+              <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono shrink-0">
                 {isSystem ? (
-                  <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444]">
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444] whitespace-nowrap">
                     <AlertOctagon className="w-3 h-3 flex-shrink-0" />
                     <span>OS BOOT DISK (LOCKED §24)</span>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-1.5 p-1.5 rounded border ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
+                  <div className={`flex items-center gap-1.5 px-2 py-1 rounded border whitespace-nowrap ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
                     <CheckCircle className="w-3 h-3 flex-shrink-0" />
                     <span>Secondary Target Disk</span>
                   </div>
                 )}
 
                 {isWriteBlocked ? (
-                  <div className={`flex items-center gap-1.5 p-1.5 rounded border ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
+                  <div className={`flex items-center gap-1.5 px-2 py-1 rounded border whitespace-nowrap ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
                     <ShieldCheck className="w-3 h-3 flex-shrink-0" />
                     <span>Write-Blocker Active</span>
                   </div>
                 ) : (
-                  <div className={`flex items-center gap-1.5 p-1.5 rounded border ${isForensic ? 'bg-[rgba(15,36,48,0.5)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/40'}`}>
+                  <div className={`flex items-center gap-1.5 px-2 py-1 rounded border whitespace-nowrap ${isForensic ? 'bg-[rgba(15,36,48,0.5)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] border-[rgba(89,238,153,0.06)] text-[#D8E4FF]/40'}`}>
                     <ShieldAlert className="w-3 h-3 flex-shrink-0 text-amber-400" />
                     <span>Direct Device Access</span>
                   </div>
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between pt-2 border-t border-[rgba(89,238,153,0.06)]">
+              {/* Right: Action Buttons */}
+              <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
                 <GlowButton
                   variant="ghost"
                   size="sm"

@@ -210,15 +210,12 @@ export const SanitizationConsole: React.FC = () => {
     <div data-mode="sanitize" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
       {/* Quiet Imposing Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 mb-1">
+        <div className="flex items-center gap-3">
           <span className="text-[#EF4444] opacity-60 text-sm">🔥</span>
           <h1 className="text-lg font-sans font-medium text-[#EF4444]/90">
             Destructive Sanitization Console
           </h1>
         </div>
-        <p className="text-[11px] text-[var(--text)]/40 font-sans">
-          NIST SP 800-88 · IEEE 2883-2022 · mandatory 7-phase non-collapsible safety gate
-        </p>
       </div>
 
       {/* Slim Step Breadcrumb */}

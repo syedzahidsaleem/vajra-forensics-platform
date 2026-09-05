@@ -142,7 +142,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
         <div className="flex items-center gap-2">
           <Layers className={`w-4 h-4 ${isSanitizing ? 'text-amber-500' : 'text-[#0DB8D3]'}`} />
           <span className={`text-xs font-semibold uppercase tracking-wider ${isSanitizing ? 'text-slate-300' : 'text-[var(--forensic-text-primary)]'}`}>
-            LBA Block Allocation & Sector Map (§32)
+            LBA Block Allocation & Sector Map
           </span>
           <div className={`flex items-center gap-1.5 text-[11px] font-mono px-2 py-0.5 rounded border ${isSanitizing ? 'bg-slate-800 border-slate-700' : 'bg-[rgba(13,184,211,0.1)] border-[var(--forensic-border)]'}`}>
             <span className={`font-bold ${isSanitizing ? 'text-slate-200' : 'text-[var(--forensic-text-primary)]'}`}>

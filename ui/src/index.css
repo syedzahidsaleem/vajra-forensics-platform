@@ -31,14 +31,26 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* Scrollbars */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--dark-slate);
-  border-radius: 2px;
+/* Scrollbars — functional, visible & themed */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--light-green); }
+::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 60%, transparent) transparent;
+}
 
 /* Global monospace for technical data */
 .mono { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; }

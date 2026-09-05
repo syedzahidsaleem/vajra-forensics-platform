@@ -46,9 +46,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <main
           data-mode={currentMode}
           style={{ background: 'var(--bg)', color: 'var(--text)' }}
-          className="flex-1 overflow-y-auto"
+          className="flex-1 min-w-0 overflow-y-auto overflow-x-auto"
         >
-          <div className="max-w-[960px] mx-auto px-8 py-8">
+          <div className="max-w-[960px] w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-16">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeScreen}

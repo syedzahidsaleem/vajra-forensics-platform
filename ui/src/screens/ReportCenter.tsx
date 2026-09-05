@@ -126,14 +126,9 @@ export const ReportCenter: React.FC = () => {
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
-              Report Center & Independent Verifier
-            </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[rgba(13,184,211,0.12)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
-              §41, §42
-            </span>
-          </div>
+          <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
+            Report Center & Independent Verifier
+          </h1>
         </div>
 
         <button
