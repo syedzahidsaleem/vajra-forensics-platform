@@ -16,7 +16,7 @@ import {
   Thermometer,
   Cpu,
 } from 'lucide-react';
-import { GlassCard, GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
+import { GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
 import { ShineBorder } from '../components/ui/shine-border';
 
 export const DeviceSelection: React.FC = () => {
@@ -222,97 +222,28 @@ export const DeviceSelection: React.FC = () => {
                           Vault Evidence
                         </GlowButton>
                       )}
-                    </div>
-                    <h3 className="font-medium text-sm text-[var(--text)] font-sans">{device.model}</h3>
-                    <div className="text-[10px] font-mono text-[var(--text)]/50">
-                      S/N: <span className="text-[var(--text)]/80">{device.serial}</span>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <div className="text-sm font-mono font-bold text-[var(--text)]">
-                      {formatBytes(device.size_bytes)}
-                    </div>
-                    <div className="text-[9px] font-mono text-[var(--text)]/50">
-                      Sector: {device.block_size} B
-                    </div>
-                  </div>
-                </div>
-
-                {/* Safety Badges */}
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[rgba(89,238,153,0.06)] text-[10px] font-mono">
-                  {isSystem ? (
-                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/20 text-[#EF4444]">
-                      <AlertOctagon className="w-3 h-3 flex-shrink-0" />
-                      <span>OS BOOT DISK (LOCKED)</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 text-[var(--primary-text)]">
-                      <CheckCircle className="w-3 h-3 flex-shrink-0" />
-                      <span>Secondary Target Disk</span>
-                    </div>
-                  )}
-
-                  {isWriteBlocked ? (
-                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 text-[var(--primary-text)]">
-                      <ShieldCheck className="w-3 h-3 flex-shrink-0" />
-                      <span>Write-Blocker Active</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1.5 p-1.5 rounded bg-[var(--surface)] border border-[var(--border)]/30 text-[var(--text)]/60">
-                      <ShieldAlert className="w-3 h-3 flex-shrink-0 text-amber-400" />
-                      <span>Direct Device Access</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex items-center justify-between pt-2 border-t border-[rgba(89,238,153,0.06)]">
-                  <GlowButton
-                    variant="ghost"
-                    size="sm"
-                    icon={<Activity className="w-3 h-3" />}
-                    onClick={() => handleInspectDevice(device)}
-                  >
-                    Inspect & Health
-                  </GlowButton>
-
-                  <div className="flex items-center gap-2">
-                    {isForensic ? (
-                      <>
-                        {activeCase && (
-                          <GlowButton
-                            variant="ghost"
-                            size="sm"
-                            icon={<Plus className="w-3 h-3" />}
-                            onClick={() => setRegisteringDevice(device)}
-                          >
-                            Vault Evidence
-                          </GlowButton>
-                        )}
-                        <GlowButton
-                          variant="primary"
-                          size="sm"
-                          icon={<Disc className="w-3 h-3" />}
-                          onClick={() => handleProceedToAcquisition(device)}
-                        >
-                          Acquire Image
-                        </GlowButton>
-                      </>
-                    ) : (
                       <GlowButton
-                        disabled={isSystem}
-                        variant="danger"
+                        variant="primary"
                         size="sm"
-                        icon={<Flame className="w-3 h-3" />}
-                        onClick={() => handleProceedToSanitization(device)}
+                        icon={<Disc className="w-3 h-3" />}
+                        onClick={() => handleProceedToAcquisition(device)}
                       >
-                        Sanitize Device
+                        Acquire Image
                       </GlowButton>
-                    )}
-                  </div>
+                    </>
+                  ) : (
+                    <GlowButton
+                      disabled={isSystem}
+                      variant="danger"
+                      size="sm"
+                      icon={<Flame className="w-3 h-3" />}
+                      onClick={() => handleProceedToSanitization(device)}
+                    >
+                      Sanitize Device
+                    </GlowButton>
+                  )}
                 </div>
-              </GlassCard>
+              </div>
             </ShineBorder>
           );
         })}

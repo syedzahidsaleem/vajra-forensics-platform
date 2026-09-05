@@ -49,34 +49,23 @@ export const Header: React.FC = () => {
         )}
       </div>
 
-      {/* Right: Mode Toggle Buttons */}
-      <div
-        className={`flex rounded-md overflow-hidden border ${
-          isForensic ? 'border-[var(--forensic-border)]' : 'border-[rgba(89,238,153,0.1)]'
-        }`}
-      >
+      {/* Right: Actions (Theme Toggle + Mode Toggle) */}
+      <div className="flex items-center gap-3">
+        {/* Theme Toggle Button */}
         <button
-          onClick={() => setMode('forensic')}
-          className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
-            isForensic
-              ? 'bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] font-bold'
-              : 'text-[#D8E4FF]/40 hover:text-[#D8E4FF]/70'
-          }`}
+          onClick={toggleTheme}
+          aria-label="Toggle Theme"
+          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          className="p-1.5 rounded-md border border-[var(--border)]/30 text-[var(--text)]/70 hover:text-[var(--primary-text)] hover:border-[var(--primary)]/50 bg-[var(--surface)] transition-colors cursor-pointer flex items-center justify-center"
         >
-          Forensic
-        </button>
-        <button
-          onClick={() => setMode('sanitization')}
-          className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
-            !isForensic
-              ? 'bg-[rgba(239,68,68,0.15)] text-[#EF4444]'
-              : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]'
-          }`}
-        >
-          Sanitize
+          {theme === 'dark' ? (
+            <Sun className="w-3.5 h-3.5 text-amber-400" />
+          ) : (
+            <Moon className="w-3.5 h-3.5 text-indigo-400" />
+          )}
         </button>
 
-        {/* Existing Mode Toggle Buttons */}
+        {/* Mode Toggle Buttons */}
         <div className="flex rounded-md overflow-hidden border border-[var(--border)]/30">
           <button
             onClick={() => setMode('forensic')}
