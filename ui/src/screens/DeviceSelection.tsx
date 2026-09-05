@@ -89,11 +89,11 @@ export const DeviceSelection: React.FC = () => {
   };
 
   return (
-    <div data-mode={isForensic ? "forensic" : "sanitize"} style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
+    <div data-mode={isForensic ? "forensic" : "sanitize"} className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+          <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
             {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
           </h1>
         </div>
@@ -129,7 +129,7 @@ export const DeviceSelection: React.FC = () => {
                 {/* Identity & Hardware Specs */}
                 <div className="space-y-1.5 min-w-[240px] sm:min-w-[280px]">
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <span className={`font-mono text-sm font-bold tracking-tight ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#59EE99]'}`}>
+                    <span className={`font-mono text-sm font-bold tracking-tight ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-accent)]'}`}>
                       {devInfo.primary}
                     </span>
                     <span className="font-mono text-xs text-[var(--text)]/50">
@@ -137,27 +137,27 @@ export const DeviceSelection: React.FC = () => {
                     </span>
                     <FileTypeBadge type={device.media_type} />
                     {device.bus_type && (
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium ${isForensic ? 'bg-[rgba(13,184,211,0.12)] text-[var(--forensic-text-secondary)] border border-[var(--forensic-border)]/40' : 'bg-[rgba(53,96,90,0.2)] text-[#D8E4FF]/60 border border-[rgba(89,238,153,0.1)]'}`}>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-medium ${isForensic ? 'bg-[rgba(13,184,211,0.12)] text-[var(--forensic-text-secondary)] border border-[var(--forensic-border)]/40' : 'bg-[rgba(255,59,59,0.12)] text-[var(--sanitize-text-secondary)] border border-[var(--sanitize-border)]/40'}`}>
                         {device.bus_type}
                       </span>
                     )}
                   </div>
                   <div className="flex items-baseline gap-2.5 flex-wrap">
-                    <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                    <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
                       {device.model}
                     </h3>
-                    <span className={`text-xs font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/40'}`}>
-                      S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)] font-semibold' : 'text-[#D8E4FF]/70'}>{device.serial}</span>
+                    <span className={`text-xs font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}>
+                      S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)] font-semibold' : 'text-[var(--sanitize-text-mono)] font-semibold'}>{device.serial}</span>
                     </span>
                   </div>
                 </div>
 
                 {/* Capacity & Sector Geometry Stat Block */}
                 <div className="pl-5 border-l border-[var(--border)]/30 shrink-0 font-mono">
-                  <div className={`text-base sm:text-lg font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[#D8E4FF]'}`}>
+                  <div className={`text-base sm:text-lg font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
                     {formatBytes(device.size_bytes)}
                   </div>
-                  <div className={`text-[11px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[#D8E4FF]/40'}`}>
+                  <div className={`text-[11px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}>
                     Sector: {device.block_size} B
                   </div>
                 </div>
@@ -173,19 +173,19 @@ export const DeviceSelection: React.FC = () => {
                       <span className="font-semibold text-[11px]">OS BOOT DISK (LOCKED §24)</span>
                     </div>
                   ) : (
-                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(255,59,59,0.08)] border-[var(--sanitize-border)] text-[var(--sanitize-accent)]'}`}>
                       <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
                       <span className="text-[11px]">Secondary Target Disk</span>
                     </div>
                   )}
 
                   {isWriteBlocked ? (
-                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(89,238,153,0.08)] border-[#59EE99]/20 text-[#59EE99]'}`}>
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(13,184,211,0.12)] border-[var(--forensic-border)] text-[var(--forensic-accent)]' : 'bg-[rgba(255,59,59,0.08)] border-[var(--sanitize-border)] text-[var(--sanitize-accent)]'}`}>
                       <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
                       <span className="text-[11px]">Write-Blocker Active</span>
                     </div>
                   ) : (
-                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(15,36,48,0.6)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(53,96,90,0.15)] border-[rgba(89,238,153,0.1)] text-[#D8E4FF]/50'}`}>
+                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border whitespace-nowrap shadow-sm ${isForensic ? 'bg-[rgba(15,36,48,0.6)] border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]' : 'bg-[rgba(30,4,6,0.6)] border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)]'}`}>
                       <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
                       <span className="text-[11px]">Direct Device Access</span>
                     </div>

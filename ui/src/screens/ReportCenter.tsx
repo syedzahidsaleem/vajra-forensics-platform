@@ -122,18 +122,22 @@ export const ReportCenter: React.FC = () => {
   };
 
   return (
-    <div data-mode={isForensic ? "forensic" : "sanitize"} style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
+    <div data-mode={isForensic ? "forensic" : "sanitize"} className="space-y-6">
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
+          <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
             Report Center & Independent Verifier
           </h1>
         </div>
 
         <button
           onClick={() => setShowGenModal(true)}
-          className="flex items-center gap-2 px-3 py-1.5 bg-[var(--forensic-accent)] text-[#0F2430] font-mono text-[11px] font-semibold rounded-md shadow-[0_0_12px_rgba(13,184,211,0.35)] hover:bg-[#0DB8D3]/90 transition-all cursor-pointer"
+          className={`flex items-center gap-2 px-3 py-1.5 font-mono text-[11px] font-semibold rounded-md transition-all cursor-pointer ${
+            isForensic
+              ? 'bg-[var(--forensic-accent)] text-[#0F2430] hover:bg-[#0DB8D3]/90 shadow-[0_0_12px_rgba(13,184,211,0.35)]'
+              : 'bg-[var(--sanitize-accent)] text-[#120202] hover:bg-[#ff5555] shadow-[0_0_12px_rgba(255,59,59,0.35)] font-bold'
+          }`}
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Generate New Report</span>

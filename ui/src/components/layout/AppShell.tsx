@@ -3,7 +3,6 @@ import { useApp } from '../../context/AppContext';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { AlertTriangle, ShieldAlert, CheckCircle, X } from 'lucide-react';
-import { GradientDots } from '../ui/gradient-dots';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,26 +26,23 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   }, [currentMode]);
 
   return (
-    <div className={`w-full h-screen flex flex-col overflow-hidden relative select-none ${isForensic ? 'forensic-mode' : 'app-bg'}`}>
-      <GradientDots />
-
+    <div className={`w-full h-screen flex flex-col overflow-hidden relative select-none ${isForensic ? 'forensic-mode' : 'sanitize-mode'}`}>
       {/* Top Application Header */}
       <Header />
 
       {/* Main Container */}
       <div
         data-mode={currentMode}
-        style={{ background: 'var(--bg)', color: 'var(--text)' }}
-        className="flex-1 flex overflow-hidden z-10 relative"
+        className="flex-1 flex overflow-hidden z-10 relative bg-transparent"
       >
         {/* Left Navigation Sidebar */}
         <Sidebar />
 
-        {/* Center Main Screen Viewport with 960px centering constraint & page transitions */}
+        {/* Center Main Screen Viewport with centering constraint & page transitions */}
         <main
           data-mode={currentMode}
-          style={{ background: 'var(--bg)', color: 'var(--text)', scrollbarGutter: 'stable' }}
-          className="flex-1 min-w-0 overflow-y-auto overflow-x-auto"
+          style={{ scrollbarGutter: 'stable' }}
+          className="flex-1 min-w-0 overflow-y-auto overflow-x-auto bg-transparent"
         >
           <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-16">
             <AnimatePresence mode="wait">
@@ -69,12 +65,12 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         className={`h-5 px-6 flex items-center justify-between font-mono text-[9px] z-40 ${
           isForensic
             ? 'bg-[var(--forensic-navbar-bg)] border-t border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]'
-            : 'border-t border-[rgba(89,238,153,0.04)] bg-[rgba(0,18,11,0.9)] text-[#D8E4FF]/25'
+            : 'bg-[var(--sanitize-navbar-bg)] border-t border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)]'
         }`}
       >
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#59EE99] opacity-75 shadow-[0_0_4px_#59EE99]" />
-          <span className={isForensic ? 'text-[var(--forensic-text-primary)] font-bold' : ''}>AIRGAP VERIFIED</span>
+          <span className={isForensic ? 'text-[var(--forensic-text-primary)] font-bold' : 'text-[var(--sanitize-text-primary)] font-bold'}>AIRGAP VERIFIED</span>
         </div>
         <div>{timeStr || 'UTC'}</div>
       </footer>

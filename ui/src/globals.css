@@ -41,13 +41,13 @@
 [data-mode="sanitize"][data-theme="dark"],
 [data-theme="dark"] [data-mode="sanitize"],
 [data-theme="dark"][data-mode="sanitize"] {
-  --bg: var(--sanitize-bg-dark);
-  --surface: var(--sanitize-surface-dark);
-  --text: var(--sanitize-text-dark);
-  --primary: var(--sanitize-primary-dark);
-  --primary-hover: var(--sanitize-primary-hover-dark);
-  --border: var(--sanitize-border-dark);
-  --primary-text: var(--sanitize-primary-text-dark);
+  --bg: transparent;
+  --surface: rgba(26, 0, 0, 0.78);
+  --text: var(--sanitize-text-primary, #FDEDEC);
+  --primary: var(--sanitize-accent, #FF3B3B);
+  --primary-hover: #e02828;
+  --border: var(--sanitize-border, rgba(255, 59, 59, 0.25));
+  --primary-text: var(--sanitize-accent, #FF3B3B);
 }
 
 [data-mode="sanitize"][data-theme="light"],
@@ -66,13 +66,13 @@
 [data-mode="forensic"][data-theme="dark"],
 [data-theme="dark"] [data-mode="forensic"],
 [data-theme="dark"][data-mode="forensic"] {
-  --bg: var(--forensic-bg-dark);
-  --surface: var(--forensic-surface-dark);
-  --text: var(--forensic-text-dark);
-  --primary: var(--forensic-primary-dark);
-  --primary-hover: var(--forensic-primary-hover-dark);
-  --border: var(--forensic-border-dark);
-  --primary-text: var(--forensic-primary-text-dark);
+  --bg: transparent;
+  --surface: rgba(15, 36, 48, 0.7);
+  --text: var(--forensic-text-primary, #F2F7FA);
+  --primary: var(--forensic-accent, #0DB8D3);
+  --primary-hover: #0a9cb3;
+  --border: var(--forensic-border, rgba(13, 184, 211, 0.25));
+  --primary-text: var(--forensic-accent, #0DB8D3);
 }
 
 [data-mode="forensic"][data-theme="light"],

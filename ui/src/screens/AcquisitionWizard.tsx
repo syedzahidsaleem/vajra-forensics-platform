@@ -112,7 +112,7 @@ export const AcquisitionWizard: React.FC = () => {
   };
 
   return (
-    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
+    <div data-mode="forensic" className="space-y-6">
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>

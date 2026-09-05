@@ -46,12 +46,16 @@ export const Sidebar: React.FC = () => {
     <aside
       className={`w-[180px] h-full flex flex-col py-4 select-none shrink-0 z-30 ${
         isForensic
-          ? 'bg-[rgba(15,36,48,0.45)] border-r border-[var(--forensic-border)]'
-          : 'bg-[rgba(0,18,11,0.6)] border-r border-[rgba(89,238,153,0.04)]'
+          ? 'bg-[rgba(15,36,48,0.7)] border-r border-[var(--forensic-border)]'
+          : 'bg-[rgba(18,2,2,0.75)] border-r border-[var(--sanitize-border)]'
       }`}
     >
       {/* Section label — Static Text Label */}
-      <div className="px-3 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] text-[var(--text)]/40 font-semibold select-none">
+      <div
+        className={`px-3 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] font-semibold select-none ${
+          isForensic ? 'text-[var(--forensic-text-secondary)]/70' : 'text-[var(--sanitize-text-secondary)]/70'
+        }`}
+      >
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
       </div>
 
@@ -67,12 +71,16 @@ export const Sidebar: React.FC = () => {
                 w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-sans text-left transition-colors cursor-pointer
                 ${
                   isActive
-                    ? 'bg-[var(--surface)] text-[var(--primary-text)] font-semibold border border-[var(--border)]/40'
-                    : 'text-[var(--text)]/70 hover:bg-[var(--surface)]/50 hover:text-[var(--text)] border border-transparent'
+                    ? isForensic
+                      ? 'bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] font-semibold border border-[var(--forensic-border)]'
+                      : 'bg-[rgba(255,59,59,0.15)] text-[var(--sanitize-accent)] font-semibold border border-[var(--sanitize-border)]'
+                    : isForensic
+                    ? 'text-[var(--forensic-text-secondary)] hover:bg-[rgba(15,36,48,0.5)] hover:text-[var(--forensic-text-primary)] border border-transparent'
+                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[rgba(60,6,8,0.4)] hover:text-[var(--sanitize-text-primary)] border border-transparent'
                 }
               `}
             >
-              <span className={isActive ? 'text-[var(--primary-text)]' : 'text-[var(--text)]/50'}>
+              <span className={isActive ? (isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]') : (isForensic ? 'text-[var(--forensic-text-secondary)]/60' : 'text-[var(--sanitize-text-secondary)]/60')}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
@@ -88,12 +96,12 @@ export const Sidebar: React.FC = () => {
             className={`w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${
               isForensic
                 ? 'bg-[var(--forensic-accent)] shadow-[0_0_5px_var(--forensic-accent)]'
-                : 'bg-[#EF4444] shadow-[0_0_5px_#EF4444]'
+                : 'bg-[var(--sanitize-accent)] shadow-[0_0_5px_var(--sanitize-accent)]'
             }`}
           />
           <span
             className={`text-[9px] font-mono uppercase tracking-wider ${
-              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#EF4444]/70'
+              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'
             }`}
           >
             {isForensic ? 'Safety Active' : 'Sanitizer Armed'}
@@ -106,8 +114,8 @@ export const Sidebar: React.FC = () => {
             w-full py-1.5 rounded border font-mono text-[10px] tracking-wider uppercase transition-all duration-200 cursor-pointer
             ${
               isForensic
-                ? 'border-[#EF4444]/30 text-[#EF4444]/70 hover:border-[#EF4444]/60 hover:text-[#EF4444] hover:bg-[rgba(239,68,68,0.05)]'
-                : 'border-[var(--forensic-accent)]/30 text-[var(--forensic-accent)] hover:border-[var(--forensic-accent)] hover:bg-[rgba(13,184,211,0.1)]'
+                ? 'border-[#EF4444]/40 text-[#EF4444] hover:border-[#EF4444] hover:bg-[rgba(239,68,68,0.1)]'
+                : 'border-[var(--forensic-accent)]/40 text-[var(--forensic-accent)] hover:border-[var(--forensic-accent)] hover:bg-[rgba(13,184,211,0.1)]'
             }
           `}
         >

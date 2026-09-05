@@ -13,7 +13,7 @@ export const Header: React.FC = () => {
       className={`h-10 px-4 sm:px-6 flex items-center justify-between z-40 relative select-none ${
         isForensic
           ? 'bg-[var(--forensic-navbar-bg)] border-b border-[var(--forensic-border)]'
-          : 'border-b border-[rgba(89,238,153,0.06)] bg-[rgba(0,18,11,0.95)] backdrop-blur-md'
+          : 'bg-[var(--sanitize-navbar-bg)] border-b border-[var(--sanitize-border)]'
       }`}
     >
       {/* Left: Brand & Sidebar Toggle */}
@@ -22,7 +22,11 @@ export const Header: React.FC = () => {
           onClick={toggleSidebar}
           aria-label="Toggle Sidebar"
           title={sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
-          className="p-1.5 -ml-1 rounded-md text-[var(--text)]/70 hover:text-[var(--text)] hover:bg-[var(--surface)] transition-colors cursor-pointer flex items-center justify-center"
+          className={`p-1.5 -ml-1 rounded-md transition-colors cursor-pointer flex items-center justify-center ${
+            isForensic
+              ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:bg-[var(--surface)]'
+              : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)] hover:bg-[var(--surface)]'
+          }`}
         >
           <Menu className="w-4 h-4" />
         </button>
@@ -31,15 +35,15 @@ export const Header: React.FC = () => {
           className={`w-1.5 h-1.5 rounded-full animate-pulse ${
             isForensic
               ? 'bg-[var(--forensic-accent)] shadow-[0_0_6px_var(--forensic-accent)]'
-              : 'bg-[#59EE99] shadow-[0_0_6px_#59EE99]'
+              : 'bg-[var(--sanitize-accent)] shadow-[0_0_6px_var(--sanitize-accent)]'
           }`}
         />
         <span
           className={`font-mono font-bold text-[11px] tracking-wider ${
-            isForensic ? 'text-[var(--forensic-text-primary)]' : 'glow-green'
+            isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'
           }`}
         >
-          VAJRA <span className={`text-[9px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'opacity-60'}`}>v0.1.0</span>
+          VAJRA <span className={`text-[9px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}>v0.1.0</span>
         </span>
       </div>
 
@@ -51,8 +55,8 @@ export const Header: React.FC = () => {
             Forensic Mode
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[var(--primary)]/15 border border-[var(--primary)]/30 text-[var(--primary-text)] font-mono text-[10px] tracking-widest uppercase animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--primary)] shadow-[0_0_6px_var(--primary)]" />
+          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[rgba(255,59,59,0.12)] border border-[var(--sanitize-border)] text-[var(--sanitize-accent)] font-mono text-[10px] tracking-widest uppercase animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--sanitize-accent)] shadow-[0_0_6px_var(--sanitize-accent)]" />
             Sanitization Mode
           </div>
         )}
@@ -65,7 +69,11 @@ export const Header: React.FC = () => {
           onClick={toggleTheme}
           aria-label="Toggle Theme"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          className="p-1.5 rounded-md border border-[var(--border)]/30 text-[var(--text)]/70 hover:text-[var(--primary-text)] hover:border-[var(--primary)]/50 bg-[var(--surface)] transition-colors cursor-pointer flex items-center justify-center"
+          className={`p-1.5 rounded-md border transition-colors cursor-pointer flex items-center justify-center ${
+            isForensic
+              ? 'border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:border-[var(--forensic-accent)]/50 bg-[var(--surface)]'
+              : 'border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)] hover:border-[var(--sanitize-accent)]/50 bg-[var(--surface)]'
+          }`}
         >
           {theme === 'dark' ? (
             <Sun className="w-3.5 h-3.5 text-amber-400" />
@@ -75,13 +83,15 @@ export const Header: React.FC = () => {
         </button>
 
         {/* Mode Toggle Buttons */}
-        <div className="flex rounded-md overflow-hidden border border-[var(--border)]/30">
+        <div className={`flex rounded-md overflow-hidden border ${
+          isForensic ? 'border-[var(--forensic-border)]' : 'border-[var(--sanitize-border)]'
+        }`}>
           <button
             onClick={() => setMode('forensic')}
             className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
               isForensic
-                ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold'
-                : 'text-[var(--text)]/50 hover:text-[var(--text)]'
+                ? 'bg-[var(--forensic-accent)]/20 text-[var(--forensic-accent)] font-bold'
+                : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)]'
             }`}
           >
             Forensic
@@ -90,8 +100,8 @@ export const Header: React.FC = () => {
             onClick={() => setMode('sanitization')}
             className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
               !isForensic
-                ? 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] font-bold'
-                : 'text-[var(--text)]/50 hover:text-[var(--text)]'
+                ? 'bg-[var(--sanitize-accent)]/20 text-[var(--sanitize-accent)] font-bold'
+                : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]'
             }`}
           >
             Sanitize

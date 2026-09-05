@@ -207,12 +207,12 @@ export const SanitizationConsole: React.FC = () => {
   ];
 
   return (
-    <div data-mode="sanitize" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-6">
+    <div data-mode="sanitize" className="space-y-6">
       {/* Quiet Imposing Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3">
-          <span className="text-[#EF4444] opacity-60 text-sm">🔥</span>
-          <h1 className="text-lg font-sans font-medium text-[#EF4444]/90">
+          <span className="text-[var(--sanitize-accent)] opacity-80 text-sm">🔥</span>
+          <h1 className="text-lg font-sans font-medium text-[var(--sanitize-text-primary)]">
             Destructive Sanitization Console
           </h1>
         </div>

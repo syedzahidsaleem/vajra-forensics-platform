@@ -99,15 +99,15 @@ export const HexExplorer: React.FC = () => {
   };
 
   return (
-    <div data-mode="forensic" style={{ background: 'var(--bg)', color: 'var(--text)' }} className="space-y-5">
+    <div data-mode="forensic" className="space-y-5">
       {/* Header & Device Context */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-sans font-medium text-[var(--text)]">
+          <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
             Hex Data & Raw Sector Explorer
           </h1>
-          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[var(--primary-text)]/10 border border-[var(--primary-text)]/30 font-mono">
-            <span className="text-xs font-bold text-[var(--primary-text)]">
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[var(--forensic-accent)]/10 border border-[var(--forensic-border)] font-mono">
+            <span className="text-xs font-bold text-[var(--forensic-accent)]">
               {devInfo.primary}
             </span>
             <span className="text-[10px] text-[var(--text)]/50">
