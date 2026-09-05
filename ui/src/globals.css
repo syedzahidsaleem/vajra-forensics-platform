@@ -41,13 +41,19 @@
 [data-mode="sanitize"][data-theme="dark"],
 [data-theme="dark"] [data-mode="sanitize"],
 [data-theme="dark"][data-mode="sanitize"] {
-  --bg: transparent;
-  --surface: rgba(26, 0, 0, 0.78);
-  --text: var(--sanitize-text-primary, #FDEDEC);
-  --primary: var(--sanitize-accent, #FF3B3B);
-  --primary-hover: #e02828;
-  --border: var(--sanitize-border, rgba(255, 59, 59, 0.25));
-  --primary-text: var(--sanitize-accent, #FF3B3B);
+  --bg: var(--sanitize-bg-dark);
+  --surface: var(--sanitize-surface-dark);
+  --text: var(--sanitize-text-dark);
+  --primary: var(--sanitize-primary-dark);
+  --primary-hover: var(--sanitize-primary-hover-dark);
+  --border: var(--sanitize-border-dark);
+  --primary-text: var(--sanitize-primary-text-dark);
+  --sanitize-text-primary: var(--sanitize-text-dark);
+  --sanitize-text-secondary: var(--sanitize-border-dark);
+  --sanitize-text-mono: var(--sanitize-text-dark);
+  --sanitize-accent: var(--sanitize-primary-text-dark);
+  --sanitize-border: var(--sanitize-border-dark);
+  --sanitize-navbar-bg: var(--sanitize-surface-dark);
 }
 
 [data-mode="sanitize"][data-theme="light"],
@@ -60,19 +66,31 @@
   --primary-hover: var(--sanitize-primary-hover-light);
   --border: var(--sanitize-border-light);
   --primary-text: var(--sanitize-primary-text-light);
+  --sanitize-text-primary: var(--sanitize-text-light);
+  --sanitize-text-secondary: var(--sanitize-border-light);
+  --sanitize-text-mono: var(--sanitize-text-light);
+  --sanitize-accent: var(--sanitize-primary-text-light);
+  --sanitize-border: var(--sanitize-border-light);
+  --sanitize-navbar-bg: var(--sanitize-surface-light);
 }
 
 [data-mode="forensic"],
 [data-mode="forensic"][data-theme="dark"],
 [data-theme="dark"] [data-mode="forensic"],
 [data-theme="dark"][data-mode="forensic"] {
-  --bg: transparent;
-  --surface: rgba(15, 36, 48, 0.7);
-  --text: var(--forensic-text-primary, #F2F7FA);
-  --primary: var(--forensic-accent, #0DB8D3);
-  --primary-hover: #0a9cb3;
-  --border: var(--forensic-border, rgba(13, 184, 211, 0.25));
-  --primary-text: var(--forensic-accent, #0DB8D3);
+  --bg: var(--forensic-bg-dark);
+  --surface: var(--forensic-surface-dark);
+  --text: var(--forensic-text-dark);
+  --primary: var(--forensic-primary-dark);
+  --primary-hover: var(--forensic-primary-hover-dark);
+  --border: var(--forensic-border-dark);
+  --primary-text: var(--forensic-primary-text-dark);
+  --forensic-text-primary: var(--forensic-text-dark);
+  --forensic-text-secondary: #A9C4D6;
+  --forensic-text-mono: var(--forensic-text-dark);
+  --forensic-accent: var(--forensic-primary-text-dark);
+  --forensic-border: var(--forensic-border-dark);
+  --forensic-navbar-bg: var(--forensic-surface-dark);
 }
 
 [data-mode="forensic"][data-theme="light"],
@@ -85,6 +103,12 @@
   --primary-hover: var(--forensic-primary-hover-light);
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
+  --forensic-text-primary: var(--forensic-text-light);
+  --forensic-text-secondary: var(--forensic-border-light);
+  --forensic-text-mono: var(--forensic-text-light);
+  --forensic-accent: var(--forensic-primary-text-light);
+  --forensic-border: var(--forensic-border-light);
+  --forensic-navbar-bg: var(--forensic-surface-light);
 }
 
 /* Default fallback when theme is dark but mode isn't explicitly set */
@@ -273,3 +297,13 @@
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 }
+
+/* ==========================================================================
+   Primary Action / CTA Buttons - Guaranteed Legible White Text
+   ========================================================================== */
+button[class*="bg-[var(--primary)]"],
+button[class*="bg-primary"],
+.btn-primary {
+  color: #ffffff !important;
+}
+

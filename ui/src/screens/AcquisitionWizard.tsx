@@ -114,15 +114,16 @@ export const AcquisitionWizard: React.FC = () => {
   return (
     <div data-mode="forensic" className="space-y-6">
       {/* Title */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
-            Forensic Evidence Acquisition Wizard
-          </h1>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h1 className="text-lg font-sans font-medium text-[var(--text)] shrink-0">
+          Forensic Evidence Acquisition Wizard
+        </h1>
 
-        {/* Step Indicator */}
-        <div className="flex items-center gap-1 overflow-x-auto">
+        {/* Step Indicator (Scoped horizontal scroll on overflow) */}
+        <div
+          className="flex items-center gap-1 overflow-x-auto min-w-0 max-w-full pb-1.5 pt-0.5"
+          style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
+        >
           {[
             { num: 1, label: 'Target' },
             { num: 2, label: 'Format' },
@@ -131,17 +132,17 @@ export const AcquisitionWizard: React.FC = () => {
           ].map((s, i) => (
             <React.Fragment key={s.num}>
               <div
-                className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap transition-all ${
+                className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap shrink-0 transition-all ${
                   step === s.num
-                    ? 'bg-[rgba(13,184,211,0.18)] text-[var(--forensic-accent)] border border-[var(--forensic-border)] font-bold'
+                    ? 'bg-[var(--primary)]/20 text-[var(--primary-text)] border border-[var(--primary-text)]/40 font-bold'
                     : step > s.num
-                    ? 'bg-[rgba(13,184,211,0.08)] text-[var(--forensic-text-mono)]'
-                    : 'text-[var(--forensic-text-secondary)] opacity-40'
+                    ? 'bg-[var(--primary-text)]/10 text-[var(--text)]'
+                    : 'text-[var(--text)] opacity-40'
                 }`}
               >
                 {s.num}. {s.label}
               </div>
-              {i < 3 && <div className="w-3 h-px bg-[var(--forensic-border)] shrink-0" />}
+              {i < 3 && <div className="w-3 h-px bg-[var(--border)] shrink-0" />}
             </React.Fragment>
           ))}
         </div>
@@ -212,7 +213,7 @@ export const AcquisitionWizard: React.FC = () => {
           <div className="flex justify-end pt-3 border-t border-[var(--border)]/20">
             <button
               onClick={() => setStep(2)}
-              className="px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono font-bold text-xs rounded-xl shadow-lg"
+              className="px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-white font-mono font-bold text-xs rounded-xl shadow-lg cursor-pointer transition-all"
             >
               Continue to Profile Selection &rarr;
             </button>
@@ -312,7 +313,7 @@ export const AcquisitionWizard: React.FC = () => {
             </button>
             <button
               onClick={() => setStep(3)}
-              className="px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono font-bold text-xs rounded-xl shadow-lg"
+              className="px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-white font-mono font-bold text-xs rounded-xl shadow-lg cursor-pointer transition-all"
             >
               Continue to Hashing Configuration &rarr;
             </button>
@@ -410,7 +411,7 @@ export const AcquisitionWizard: React.FC = () => {
             </button>
             <button
               onClick={handleStartImaging}
-              className="flex items-center space-x-2 px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono font-bold text-xs rounded-xl shadow-lg"
+              className="flex items-center space-x-2 px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-white font-mono font-bold text-xs rounded-xl shadow-lg cursor-pointer transition-all"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>Start Forensic Acquisition</span>
@@ -570,7 +571,7 @@ export const AcquisitionWizard: React.FC = () => {
 
                   <button
                     onClick={() => setActiveScreen('reports')}
-                    className="flex items-center space-x-1.5 px-5 py-2 rounded-xl bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs font-bold shadow-lg"
+                    className="flex items-center space-x-1.5 px-5 py-2 rounded-xl bg-[var(--primary)] hover:brightness-110 text-white font-mono text-xs font-bold shadow-lg cursor-pointer transition-all"
                   >
                     <FileCode className="w-4 h-4" />
                     <span>Generate Acquisition Report</span>

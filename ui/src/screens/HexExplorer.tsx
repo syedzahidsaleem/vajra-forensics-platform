@@ -189,7 +189,7 @@ export const HexExplorer: React.FC = () => {
 
           <button
             type="submit"
-            className="px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:brightness-110 text-[var(--bg)] font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all"
+            className="px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:brightness-110 text-white font-mono text-xs font-bold flex items-center gap-1.5 shadow-sm cursor-pointer transition-all"
           >
             <Search className="w-3.5 h-3.5" />
             <span>Jump</span>
@@ -316,7 +316,7 @@ export const HexExplorer: React.FC = () => {
                         onClick={() => setSelectedByteOffset(byteGlobalOffset)}
                         className={`py-0.5 rounded transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-[var(--primary)] text-[var(--bg)] font-bold ring-2 ring-[var(--primary)]/50'
+                            ? 'bg-[var(--primary)] text-white font-bold ring-2 ring-[var(--primary)]/50'
                             : isNull
                             ? 'text-[var(--text)]/30 hover:bg-[var(--border)]/20 hover:text-[var(--text)]/70'
                             : isAscii
@@ -341,7 +341,7 @@ export const HexExplorer: React.FC = () => {
                         key={idx}
                         onClick={() => setSelectedByteOffset(byteGlobalOffset)}
                         className={`cursor-pointer inline-block ${
-                          isSelected ? 'bg-[var(--primary)] text-[var(--bg)] font-bold px-0.5 rounded' : 'hover:text-[var(--primary)]'
+                          isSelected ? 'bg-[var(--primary)] text-white font-bold px-0.5 rounded' : 'hover:text-[var(--primary)]'
                         }`}
                       >
                         {char}

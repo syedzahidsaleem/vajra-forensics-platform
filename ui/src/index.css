@@ -101,49 +101,17 @@ html, body, #root {
   border-color: rgba(239, 68, 68, 0.25) !important;
 }
 
-/* Forensic Mode CSS Variables & Scoped Layout Styling */
+/* Forensic Mode Scoped Layout Styling */
 .forensic-mode {
-  --forensic-bg-gradient: linear-gradient(
-    180deg,
-    #193546 0%,
-    #065B98 45%,
-    #1B7FDC 78%,
-    #0DB8D3 100%
-  );
-  --forensic-bg-glow: radial-gradient(
-    ellipse 900px 500px at 50% 35%,
-    rgba(27, 127, 220, 0.35) 0%,
-    rgba(6, 91, 152, 0.15) 45%,
-    rgba(0, 0, 0, 0) 100%
-  );
-  --forensic-navbar-bg: #0F2430; /* noticeably darker than the gradient's darkest stop (#193546), for contrast at the top of the screen */
-  --forensic-text-primary: #F2F7FA;   /* near-white, for headings and key values */
-  --forensic-text-secondary: #A9C4D6; /* soft blue-grey, for labels/subtext */
-  --forensic-text-mono: #C9E8F5;      /* light cyan-white, for monospace technical data (hashes, paths, hex) */
-  --forensic-accent: #0DB8D3;         /* cyan accent for active states, highlighted borders, badges */
-  --forensic-border: rgba(13, 184, 211, 0.25); /* subtle cyan-tinted borders/dividers */
-  --forensic-grid-line: rgba(255, 255, 255, 0.06); /* faint grid-line color, visible but subtle against the gradient */
-  --forensic-grid-size: 48px; /* spacing between grid lines */
-
-  background:
-    linear-gradient(var(--forensic-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--forensic-grid-line) 1px, transparent 1px),
-    var(--forensic-bg-glow),
-    var(--forensic-bg-gradient);
-  background-size:
-    var(--forensic-grid-size) var(--forensic-grid-size),
-    var(--forensic-grid-size) var(--forensic-grid-size),
-    cover,
-    cover;
-  background-blend-mode: normal, normal, screen, normal;
-  color: var(--forensic-text-primary);
+  background: var(--bg);
+  color: var(--text);
 }
 
 .forensic-mode .glass {
-  background: rgba(15, 36, 48, 0.45);
+  background: var(--surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--forensic-border);
+  border: 1px solid var(--border);
 }
 
 /* Text hierarchy tightening */
@@ -184,41 +152,17 @@ html, body, #root {
   color: var(--forensic-text-mono);
 }
 
-/* Sanitize Mode CSS Variables & Scoped Layout Styling */
+/* Sanitize Mode Scoped Layout Styling */
 .sanitize-mode {
-  --sanitize-bg-gradient: radial-gradient(
-    ellipse 700px 600px at 50% 50%,
-    #B31217 0%,
-    #7A0C10 35%,
-    #3D0608 65%,
-    #1A0000 100%
-  );
-  --sanitize-navbar-bg: #120202; /* noticeably darker than the gradient's darkest edge (#1A0000), for contrast at the top of the screen */
-  --sanitize-text-primary: #FDEDEC;   /* near-white with a warm tint, for headings and key values */
-  --sanitize-text-secondary: #E8A6A6; /* soft muted red-pink, for labels/subtext */
-  --sanitize-text-mono: #FFD1D1;      /* light warm-white, for monospace technical data (device IDs, wipe method, progress) */
-  --sanitize-accent: #FF3B3B;         /* bright red accent for active states, warnings, destructive confirm buttons */
-  --sanitize-border: rgba(255, 59, 59, 0.25); /* subtle red-tinted borders/dividers */
-  --sanitize-grid-line: rgba(255, 60, 60, 0.18); /* visible red grid-line color, brighter than forensic grid since base is darker */
-  --sanitize-grid-size: 48px; /* spacing between grid lines, matches Forensic mode for visual consistency */
-
-  background:
-    linear-gradient(var(--sanitize-grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--sanitize-grid-line) 1px, transparent 1px),
-    var(--sanitize-bg-gradient);
-  background-size:
-    var(--sanitize-grid-size) var(--sanitize-grid-size),
-    var(--sanitize-grid-size) var(--sanitize-grid-size),
-    cover;
-  background-blend-mode: normal, normal, normal;
-  color: var(--sanitize-text-primary);
+  background: var(--bg);
+  color: var(--text);
 }
 
 .sanitize-mode .glass {
-  background: rgba(30, 4, 6, 0.6);
+  background: var(--surface);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--sanitize-border);
+  border: 1px solid var(--border);
 }
 
 .sanitize-mode .label-muted {

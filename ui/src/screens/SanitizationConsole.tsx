@@ -218,12 +218,15 @@ export const SanitizationConsole: React.FC = () => {
         </div>
       </div>
 
-      {/* Slim Step Breadcrumb */}
-      <div className="flex items-center gap-1 mb-6 overflow-x-auto">
+      {/* Slim Step Breadcrumb (Scoped horizontal scroll on overflow) */}
+      <div
+        className="flex items-center gap-1 mb-6 overflow-x-auto min-w-0 max-w-full pb-1.5 pt-0.5"
+        style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}
+      >
         {stepsList.map((step, i) => (
           <React.Fragment key={step}>
             <div
-              className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap transition-all ${
+              className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap shrink-0 transition-all ${
                 i + 1 === gateStep
                   ? 'bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/30 font-bold'
                   : i + 1 < gateStep
