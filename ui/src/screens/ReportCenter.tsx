@@ -126,7 +126,7 @@ export const ReportCenter: React.FC = () => {
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-3">
             <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
               Report Center & Independent Verifier
             </h1>
@@ -134,9 +134,6 @@ export const ReportCenter: React.FC = () => {
               §41, §42
             </span>
           </div>
-          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
-            Generate and export the 6 court-admissible forensic report types and execute independent tamper verification.
-          </p>
         </div>
 
         <button

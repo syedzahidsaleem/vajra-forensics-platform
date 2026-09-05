@@ -259,13 +259,15 @@
 }
 
 /* ==========================================================================
-   Report Type Card Hover Lift & Primary Shadow
+   Report Type & Case Card Hover Lift & Primary Shadow
    ========================================================================== */
-.report-type-card {
+.report-type-card,
+.case-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.report-type-card:hover {
+.report-type-card:hover,
+.case-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 25%, transparent);
 }

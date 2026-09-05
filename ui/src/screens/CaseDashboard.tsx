@@ -110,7 +110,7 @@ export const CaseDashboard: React.FC = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-1">
+          <div className="flex items-center gap-3">
             <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
               Evidence Vault
             </h1>
@@ -118,9 +118,6 @@ export const CaseDashboard: React.FC = () => {
               §17, §22
             </span>
           </div>
-          <p className="text-[11px] text-[var(--forensic-text-secondary)] font-sans">
-            AES-256 SQLCipher encrypted case metadata and custody registry
-          </p>
         </div>
 
         <GlowButton
@@ -135,7 +132,7 @@ export const CaseDashboard: React.FC = () => {
 
       {/* Active Case Hero Card */}
       {activeCase ? (
-        <GlassCard hover={false} className="p-5" style={{ border: '1px solid var(--border)', borderRadius: '12px' }}>
+        <GlassCard hover={false} className="p-5 case-card" style={{ border: '1px solid var(--border)', borderRadius: '12px' }}>
           {/* Top row */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
@@ -268,9 +265,9 @@ export const CaseDashboard: React.FC = () => {
               <GlassCard
                 key={c.case_id}
                 selected={isSelected}
-                hover={true}
+                hover={false}
                 onClick={() => setActiveCase(c)}
-                className="p-4"
+                className="p-4 case-card cursor-pointer"
                 style={{
                   border: isSelected ? '1px solid var(--primary)' : '1px solid var(--border)',
                   borderRadius: '12px',
