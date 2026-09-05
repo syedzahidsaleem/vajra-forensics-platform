@@ -33,23 +33,27 @@ html, body, #root {
 
 /* Scrollbars — functional, visible & themed */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  background: rgba(0, 0, 0, 0.15);
 }
 ::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--border) 60%, transparent);
-  border-radius: 4px;
+  background: var(--border);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--border) 60%, transparent) transparent;
+  scrollbar-color: var(--border) rgba(0, 0, 0, 0.15);
 }
 
 /* Global monospace for technical data */

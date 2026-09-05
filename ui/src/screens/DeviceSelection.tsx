@@ -122,7 +122,7 @@ export const DeviceSelection: React.FC = () => {
             <div
               key={device.path}
               style={{ border: '1px solid var(--border)', borderRadius: '12px' }}
-              className="p-4 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 shadow-sm w-full"
+              className="p-3.5 px-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm w-full"
             >
               {/* Left: Drive Info + Capacity */}
               <div className="flex items-center gap-4 min-w-0 flex-1">
