@@ -90,7 +90,30 @@
   --forensic-text-mono: var(--forensic-text-dark);
   --forensic-accent: var(--forensic-primary-text-dark);
   --forensic-border: var(--forensic-border-dark);
-  --forensic-navbar-bg: var(--forensic-surface-dark);
+  --forensic-navbar-bg: #0F2430;
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #071a20 0%,
+    #0b1f3d 25%,
+    #0fae87 55%,
+    #1fd9a8 75%,
+    #7be0c0 100%
+  );
+  --forensic-page-bg: linear-gradient(
+    135deg,
+    rgba(7, 26, 32, 0.25) 0%,
+    rgba(11, 31, 61, 0.3) 25%,
+    rgba(7, 26, 32, 0.45) 55%,
+    rgba(7, 26, 32, 0.6) 75%,
+    rgba(7, 26, 32, 0.7) 100%
+  ), linear-gradient(
+    135deg,
+    #071a20 0%,
+    #0b1f3d 25%,
+    #0fae87 55%,
+    #1fd9a8 75%,
+    #7be0c0 100%
+  );
 }
 
 [data-mode="forensic"][data-theme="light"],
@@ -109,6 +132,8 @@
   --forensic-accent: var(--forensic-primary-text-light);
   --forensic-border: var(--forensic-border-light);
   --forensic-navbar-bg: var(--forensic-surface-light);
+  --forensic-page-bg: var(--forensic-bg-light);
+  --forensic-bg-gradient: var(--forensic-bg-light);
 }
 
 /* Default fallback when theme is dark but mode isn't explicitly set */
@@ -120,6 +145,30 @@
   --primary-hover: var(--forensic-primary-hover-dark);
   --border: var(--forensic-border-dark);
   --primary-text: var(--forensic-primary-text-dark);
+  --forensic-navbar-bg: #0F2430;
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #071a20 0%,
+    #0b1f3d 25%,
+    #0fae87 55%,
+    #1fd9a8 75%,
+    #7be0c0 100%
+  );
+  --forensic-page-bg: linear-gradient(
+    135deg,
+    rgba(7, 26, 32, 0.25) 0%,
+    rgba(11, 31, 61, 0.3) 25%,
+    rgba(7, 26, 32, 0.45) 55%,
+    rgba(7, 26, 32, 0.6) 75%,
+    rgba(7, 26, 32, 0.7) 100%
+  ), linear-gradient(
+    135deg,
+    #071a20 0%,
+    #0b1f3d 25%,
+    #0fae87 55%,
+    #1fd9a8 75%,
+    #7be0c0 100%
+  );
 }
 
 :root[data-theme="light"], html[data-theme="light"] {
@@ -130,6 +179,8 @@
   --primary-hover: var(--forensic-primary-hover-light);
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
+  --forensic-page-bg: var(--forensic-bg-light);
+  --forensic-bg-gradient: var(--forensic-bg-light);
 }
 
 /* Fallback mappings for legacy color variables */
@@ -149,8 +200,9 @@
   --light-green: #59EE99;
 }
 
-/* Page wrapper element styling */
-[data-mode] {
+/* Page wrapper element styling - root html/body level */
+html[data-mode],
+body[data-mode] {
   background: var(--bg);
   color: var(--text);
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;

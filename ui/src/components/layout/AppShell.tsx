@@ -28,25 +28,23 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   return (
     <div
       className={`w-full h-screen flex flex-col overflow-hidden relative select-none ${isForensic ? 'forensic-mode' : 'sanitize-mode'}`}
-      style={{ background: 'var(--bg)', color: 'var(--text)' }}
+      style={{ background: isForensic ? 'var(--forensic-page-bg, var(--bg))' : 'var(--bg)', color: 'var(--text)' }}
     >
       {/* Top Application Header */}
       <Header />
 
       {/* Main Container */}
       <div
-        data-mode={currentMode}
-        style={{ background: 'var(--bg)', color: 'var(--text)' }}
-        className="flex-1 flex overflow-hidden z-10 relative"
+        style={{ color: 'var(--text)' }}
+        className="flex-1 flex overflow-hidden z-10 relative bg-transparent"
       >
         {/* Left Navigation Sidebar */}
         <Sidebar />
 
         {/* Center Main Screen Viewport with centering constraint & page transitions */}
         <main
-          data-mode={currentMode}
-          style={{ background: 'var(--bg)', color: 'var(--text)', scrollbarGutter: 'stable' }}
-          className="flex-1 min-w-0 overflow-y-auto"
+          style={{ color: 'var(--text)', scrollbarGutter: 'stable' }}
+          className="flex-1 min-w-0 overflow-y-auto bg-transparent"
         >
           <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-8 py-6 sm:py-8 pb-16">
             <AnimatePresence mode="wait">

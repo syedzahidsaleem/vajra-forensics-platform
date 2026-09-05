@@ -46,7 +46,7 @@ export const Sidebar: React.FC = () => {
     <aside
       className={`w-[180px] h-full flex flex-col py-4 select-none shrink-0 z-30 ${
         isForensic
-          ? 'bg-[rgba(15,36,48,0.7)] border-r border-[var(--forensic-border)]'
+          ? 'bg-[var(--forensic-navbar-bg)] border-r border-[var(--forensic-border)]'
           : 'bg-[rgba(18,2,2,0.75)] border-r border-[var(--sanitize-border)]'
       }`}
     >
