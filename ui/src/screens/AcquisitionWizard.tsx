@@ -18,9 +18,13 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { formatDevicePath } from '../lib/utils';
+import { HoverButton } from '../components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
 
 export const AcquisitionWizard: React.FC = () => {
   const { devices, selectedDevice, setActiveScreen } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   // Wizard Steps: 1: Source & Case, 2: Profile & Format, 3: Options, 4: Live Imaging
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
@@ -596,13 +600,17 @@ export const AcquisitionWizard: React.FC = () => {
                     <span>New Acquisition</span>
                   </button>
 
-                  <button
+                  <HoverButton
                     onClick={() => setActiveScreen('reports')}
-                    className="flex items-center space-x-1.5 px-5 py-2 rounded-xl bg-[var(--primary)] hover:brightness-110 text-white font-mono text-xs font-bold shadow-lg cursor-pointer transition-all"
+                    glowColor={isDark ? '#59EE99' : '#05664B'}
+                    backgroundColor={isDark ? 'rgba(89, 238, 153, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+                    textColor={isDark ? '#59EE99' : '#05664B'}
+                    hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+                    className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-[rgba(89,238,153,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-lg inline-flex items-center gap-2 cursor-pointer`}
                   >
                     <FileCode className="w-4 h-4" />
                     <span>Generate Acquisition Report</span>
-                  </button>
+                  </HoverButton>
                 </>
               ) : (
                 <button

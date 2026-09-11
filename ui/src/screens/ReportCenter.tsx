@@ -15,10 +15,47 @@ import {
   Eye,
 } from 'lucide-react';
 import { ShineBorder } from '../components/ui/shine-border';
+import { HoverButton } from '../components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
 
 export const ReportCenter: React.FC = () => {
   const { activeCase, mode } = useApp();
+  const { theme } = useTheme();
   const isForensic = mode === 'forensic';
+  const isDark = theme === 'dark';
+
+  const buttonConfig = isForensic
+    ? isDark
+      ? {
+          glowColor: '#59EE99',
+          backgroundColor: 'rgba(89, 238, 153, 0.12)',
+          textColor: '#59EE99',
+          hoverTextColor: '#FFFFFF',
+          border: 'border-[rgba(89,238,153,0.35)]',
+        }
+      : {
+          glowColor: '#05664B',
+          backgroundColor: 'rgba(5, 102, 75, 0.12)',
+          textColor: '#05664B',
+          hoverTextColor: '#034430',
+          border: 'border-[#05664B]/40',
+        }
+    : isDark
+      ? {
+          glowColor: '#FF7B88',
+          backgroundColor: 'rgba(255, 123, 136, 0.12)',
+          textColor: '#FF7B88',
+          hoverTextColor: '#FFFFFF',
+          border: 'border-[rgba(255,123,136,0.35)]',
+        }
+      : {
+          glowColor: '#EF4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.12)',
+          textColor: '#680E18',
+          hoverTextColor: '#3B0007',
+          border: 'border-[#EF4444]/40',
+        };
+
   const [reports, setReports] = useState<ReportSummary[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -131,13 +168,22 @@ export const ReportCenter: React.FC = () => {
           </h1>
         </div>
 
-        <button
-          onClick={() => setShowGenModal(true)}
-          className="flex items-center gap-2 px-3 py-1.5 font-mono text-[11px] font-bold rounded-md transition-all cursor-pointer bg-[var(--primary)] text-white hover:brightness-110 shadow-md"
+        <HoverButton
+          onClick={() => {
+            if (!isForensic) {
+              setSelectedType('SanitizationCertificate');
+            }
+            setShowGenModal(true);
+          }}
+          glowColor={buttonConfig.glowColor}
+          backgroundColor={buttonConfig.backgroundColor}
+          textColor={buttonConfig.textColor}
+          hoverTextColor={buttonConfig.hoverTextColor}
+          className={`!text-xs !px-4 !py-2 border ${buttonConfig.border} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer`}
         >
           <Plus className="w-3.5 h-3.5" />
-          <span>Generate New Report</span>
-        </button>
+          <span>{isForensic ? 'Generate New Report' : 'Generate Sanitization Certificate'}</span>
+        </HoverButton>
       </div>
 
       {/* Reports Grid */}
@@ -358,11 +404,11 @@ export const ReportCenter: React.FC = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-base font-mono font-bold text-[var(--primary-text)] flex items-center space-x-2">
                 <FileCheck className="w-5 h-5" />
-                <span>Generate Forensic Report</span>
+                <span>{isForensic ? 'Generate Forensic Report' : 'Generate Sanitization Certificate'}</span>
               </h3>
               <button
                 onClick={() => setShowGenModal(false)}
-                className="text-[var(--text)]/50 hover:text-[var(--text)] p-1 rounded-lg"
+                className="text-[var(--text)]/50 hover:text-[var(--text)] p-1 rounded-lg cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -399,18 +445,26 @@ export const ReportCenter: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowGenModal(false)}
-                  className="px-4 py-2 bg-[var(--border)]/20 hover:bg-[var(--border)]/30 text-[var(--text)]/80 rounded-xl"
+                  className="px-4 py-2 bg-[var(--border)]/20 hover:bg-[var(--border)]/30 text-[var(--text)]/80 rounded-xl cursor-pointer"
                 >
                   Cancel
                 </button>
-                <button
+                <HoverButton
                   type="submit"
                   disabled={generating}
-                  className="px-5 py-2 bg-[var(--primary)] hover:brightness-110 disabled:opacity-50 text-white font-bold rounded-xl flex items-center space-x-2 shadow-lg cursor-pointer"
+                  glowColor={buttonConfig.glowColor}
+                  backgroundColor={buttonConfig.backgroundColor}
+                  textColor={buttonConfig.textColor}
+                  hoverTextColor={buttonConfig.hoverTextColor}
+                  className={`!text-xs !px-5 !py-2.5 border ${buttonConfig.border} font-industrial font-black uppercase tracking-wider shadow-lg inline-flex items-center gap-2 cursor-pointer`}
                 >
-                  {generating && <RotateCw className="w-3.5 h-3.5 animate-spin" />}
+                  {generating ? (
+                    <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <FileCheck className="w-3.5 h-3.5" />
+                  )}
                   <span>Generate & Sign</span>
-                </button>
+                </HoverButton>
               </div>
             </form>
           </div>

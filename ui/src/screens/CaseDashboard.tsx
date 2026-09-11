@@ -12,9 +12,12 @@ import {
 } from 'lucide-react';
 import { GlassCard, GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
 import { HoverButton } from '@/components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
 
 export const CaseDashboard: React.FC = () => {
   const { activeCase, cases, setActiveCase, refreshCases, setActiveScreen } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { toast } = useToast();
   const [evidenceList, setEvidenceList] = useState<EvidenceItemRecord[]>([]);
   const [loadingEvidence, setLoadingEvidence] = useState(false);
@@ -118,13 +121,13 @@ export const CaseDashboard: React.FC = () => {
 
         <HoverButton
           onClick={() => setShowNewCaseModal(true)}
-          glowColor="#059669"
-          backgroundColor="rgba(5, 102, 75, 0.15)"
-          textColor="var(--forensic-accent)"
-          hoverTextColor="#034430"
-          className="!text-xs !px-4 !py-2 border border-[var(--forensic-border)] font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer"
+          glowColor={isDark ? '#59EE99' : '#05664B'}
+          backgroundColor={isDark ? 'rgba(89, 238, 153, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+          textColor={isDark ? '#59EE99' : '#05664B'}
+          hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+          className={`!text-xs !px-4 !py-2 border ${isDark ? 'border-[rgba(89,238,153,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer`}
         >
-          <FolderPlus className="w-3.5 h-3.5 inline-block mr-1.5" />
+          <FolderPlus className="w-3.5 h-3.5" />
           <span>Create New Case</span>
         </HoverButton>
       </div>
