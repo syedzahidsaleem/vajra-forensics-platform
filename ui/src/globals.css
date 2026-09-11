@@ -15,7 +15,7 @@
   --sanitize-primary-light: #A8283A;
   --sanitize-primary-hover-light: #8F1E2E;
   --sanitize-border-light: rgba(168, 40, 58, 0.25);
-  --sanitize-primary-text-light: #991B1B;  /* rich ruby red, highly readable on light bg */
+  --sanitize-primary-text-light: #680E18;  /* deep rich crimson maroon, highly readable on light bg */
 
   /* Forensic mode: dark theme (teal-tinted palette matching ombre gradient) */
   --forensic-bg-dark: #071a20;
@@ -102,7 +102,7 @@
   --sanitize-text-primary: var(--sanitize-text-light);
   --sanitize-text-secondary: #7A222C;
   --sanitize-text-mono: var(--sanitize-text-light);
-  --sanitize-accent: #991B1B;
+  --sanitize-accent: #680E18;
   --sanitize-border: var(--sanitize-border-light);
   --sanitize-navbar-bg: var(--sanitize-surface-light);
   --sanitize-sidebar-bg: var(--sanitize-surface-light);
@@ -415,11 +415,11 @@ body[data-mode] {
 }
 
 /* ==========================================================================
-   Primary Action / CTA Buttons - Guaranteed Legible White Text
+   Primary Action / CTA Buttons - Scoped strictly to dark mode or explicit .btn-primary
+   (Never force white text onto buttons in light mode or tinted buttons like bg-[var(--primary)]/15)
    ========================================================================== */
-button[class*="bg-[var(--primary)]"],
-button[class*="bg-primary"],
-.btn-primary {
+.dark .btn-primary {
   color: #ffffff !important;
 }
+
 

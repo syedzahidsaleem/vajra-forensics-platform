@@ -24,8 +24,8 @@ export const Header: React.FC = () => {
           title={sidebarOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
           className={`p-1.5 -ml-1 rounded-md transition-colors cursor-pointer flex items-center justify-center ${
             isForensic
-              ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:bg-[var(--surface)]'
-              : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)] hover:bg-[var(--surface)]'
+              ? 'text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[#044E38] dark:hover:text-[var(--forensic-text-primary)] hover:bg-[var(--surface)]'
+              : 'text-[#7A222C] dark:text-[var(--sanitize-text-secondary)] hover:text-[#680E18] dark:hover:text-[var(--sanitize-text-primary)] hover:bg-[var(--surface)]'
           }`}
         >
           <Menu className="w-4 h-4" />
@@ -35,13 +35,13 @@ export const Header: React.FC = () => {
           <div
             className={`w-2 h-2 rounded-sm rotate-45 shrink-0 ${
               isForensic
-                ? 'bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)]'
-                : 'bg-[var(--sanitize-accent)] shadow-[0_0_8px_var(--sanitize-accent)]'
+                ? 'bg-[#044E38] dark:bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)]'
+                : 'bg-[#680E18] dark:bg-[var(--sanitize-accent)] shadow-[0_0_8px_var(--sanitize-accent)]'
             }`}
           />
           <span
             className={`font-industrial font-black text-sm sm:text-base tracking-[0.18em] uppercase ${
-              isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'
+              isForensic ? 'text-[#044E38] dark:text-[var(--forensic-text-primary)]' : 'text-[#680E18] dark:text-[var(--sanitize-text-primary)]'
             }`}
           >
             VAJRA
@@ -49,8 +49,8 @@ export const Header: React.FC = () => {
           <span
             className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider uppercase border ${
               isForensic
-                ? 'bg-[var(--primary)]/10 text-[var(--forensic-accent)] border-[var(--forensic-border)]'
-                : 'bg-[var(--primary)]/10 text-[var(--sanitize-accent)] border-[var(--sanitize-border)]'
+                ? 'bg-emerald-950/10 dark:bg-emerald-500/15 text-[#044E38] dark:text-[var(--forensic-accent)] border-[var(--forensic-border)]'
+                : 'bg-red-950/10 dark:bg-red-500/15 text-[#680E18] dark:text-[var(--sanitize-accent)] border-[var(--sanitize-border)]'
             }`}
           >
             v0.1.0
@@ -62,15 +62,15 @@ export const Header: React.FC = () => {
       <div className="flex items-center">
         {isForensic ? (
           <div className="flex items-center gap-2.5 animate-pulse select-none">
-            <span className="w-2 h-2 rounded-sm rotate-45 bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)] shrink-0" />
-            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[var(--forensic-accent)] uppercase">
+            <span className="w-2 h-2 rounded-sm rotate-45 bg-[#044E38] dark:bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)] shrink-0" />
+            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[#044E38] dark:text-[var(--forensic-accent)] uppercase">
               Forensic Mode
             </span>
           </div>
         ) : (
           <div className="flex items-center gap-2.5 animate-pulse select-none">
-            <span className="w-2 h-2 rounded-sm rotate-45 bg-[var(--sanitize-accent)] shadow-[0_0_8px_var(--sanitize-accent)] shrink-0" />
-            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[var(--sanitize-accent)] uppercase">
+            <span className="w-2 h-2 rounded-sm rotate-45 bg-[#680E18] dark:bg-[var(--sanitize-accent)] shadow-[0_0_8px_var(--sanitize-accent)] shrink-0" />
+            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[#680E18] dark:text-[var(--sanitize-accent)] uppercase">
               Sanitization Mode
             </span>
           </div>
@@ -86,8 +86,8 @@ export const Header: React.FC = () => {
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
           className={`p-1.5 rounded-md border transition-colors cursor-pointer flex items-center justify-center ${
             isForensic
-              ? 'border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] hover:border-[var(--forensic-accent)]/50 bg-[var(--surface)]'
-              : 'border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)] hover:border-[var(--sanitize-accent)]/50 bg-[var(--surface)]'
+              ? 'border-[var(--forensic-border)] text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[#044E38] dark:hover:text-[var(--forensic-text-primary)] hover:border-[var(--forensic-accent)]/50 bg-[var(--surface)]'
+              : 'border-[var(--sanitize-border)] text-[#7A222C] dark:text-[var(--sanitize-text-secondary)] hover:text-[#680E18] dark:hover:text-[var(--sanitize-text-primary)] hover:border-[var(--sanitize-accent)]/50 bg-[var(--surface)]'
           }`}
         >
           {theme === 'dark' ? (
@@ -105,8 +105,8 @@ export const Header: React.FC = () => {
             onClick={() => setMode('forensic')}
             className={`px-3 py-1 text-[10px] font-industrial font-bold tracking-wider uppercase transition-colors cursor-pointer ${
               isForensic
-                ? 'bg-[var(--forensic-accent)]/20 text-[var(--forensic-accent)]'
-                : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)]'
+                ? 'bg-emerald-950/10 dark:bg-[var(--forensic-accent)]/20 text-[#044E38] dark:text-[var(--forensic-accent)]'
+                : 'text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[#044E38] dark:hover:text-[var(--forensic-text-primary)]'
             }`}
           >
             Forensic
@@ -115,8 +115,8 @@ export const Header: React.FC = () => {
             onClick={() => setMode('sanitization')}
             className={`px-3 py-1 text-[10px] font-industrial font-bold tracking-wider uppercase transition-colors cursor-pointer ${
               !isForensic
-                ? 'bg-[var(--sanitize-accent)]/20 text-[var(--sanitize-accent)]'
-                : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]'
+                ? 'bg-red-950/10 dark:bg-[var(--sanitize-accent)]/20 text-[#680E18] dark:text-[var(--sanitize-accent)]'
+                : 'text-[#7A222C] dark:text-[var(--sanitize-text-secondary)] hover:text-[#680E18] dark:hover:text-[var(--sanitize-text-primary)]'
             }`}
           >
             Sanitize
