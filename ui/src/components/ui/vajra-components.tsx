@@ -94,19 +94,17 @@ export function GlowButton({
       bg-[#05664B] text-white
       hover:bg-[#034430]
       border border-[#044E38]
-      shadow-[0_2px_8px_rgba(5,102,75,0.25)]
+      shadow-sm
       dark:bg-[#59EE99] dark:text-[#00120B]
       dark:hover:bg-[#6fffaa]
       dark:border-transparent
-      dark:shadow-[0_0_20px_rgba(89,238,153,0.5),0_0_40px_rgba(89,238,153,0.2)]
-      dark:active:shadow-[0_0_8px_rgba(89,238,153,0.3)]
+      dark:shadow-none
     `,
     danger: `
       bg-[#EF4444] text-white
-      hover:bg-[#f55]
-      shadow-[0_0_0_0_rgba(239,68,68,0)]
-      hover:shadow-[0_0_20px_rgba(239,68,68,0.5),0_0_40px_rgba(239,68,68,0.2)]
+      hover:bg-[#DC2626]
       border border-[#EF4444]
+      shadow-sm
     `,
     ghost: `
       bg-transparent text-[var(--text)]
@@ -119,7 +117,6 @@ export function GlowButton({
       hover:border-[#05664B] hover:bg-[#05664B]/10
       dark:text-[#59EE99] dark:border-[#59EE99]/40
       dark:hover:border-[#59EE99] dark:hover:bg-[#59EE99]/8
-      dark:hover:shadow-[0_0_12px_rgba(89,238,153,0.2)]
     `,
   };
 
