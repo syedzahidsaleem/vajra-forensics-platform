@@ -118,11 +118,11 @@ export const CaseDashboard: React.FC = () => {
 
         <HoverButton
           onClick={() => setShowNewCaseModal(true)}
-          glowColor="#10B981"
-          backgroundColor="rgba(16, 185, 129, 0.12)"
+          glowColor="#059669"
+          backgroundColor="rgba(5, 102, 75, 0.15)"
           textColor="var(--forensic-accent)"
-          hoverTextColor="#059669"
-          className="!text-xs !px-4 !py-2 border border-[var(--forensic-border)] font-industrial font-bold uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer"
+          hoverTextColor="#034430"
+          className="!text-xs !px-4 !py-2 border border-[var(--forensic-border)] font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer"
         >
           <FolderPlus className="w-3.5 h-3.5 inline-block mr-1.5" />
           <span>Create New Case</span>
@@ -141,28 +141,28 @@ export const CaseDashboard: React.FC = () => {
               <span className="text-[12px] font-sans text-[var(--forensic-text-primary)] font-medium">
                 {activeCase.case_name}
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] uppercase tracking-wider border border-[var(--forensic-border)]">
+              <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] uppercase tracking-wider border border-[var(--forensic-border)]">
                 {activeCase.status}
               </span>
             </div>
             {activeCase.status === 'Active' && (
               <button
                 onClick={() => handleCloseCase(activeCase.case_id)}
-                className="text-[10px] font-mono text-[var(--forensic-text-secondary)] hover:text-[#EF4444] transition-colors cursor-pointer"
+                className="text-[11px] font-mono font-bold text-[var(--forensic-text-secondary)] hover:text-[#EF4444] transition-colors cursor-pointer"
               >
                 Close Case
               </button>
             )}
           </div>
 
-          {/* Dimmed Metadata Line */}
-          <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)] opacity-80 mb-5">
+          {/* Metadata Line */}
+          <p className="text-[11px] font-mono text-[var(--forensic-text-secondary)] font-semibold mb-5">
             {activeCase.investigator_id} · {activeCase.created_at} · {evidenceList.length} evidence item{evidenceList.length === 1 ? '' : 's'} · SQLCipher AES-256
           </p>
 
           {/* Evidence Table Header */}
           <div className="flex items-center justify-between mb-3 pt-4 border-t border-[var(--forensic-border)]">
-            <span className="text-[10px] font-mono text-[var(--forensic-text-secondary)] uppercase tracking-wider">
+            <span className="text-[11px] font-mono font-bold text-[var(--forensic-text-secondary)] uppercase tracking-wider">
               Registered Evidence Media ({evidenceList.length})
             </span>
             <GlowButton
@@ -180,8 +180,8 @@ export const CaseDashboard: React.FC = () => {
             <div className="overflow-hidden rounded-lg border border-[var(--forensic-border)]">
               <table className="w-full text-left text-[11px] font-mono">
                 <thead
-                  style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)' }}
-                  className="text-[var(--forensic-text-secondary)] border-b border-[var(--forensic-border)]"
+                  style={{ background: 'color-mix(in srgb, var(--surface) 75%, transparent)' }}
+                  className="text-[var(--forensic-text-secondary)] font-bold border-b border-[var(--forensic-border)]"
                 >
                   <tr>
                     <th className="py-2.5 px-3">Evidence ID</th>
@@ -216,13 +216,13 @@ export const CaseDashboard: React.FC = () => {
                       <td className="py-2.5 px-3 text-right space-x-2">
                         <button
                           onClick={() => handleOpenCustodyModal(item)}
-                          className="px-2 py-1 rounded bg-[var(--primary)]/10 text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
+                          className="px-2.5 py-1 rounded bg-[var(--primary)]/15 text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] font-bold text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
                         >
                           Custody Log
                         </button>
                         <button
                           onClick={() => setActiveScreen('acquisition')}
-                          className="px-2 py-1 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] hover:bg-[var(--primary)]/25 text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
+                          className="px-2.5 py-1 rounded bg-[var(--primary)]/20 text-[var(--forensic-accent)] hover:bg-[var(--primary)]/30 font-bold text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
                         >
                           Acquire
                         </button>
@@ -233,7 +233,7 @@ export const CaseDashboard: React.FC = () => {
               </table>
             </div>
           ) : (
-            <div className="py-8 text-center text-[11px] font-mono text-[var(--forensic-text-secondary)]">
+            <div className="py-8 text-center text-[11px] font-mono font-medium text-[var(--forensic-text-secondary)]">
               {loadingEvidence
                 ? 'Loading evidence registry...'
                 : 'No evidence items registered under this case.'}
@@ -256,7 +256,7 @@ export const CaseDashboard: React.FC = () => {
 
       {/* All Cases Section: 2 Column Minimal Cards Grid */}
       <div className="space-y-3">
-        <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)] uppercase tracking-widest">
+        <p className="text-[11px] font-mono font-bold text-[var(--forensic-text-secondary)] uppercase tracking-widest">
           All Cases ({cases.length})
         </p>
 
@@ -277,14 +277,14 @@ export const CaseDashboard: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-mono text-[var(--forensic-text-mono)] font-bold">{c.case_id}</span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
+                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
                     {c.status}
                   </span>
                 </div>
                 <p className="text-[12px] font-sans text-[var(--forensic-text-primary)] mb-1 truncate">
                   {c.case_name}
                 </p>
-                <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)]">
+                <p className="text-[11px] font-mono font-medium text-[var(--forensic-text-secondary)]">
                   {c.investigator_id} · {c.created_at.split(' ')[0]}
                 </p>
               </GlassCard>

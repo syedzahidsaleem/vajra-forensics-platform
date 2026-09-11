@@ -66,8 +66,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       <footer
         className={`h-6 px-4 sm:px-6 flex items-center justify-between font-mono text-[9px] z-40 ${
           isForensic
-            ? 'bg-[var(--forensic-navbar-bg)] border-t border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]'
-            : 'bg-[var(--sanitize-navbar-bg)] border-t border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)]'
+            ? 'bg-[var(--forensic-navbar-bg)] border-t border-[var(--forensic-border)] text-[var(--forensic-text-secondary)] font-semibold'
+            : 'bg-[var(--sanitize-navbar-bg)] border-t border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)] font-semibold'
         }`}
       >
         <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </span>
           </div>
           <span className="text-[var(--border)] hidden sm:inline">|</span>
-          <span className="text-[var(--text)]/40 hidden sm:inline">vajra-forensics.org</span>
+          <span className={isForensic ? 'text-[var(--forensic-text-secondary)] font-medium hidden sm:inline' : 'text-[var(--sanitize-text-secondary)] font-medium hidden sm:inline'}>vajra-forensics.org</span>
         </div>
 
         <div className="flex items-center gap-3">

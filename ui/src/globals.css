@@ -26,14 +26,14 @@
   --forensic-border-dark: rgba(15, 174, 135, 0.25);
   --forensic-primary-text-dark: #59EE99;   /* bright teal/green on dark bg */
 
-  /* Forensic mode: light theme (green-aligned forensic palette) */
+  /* Forensic mode: light theme (high-contrast, deep forest green forensic palette) */
   --forensic-bg-light: #F0F7F4;
   --forensic-surface-light: #E1EFEA;
-  --forensic-text-light: #0B241A;
-  --forensic-primary-light: #059669;
-  --forensic-primary-hover-light: #047857;
-  --forensic-border-light: rgba(5, 150, 105, 0.28);
-  --forensic-primary-text-light: #047857;  /* rich forest emerald, readable on light bg */
+  --forensic-text-light: #051A13;
+  --forensic-primary-light: #05664B;
+  --forensic-primary-hover-light: #034430;
+  --forensic-border-light: rgba(5, 150, 105, 0.35);
+  --forensic-primary-text-light: #044E38;  /* deep dark forest emerald, highly readable on light bg */
   --button-ripple-color: oklch(0.145 0 0 / 0.3);
 }
 
@@ -167,9 +167,9 @@
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
   --forensic-text-primary: var(--forensic-text-light);
-  --forensic-text-secondary: #1E5948;
+  --forensic-text-secondary: #0D3B2E;
   --forensic-text-mono: var(--forensic-text-light);
-  --forensic-accent: #047857;
+  --forensic-accent: #044E38;
   --forensic-border: var(--forensic-border-light);
   --forensic-navbar-bg: var(--forensic-surface-light);
   --forensic-sidebar-bg: var(--forensic-surface-light);
@@ -231,9 +231,9 @@
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
   --forensic-text-primary: var(--forensic-text-light);
-  --forensic-text-secondary: #1E5948;
+  --forensic-text-secondary: #0D3B2E;
   --forensic-text-mono: var(--forensic-text-light);
-  --forensic-accent: #047857;
+  --forensic-accent: #044E38;
   --forensic-border: var(--forensic-border-light);
   --forensic-navbar-bg: var(--forensic-surface-light);
   --forensic-sidebar-bg: var(--forensic-surface-light);

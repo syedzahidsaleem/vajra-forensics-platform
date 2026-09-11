@@ -52,7 +52,7 @@ export const Sidebar: React.FC = () => {
     >
       {/* Section label: Static Text Label */}
       <div
-        className={`px-3 mb-2 text-[10px] font-industrial uppercase tracking-[0.2em] font-bold select-none ${
+        className={`px-3 mb-2 text-[10px] font-industrial uppercase tracking-[0.2em] font-black select-none ${
           isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-accent)]'
         }`}
       >
@@ -72,11 +72,11 @@ export const Sidebar: React.FC = () => {
                 ${
                   isActive
                     ? isForensic
-                      ? 'bg-[var(--primary)]/15 text-[var(--forensic-accent)] font-semibold border border-[var(--forensic-border)]'
-                      : 'bg-[var(--primary)]/15 text-[var(--sanitize-accent)] font-semibold border border-[var(--sanitize-border)] shadow-[0_0_10px_rgba(239,68,68,0.15)]'
+                      ? 'bg-[var(--primary)]/15 text-[var(--forensic-accent)] font-bold border border-[var(--forensic-border)]'
+                      : 'bg-[var(--primary)]/15 text-[var(--sanitize-accent)] font-bold border border-[var(--sanitize-border)] shadow-[0_0_10px_rgba(239,68,68,0.15)]'
                     : isForensic
-                    ? 'text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
-                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--sanitize-text-primary)] border border-transparent'
+                    ? 'font-semibold text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
+                    : 'font-semibold text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--sanitize-text-primary)] border border-transparent'
                 }
               `}
             >
@@ -98,7 +98,7 @@ export const Sidebar: React.FC = () => {
             className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'privacy'
                 ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[var(--sanitize-accent)] font-bold'
-                : isForensic ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--text)]'
+                : isForensic ? 'font-medium text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'font-medium text-[var(--sanitize-text-secondary)] hover:text-[var(--text)]'
             }`}
           >
             Privacy Policy
@@ -108,7 +108,7 @@ export const Sidebar: React.FC = () => {
             className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'terms'
                 ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[var(--sanitize-accent)] font-bold'
-                : isForensic ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--text)]'
+                : isForensic ? 'font-medium text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'font-medium text-[var(--sanitize-text-secondary)] hover:text-[var(--text)]'
             }`}
           >
             Terms & Conditions
