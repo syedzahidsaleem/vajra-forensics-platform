@@ -103,35 +103,36 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       {/* Mode Switch Intercept Modal */}
       {pendingModeSwitch === 'sanitization' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-[var(--surface)] border border-[#EF4444]/40 rounded-2xl p-6 shadow-[0_0_50px_rgba(239,68,68,0.3)] space-y-5">
+          <div className="w-full max-w-lg bg-[var(--surface)] border border-[#DC2626]/40 dark:border-[#EF4444]/40 rounded-2xl p-6 shadow-2xl space-y-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/40 rounded-xl">
+                <div className="p-2.5 bg-red-100 dark:bg-[rgba(239,68,68,0.15)] text-[#DC2626] dark:text-[#EF4444] border border-red-300 dark:border-[#EF4444]/40 rounded-xl">
                   <ShieldAlert className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-industrial font-bold text-[#EF4444] tracking-wide uppercase">
+                  <h3 className="text-base font-industrial font-black text-[#DC2626] dark:text-[#EF4444] tracking-wide uppercase">
                     ATTENTION: ENTERING SANITIZATION MODE
                   </h3>
-                  <p className="text-[11px] text-[var(--text)]/40 font-sans">
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 font-sans font-medium">
                     Part VIII: Destructive Operation Protocol
                   </p>
                 </div>
               </div>
               <button
                 onClick={cancelModeSwitch}
-                className="text-[var(--text)]/40 hover:text-[var(--text)] p-1 rounded-lg hover:bg-[var(--primary)]/10"
+                className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                title="Cancel"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 rounded-xl bg-[rgba(239,68,68,0.08)] border border-[#EF4444]/30 text-[11px] text-[var(--text)]/80 leading-relaxed space-y-2 font-sans">
+            <div className="p-4 rounded-xl bg-red-50/70 dark:bg-[rgba(239,68,68,0.08)] border border-red-200 dark:border-[#EF4444]/30 text-xs text-slate-800 dark:text-slate-200 leading-relaxed space-y-3 font-sans">
               <p>
-                You are transitioning from <strong>Forensic Mode</strong> (where all connected drives are guarded by read-only block source wrappers) to <strong>Sanitization Mode</strong>.
+                You are transitioning from <strong className="text-slate-950 dark:text-white font-bold">Forensic Mode</strong> (where all connected drives are guarded by read-only block source wrappers) to <strong className="text-[#DC2626] dark:text-[#FF6B7A] font-bold">Sanitization Mode</strong>.
               </p>
-              <div className="p-2.5 rounded bg-[rgba(239,68,68,0.15)] border border-[#EF4444]/40 flex items-start space-x-2 text-[10px] font-mono text-[#EF4444]">
-                <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+              <div className="p-3 rounded-lg bg-red-100/70 dark:bg-[rgba(239,68,68,0.18)] border border-red-300 dark:border-[#EF4444]/50 flex items-start space-x-2.5 text-[11px] font-mono text-[#991B1B] dark:text-[#FCA5A5] leading-normal">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#DC2626] dark:text-[#EF4444]" />
                 <span>
                   Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block and two-phase authorization gate will remain strictly enforced.
                 </span>
@@ -141,16 +142,16 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <div className="flex items-center justify-end space-x-3 pt-2">
               <button
                 onClick={cancelModeSwitch}
-                className="px-3.5 py-1.5 rounded-lg text-[11px] font-mono text-[var(--text)]/70 hover:bg-[var(--primary)]/10 border border-[var(--border)] transition-colors"
+                className="px-4 py-2 rounded-lg text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-slate-300 dark:border-white/20 transition-all cursor-pointer shadow-sm select-none"
               >
                 Cancel (Stay in Forensic Mode)
               </button>
               <button
                 onClick={confirmModeSwitch}
-                className="px-4 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-[#EF4444] hover:bg-[#f55] text-[var(--text)] shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer"
+                className="px-4 py-2 rounded-lg text-xs font-mono font-bold bg-[#DC2626] hover:bg-[#B91C1C] dark:bg-[#EF4444] dark:hover:bg-[#DC2626] text-white shadow-[0_0_16px_rgba(220,38,38,0.4)] flex items-center space-x-2 transition-all cursor-pointer select-none"
               >
-                <CheckCircle className="w-3.5 h-3.5" />
-                <span>Authorize & Enter Sanitization Mode</span>
+                <CheckCircle className="w-4 h-4 text-white shrink-0" />
+                <span className="text-white font-bold">Authorize & Enter Sanitization Mode</span>
               </button>
             </div>
           </div>
