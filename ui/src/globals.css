@@ -12,9 +12,9 @@
   --sanitize-bg-light: #FBF1EF;
   --sanitize-surface-light: #F6E6E4;
   --sanitize-text-light: #20050B;
-  --sanitize-primary-light: #A8283A;
-  --sanitize-primary-hover-light: #8F1E2E;
-  --sanitize-border-light: rgba(168, 40, 58, 0.25);
+  --sanitize-primary-light: #EF4444;
+  --sanitize-primary-hover-light: #DC2626;
+  --sanitize-border-light: rgba(239, 68, 68, 0.25);
   --sanitize-primary-text-light: #680E18;  /* deep rich crimson maroon, highly readable on light bg */
 
   /* Forensic mode: dark theme (teal-tinted palette matching ombre gradient) */
