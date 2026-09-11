@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { useApp } from '../context/AppContext';
 import { Shield, Lock, EyeOff, FileText, Database, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { GlassCard } from '../components/ui/vajra-components';
@@ -27,7 +27,7 @@ export const PrivacyPolicy: React.FC = () => {
           </p>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] font-bold">
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#05664B]/10 border border-[#05664B]/30 text-[#05664B] dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-400 font-mono text-[11px] font-bold">
           <Shield className="w-4 h-4" />
           <span>AIRGAP CERTIFIED</span>
         </div>

@@ -583,7 +583,7 @@ export const SanitizationConsole: React.FC = () => {
             className="p-2.5 rounded-lg font-mono text-[10px] text-[var(--text)]/60 space-y-0.5"
           >
             <p className="label-muted">Ed25519 Digital Signature</p>
-            <p className="text-[#59EE99] font-mono truncate">{certificate.digital_signature}</p>
+            <p className="text-[#05664B] dark:text-[#59EE99] font-mono truncate">{certificate.digital_signature}</p>
           </div>
 
           <div className="flex justify-between pt-2 border-t border-[var(--border)]/15">

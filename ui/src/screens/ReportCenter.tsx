@@ -168,7 +168,7 @@ export const ReportCenter: React.FC = () => {
                   </div>
 
                   {r.signed && (
-                    <span className="flex items-center space-x-1 text-[11px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60">
+                    <span className="flex items-center space-x-1 text-[11px] font-mono text-[#05664B] dark:text-emerald-400 px-2 py-0.5 rounded bg-[#05664B]/10 dark:bg-emerald-950/60 border border-[#05664B]/30 dark:border-emerald-800/60">
                       <Lock className="w-3 h-3" />
                       <span>X.509 Signed</span>
                     </span>
@@ -292,7 +292,7 @@ export const ReportCenter: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded text-xs font-mono font-bold">
+                  <span className="inline-block bg-[#05664B]/10 text-[#05664B] dark:text-emerald-400 border border-[#05664B]/30 px-2.5 py-0.5 rounded text-xs font-mono font-bold">
                     CRYPTOGRAPHICALLY SIGNED
                   </span>
                   <div className="text-xs font-mono text-[var(--text)]/60 mt-1">ID: {viewingReport.report_id}</div>
@@ -456,12 +456,12 @@ export const ReportCenter: React.FC = () => {
               </div>
             ) : verifyResult ? (
               <div className="space-y-4 font-mono text-xs">
-                <div className="p-3.5 rounded-xl bg-emerald-950/70 border border-emerald-800 flex items-center justify-between">
-                  <div className="flex items-center space-x-2 font-bold text-emerald-300">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <div className="p-3.5 rounded-xl bg-[#05664B]/10 dark:bg-emerald-950/70 border border-[#05664B]/30 dark:border-emerald-800 flex items-center justify-between">
+                  <div className="flex items-center space-x-2 font-bold text-[#05664B] dark:text-emerald-300">
+                    <CheckCircle2 className="w-5 h-5 text-[#05664B] dark:text-emerald-400" />
                     <span>REPORT INTEGRITY VERIFIED (PASS)</span>
                   </div>
-                  <span className="text-[11px] text-emerald-400">Zero Tamper Detected</span>
+                  <span className="text-[11px] text-[#05664B] dark:text-emerald-400">Zero Tamper Detected</span>
                 </div>
 
                 <div className="space-y-2">
@@ -472,7 +472,7 @@ export const ReportCenter: React.FC = () => {
                       className="p-3 rounded-xl flex items-start space-x-3"
                       style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
                     >
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[#05664B] dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1 min-w-0">
                         <div className="font-bold text-[var(--text)]">{c.check_name}</div>
                         <div className="text-[11px] text-[var(--text)]/60">{c.details}</div>

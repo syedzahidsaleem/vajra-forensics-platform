@@ -42,7 +42,7 @@ export function AnimatedCounter({
 
   const glowStyle =
     glowColor === 'green'
-      ? { color: '#59EE99', textShadow: '0 0 12px rgba(89,238,153,0.5)' }
+      ? { color: 'var(--light-green, #05664B)' }
       : glowColor === 'amethyst'
       ? { color: '#AA77A9', textShadow: '0 0 12px rgba(170,119,169,0.5)' }
       : glowColor === 'red'
@@ -91,11 +91,15 @@ export function GlowButton({
 
   const variants = {
     primary: `
-      bg-[#59EE99] text-[#00120B]
-      hover:bg-[#6fffaa]
-      shadow-[0_0_0_0_rgba(89,238,153,0)]
-      hover:shadow-[0_0_20px_rgba(89,238,153,0.5),0_0_40px_rgba(89,238,153,0.2)]
-      active:shadow-[0_0_8px_rgba(89,238,153,0.3)]
+      bg-[#05664B] text-white
+      hover:bg-[#034430]
+      border border-[#044E38]
+      shadow-[0_2px_8px_rgba(5,102,75,0.25)]
+      dark:bg-[#59EE99] dark:text-[#00120B]
+      dark:hover:bg-[#6fffaa]
+      dark:border-transparent
+      dark:shadow-[0_0_20px_rgba(89,238,153,0.5),0_0_40px_rgba(89,238,153,0.2)]
+      dark:active:shadow-[0_0_8px_rgba(89,238,153,0.3)]
     `,
     danger: `
       bg-[#EF4444] text-white
@@ -107,14 +111,15 @@ export function GlowButton({
     ghost: `
       bg-transparent text-[var(--text)]
       border border-[var(--border)]/40
-      hover:border-[#59EE99]/50 hover:text-[#59EE99]
-      hover:bg-[#59EE99]/5
+      hover:border-[#05664B]/50 hover:text-[#05664B] hover:bg-[#05664B]/10
+      dark:hover:border-[#59EE99]/50 dark:hover:text-[#59EE99] dark:hover:bg-[#59EE99]/5
     `,
     outline: `
-      bg-transparent text-[#59EE99]
-      border border-[#59EE99]/40
-      hover:border-[#59EE99] hover:bg-[#59EE99]/8
-      hover:shadow-[0_0_12px_rgba(89,238,153,0.2)]
+      bg-transparent text-[#05664B] border-[#05664B]/40
+      hover:border-[#05664B] hover:bg-[#05664B]/10
+      dark:text-[#59EE99] dark:border-[#59EE99]/40
+      dark:hover:border-[#59EE99] dark:hover:bg-[#59EE99]/8
+      dark:hover:shadow-[0_0_12px_rgba(89,238,153,0.2)]
     `,
   };
 
@@ -315,14 +320,14 @@ export function ConfidenceBar({
 }) {
   const color =
     value >= 0.8
-      ? '#59EE99'
+      ? 'var(--light-green, #05664B)'
       : value >= 0.5
       ? '#AA77A9'
       : '#EF4444';
 
   const glow =
     value >= 0.8
-      ? 'rgba(89,238,153,0.5)'
+      ? 'var(--green-glow, rgba(5,102,75,0.25))'
       : value >= 0.5
       ? 'rgba(170,119,169,0.5)'
       : 'rgba(239,68,68,0.5)';
@@ -578,7 +583,7 @@ export function LinearProgress({
   variant?: 'green' | 'amethyst' | 'danger';
 }) {
   const colors = {
-    green: { bar: '#59EE99', glow: 'rgba(89,238,153,0.4)' },
+    green: { bar: 'var(--light-green, #05664B)', glow: 'var(--green-glow, rgba(5,102,75,0.25))' },
     amethyst: { bar: '#AA77A9', glow: 'rgba(170,119,169,0.4)' },
     danger: { bar: '#EF4444', glow: 'rgba(239,68,68,0.4)' },
   }[variant];

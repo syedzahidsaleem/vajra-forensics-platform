@@ -202,7 +202,7 @@ export const AcquisitionWizard: React.FC = () => {
               <div className="grid grid-cols-3 gap-2 text-[var(--text)]/80">
                 <div>Model: <span className="text-[var(--primary-text)] font-semibold">{targetDevice.model}</span></div>
                 <div>Serial: <span className="text-[var(--text)]">{targetDevice.serial}</span></div>
-                <div>Capacity: <span className="text-emerald-400 font-bold">{formatBytes(targetDevice.size_bytes)}</span></div>
+                <div>Capacity: <span className="text-[#05664B] dark:text-emerald-400 font-bold">{formatBytes(targetDevice.size_bytes)}</span></div>
               </div>
               {targetDevice.is_system_disk && (
                 <div className="p-2 rounded bg-amber-950/40 border border-amber-800/50 text-amber-300 text-[11px] flex items-center space-x-1.5">
@@ -444,7 +444,7 @@ export const AcquisitionWizard: React.FC = () => {
                   <span
                     className={`px-2.5 py-0.5 rounded text-xs font-mono font-bold uppercase ${
                       progress.state === 'completed'
-                        ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60'
+                        ? 'bg-[#05664B]/15 text-[#05664B] border border-[#05664B]/40 dark:bg-emerald-950/60 dark:text-emerald-400 dark:border-emerald-800/60'
                         : 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] border border-[var(--primary-text)]/40 animate-pulse'
                     }`}
                   >
@@ -518,7 +518,7 @@ export const AcquisitionWizard: React.FC = () => {
                 style={{ background: 'color-mix(in srgb, var(--surface) 45%, transparent)', border: '1px solid var(--border)' }}
               >
                 <div className="text-[var(--text)]/50 text-[10px]">Bad Sectors Detected</div>
-                <div className="text-base font-bold text-emerald-400">
+                <div className="text-base font-bold text-[#05664B] dark:text-emerald-400">
                   {progress.bad_sectors_count} (0 LBA errors)
                 </div>
               </div>
@@ -558,12 +558,12 @@ export const AcquisitionWizard: React.FC = () => {
 
             {/* Post-Acquisition Hash Summary */}
             {progress.state === 'completed' && progress.sha256_checksum && (
-              <div className="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/60 space-y-2 font-mono text-xs">
-                <div className="flex items-center space-x-2 text-emerald-400 font-bold">
+              <div className="p-4 rounded-xl bg-[#05664B]/10 border border-[#05664B]/30 dark:bg-emerald-950/30 dark:border-emerald-800/60 space-y-2 font-mono text-xs">
+                <div className="flex items-center space-x-2 text-[#05664B] dark:text-emerald-400 font-bold">
                   <ShieldCheck className="w-4 h-4" />
                   <span>Acquisition Integrity Verified (Dual-Phase SHA-256 Match)</span>
                 </div>
-                <div className="p-2 rounded bg-black/60 font-mono text-[11px] text-emerald-300 break-all select-all">
+                <div className="p-2 rounded bg-black/60 font-mono text-[11px] text-[#59EE99] break-all select-all">
                   SHA-256: {progress.sha256_checksum}
                 </div>
                 <p className="text-[11px] text-[var(--text)]/60">

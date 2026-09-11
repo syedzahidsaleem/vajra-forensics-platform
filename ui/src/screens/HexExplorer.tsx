@@ -241,8 +241,8 @@ export const HexExplorer: React.FC = () => {
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-emerald-400 font-semibold">Copied Dump!</span>
+                <Check className="w-3.5 h-3.5 text-[#05664B] dark:text-emerald-400" />
+                <span className="text-[#05664B] dark:text-emerald-400 font-semibold">Copied Dump!</span>
               </>
             ) : (
               <>
@@ -269,8 +269,8 @@ export const HexExplorer: React.FC = () => {
             </div>
             <div className="flex flex-wrap items-center gap-3 text-[10px]">
               <div className="flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500/30 border border-emerald-400 inline-block" />
-                <span className="text-emerald-400 font-medium">Frag 1 [LBA 2048..2247]</span>
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#05664B]/20 border border-[#05664B] dark:bg-emerald-500/30 dark:border-emerald-400 inline-block" />
+                <span className="text-[#05664B] dark:text-emerald-400 font-medium">Frag 1 [LBA 2048..2247]</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-sm bg-amber-500/30 border border-amber-400 inline-block" />
@@ -404,7 +404,7 @@ export const HexExplorer: React.FC = () => {
 
                 <div className="flex justify-between">
                   <span className="text-[var(--text)]/60">ASCII Character:</span>
-                  <span className="text-emerald-500 dark:text-emerald-400 font-bold">
+                  <span className="text-[#05664B] dark:text-emerald-400 font-bold">
                     {selectedByteVal >= 32 && selectedByteVal <= 126
                       ? `'${String.fromCharCode(selectedByteVal)}'`
                       : 'Non-Printable'}

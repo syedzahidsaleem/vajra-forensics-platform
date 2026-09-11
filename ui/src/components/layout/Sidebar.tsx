@@ -72,7 +72,7 @@ export const Sidebar: React.FC = () => {
                 ${
                   isActive
                     ? isForensic
-                      ? 'bg-emerald-900/10 dark:bg-emerald-500/20 text-[#044E38] dark:text-[#59EE99] font-bold border border-emerald-600/30 dark:border-emerald-500/30'
+                      ? 'bg-[#05664B]/10 dark:bg-emerald-500/20 text-[#05664B] dark:text-[#59EE99] font-bold border border-[#05664B]/30 dark:border-emerald-500/30'
                       : 'bg-red-900/10 dark:bg-red-500/20 text-[#680E18] dark:text-[#FF7B88] font-bold border border-red-600/30 dark:border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.15)]'
                     : isForensic
                     ? 'font-semibold text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
@@ -84,7 +84,7 @@ export const Sidebar: React.FC = () => {
                 className={
                   isActive
                     ? isForensic
-                      ? 'text-[#044E38] dark:text-[#59EE99]'
+                      ? 'text-[#05664B] dark:text-[#59EE99]'
                       : 'text-[#680E18] dark:text-[#FF7B88]'
                     : isForensic
                     ? 'text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)]'
@@ -97,7 +97,7 @@ export const Sidebar: React.FC = () => {
                 className={`truncate font-bold ${
                   isActive
                     ? isForensic
-                      ? 'text-[#044E38] dark:text-[#59EE99]'
+                      ? 'text-[#05664B] dark:text-[#59EE99]'
                       : 'text-[#680E18] dark:text-[#FF7B88]'
                     : isForensic
                     ? 'text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)]'
@@ -120,7 +120,7 @@ export const Sidebar: React.FC = () => {
             className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'privacy'
                 ? isForensic
-                  ? 'text-[#044E38] dark:text-[#59EE99] font-bold'
+                  ? 'text-[#05664B] dark:text-[#59EE99] font-bold'
                   : 'text-[#680E18] dark:text-[#FF7B88] font-bold'
                 : isForensic
                 ? 'font-medium text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[var(--text)]'
@@ -134,7 +134,7 @@ export const Sidebar: React.FC = () => {
             className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'terms'
                 ? isForensic
-                  ? 'text-[#044E38] dark:text-[#59EE99] font-bold'
+                  ? 'text-[#05664B] dark:text-[#59EE99] font-bold'
                   : 'text-[#680E18] dark:text-[#FF7B88] font-bold'
                 : isForensic
                 ? 'font-medium text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[var(--text)]'
@@ -149,14 +149,14 @@ export const Sidebar: React.FC = () => {
           <span
             className={`w-2 h-2 rounded-sm rotate-45 shrink-0 ${
               isForensic
-                ? 'bg-[#044E38] dark:bg-[var(--forensic-accent)] shadow-[0_0_6px_var(--forensic-accent)]'
+                ? 'bg-[#05664B] dark:bg-[var(--forensic-accent)] shadow-[0_0_6px_rgba(5,102,75,0.3)] dark:shadow-[0_0_6px_var(--forensic-accent)]'
                 : 'bg-[#680E18] dark:bg-[var(--sanitize-accent)] shadow-[0_0_6px_var(--sanitize-accent)]'
             }`}
           />
           <span
             className={`text-[9px] font-industrial font-bold uppercase tracking-widest ${
               isForensic
-                ? 'text-[#044E38] dark:text-[var(--forensic-accent)]'
+                ? 'text-[#05664B] dark:text-[var(--forensic-accent)]'
                 : 'text-[#680E18] dark:text-[var(--sanitize-accent)]'
             }`}
           >
@@ -171,7 +171,7 @@ export const Sidebar: React.FC = () => {
             ${
               isForensic
                 ? 'border-[rgba(168,40,58,0.4)] text-[#680E18] dark:text-[var(--sanitize-accent)] hover:border-[var(--sanitize-accent)] hover:bg-[var(--sanitize-accent)]/10'
-                : 'border-[rgba(5,150,105,0.4)] text-[#044E38] dark:text-[var(--forensic-accent)] hover:border-[var(--forensic-accent)] hover:bg-[var(--forensic-accent)]/10'
+                : 'border-[#05664B]/40 text-[#05664B] dark:text-[var(--forensic-accent)] hover:border-[#05664B] hover:bg-[#05664B]/10'
             }
           `}
         >

@@ -77,7 +77,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
 
         if (isSanitized) {
           status = 'sanitized';
-          colorClass = 'bg-emerald-600 border-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.3)]';
+          colorClass = 'bg-[#05664B] border-[#044E38] shadow-[0_0_6px_rgba(5,102,75,0.3)] dark:bg-emerald-600 dark:border-emerald-400';
         } else if (isCurrentlyWiping) {
           status = 'wiping';
           colorClass = 'bg-amber-500 animate-pulse border-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.5)]';
@@ -159,7 +159,7 @@ export const StorageMap: React.FC<StorageMapProps> = ({
           {isSanitizing ? (
             <>
               <div className="flex items-center gap-1">
-                <span className="w-2.5 h-2.5 rounded-sm bg-emerald-600 border border-emerald-400 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#05664B] border border-[#044E38] dark:bg-emerald-600 dark:border-emerald-400 inline-block" />
                 <span>Sanitized / Zero-Entropy</span>
               </div>
               <div className="flex items-center gap-1">
