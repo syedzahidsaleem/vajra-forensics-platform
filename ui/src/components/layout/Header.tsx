@@ -61,14 +61,14 @@ export const Header: React.FC = () => {
       {/* Center: Command Mode Header (Prominent Cyber-Industrial Typography) */}
       <div className="flex items-center">
         {isForensic ? (
-          <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-[rgba(13,184,211,0.08)] border border-[var(--forensic-accent)]/35 shadow-[0_0_15px_rgba(13,184,211,0.1)]">
+          <div className="flex items-center gap-2.5 animate-pulse select-none">
             <span className="w-2 h-2 rounded-sm rotate-45 bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)] shrink-0" />
             <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[var(--forensic-accent)] uppercase">
               Forensic Mode
             </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-[rgba(255,59,59,0.12)] border border-[rgba(255,107,122,0.4)] shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse">
+          <div className="flex items-center gap-2.5 animate-pulse select-none">
             <span className="w-2 h-2 rounded-sm rotate-45 bg-[#FF7B88] shadow-[0_0_8px_#FF7B88] shrink-0" />
             <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[#FCA5A5] uppercase">
               Sanitization Mode
