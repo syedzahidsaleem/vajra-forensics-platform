@@ -121,8 +121,8 @@ export const DeviceSelection: React.FC = () => {
           return (
             <div
               key={device.path}
-              style={{ border: '1px solid var(--border)', borderRadius: '14px' }}
-              className="device-card p-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col justify-between gap-4 h-full shadow-sm transition-all duration-200 hover:border-[var(--primary)]/60"
+              style={{ borderRadius: '14px' }}
+              className="device-card p-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col justify-between gap-4 h-full shadow-sm border border-[var(--border)] transition-all duration-200"
             >
               {/* Drive Top Row: Identity on Left, Capacity on Right */}
               <div className="flex items-start justify-between gap-3">

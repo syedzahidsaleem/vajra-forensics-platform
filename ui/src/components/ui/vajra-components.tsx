@@ -106,21 +106,21 @@ export function GlowButton({
       hover:bg-[#DC2626]
       border border-[#EF4444]
       shadow-sm hover:shadow-md
-      dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]
-      dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.45)]
+      dark:shadow-[0_2px_8px_rgba(0,0,0,0.35)]
+      dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.5),0_2px_8px_rgba(239,68,68,0.2)]
     `,
     ghost: `
       bg-transparent text-[var(--text)]
       border border-[var(--border)]/40
-      hover:border-[#05664B]/50 hover:text-[#05664B] hover:bg-[#05664B]/10 hover:shadow-sm
-      dark:hover:border-[#38C193]/50 dark:hover:text-[#38C193] dark:hover:bg-[#38C193]/5
+      hover:border-[var(--primary)]/60 hover:text-[var(--primary-text)] hover:bg-[var(--primary)]/10 hover:shadow-sm
+      dark:hover:border-[var(--primary)]/60 dark:hover:text-[var(--primary-text)] dark:hover:bg-[var(--primary)]/10
       dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.25)]
     `,
     outline: `
-      bg-transparent text-[#05664B] border-[#05664B]/40
-      hover:border-[#05664B] hover:bg-[#05664B]/10 hover:shadow-sm
-      dark:text-[#38C193] dark:border-[#38C193]/40
-      dark:hover:border-[#38C193] dark:hover:bg-[#38C193]/8
+      bg-transparent text-[var(--primary-text)] border-[var(--primary)]/40
+      hover:border-[var(--primary)] hover:bg-[var(--primary)]/10 hover:shadow-sm
+      dark:text-[var(--primary-text)] dark:border-[var(--primary)]/40
+      dark:hover:border-[var(--primary)] dark:hover:bg-[var(--primary)]/10
       dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.25)]
     `,
   };

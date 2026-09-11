@@ -413,13 +413,24 @@ body[data-mode] {
 .case-card:hover,
 .device-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  border-color: var(--primary) !important;
+}
+
+[data-mode="sanitize"] .report-type-card:hover,
+[data-mode="sanitize"] .case-card:hover,
+[data-mode="sanitize"] .device-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(239, 68, 68, 0.15);
+  border-color: var(--primary) !important;
 }
 
 [data-theme="light"] .report-type-card:hover,
 [data-theme="light"] .case-card:hover,
-[data-theme="light"] .device-card:hover {
+[data-theme="light"] .device-card:hover,
+[data-mode="sanitize"][data-theme="light"] .device-card:hover,
+[data-theme="light"] [data-mode="sanitize"] .device-card:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-color: var(--primary) !important;
 }
 
 /* ==========================================================================
