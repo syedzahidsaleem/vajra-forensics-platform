@@ -210,12 +210,9 @@ export const SanitizationConsole: React.FC = () => {
     <div data-mode="sanitize" className="space-y-6">
       {/* Quiet Imposing Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <span className="text-[var(--sanitize-accent)] opacity-80 text-sm">🔥</span>
-          <h1 className="text-xl sm:text-2xl font-industrial font-black tracking-wider text-[var(--sanitize-text-primary)] uppercase">
-            Destructive Sanitization Console
-          </h1>
-        </div>
+        <h1 className="text-xl sm:text-2xl font-industrial font-black tracking-wider text-[var(--sanitize-text-primary)] uppercase">
+          Destructive Sanitization Console
+        </h1>
       </div>
 
       {/* Slim Step Breadcrumb (Scoped horizontal scroll on overflow) */}
