@@ -118,10 +118,10 @@ export const CaseDashboard: React.FC = () => {
 
         <HoverButton
           onClick={() => setShowNewCaseModal(true)}
-          glowColor="#14B8A6"
-          backgroundColor="rgba(13, 184, 211, 0.12)"
+          glowColor="#10B981"
+          backgroundColor="rgba(16, 185, 129, 0.12)"
           textColor="var(--forensic-accent)"
-          hoverTextColor="#59EE99"
+          hoverTextColor="#059669"
           className="!text-xs !px-4 !py-2 border border-[var(--forensic-border)] font-industrial font-bold uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer"
         >
           <FolderPlus className="w-3.5 h-3.5 inline-block mr-1.5" />
@@ -141,7 +141,7 @@ export const CaseDashboard: React.FC = () => {
               <span className="text-[12px] font-sans text-[var(--forensic-text-primary)] font-medium">
                 {activeCase.case_name}
               </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] uppercase tracking-wider border border-[var(--forensic-border)]">
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] uppercase tracking-wider border border-[var(--forensic-border)]">
                 {activeCase.status}
               </span>
             </div>
@@ -192,7 +192,7 @@ export const CaseDashboard: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-[var(--forensic-border)]">
                   {evidenceList.map((item) => (
-                    <tr key={item.evidence_id} className="hover:bg-[rgba(13,184,211,0.05)] transition-colors">
+                    <tr key={item.evidence_id} className="hover:bg-[var(--primary)]/5 transition-colors">
                       <td className="py-2.5 px-3">
                         <div className="flex items-center gap-2">
                           <span className="text-[var(--forensic-text-mono)] font-bold">{item.evidence_id}</span>
@@ -216,13 +216,13 @@ export const CaseDashboard: React.FC = () => {
                       <td className="py-2.5 px-3 text-right space-x-2">
                         <button
                           onClick={() => handleOpenCustodyModal(item)}
-                          className="px-2 py-1 rounded bg-[rgba(13,184,211,0.1)] text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
+                          className="px-2 py-1 rounded bg-[var(--primary)]/10 text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)] text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
                         >
                           Custody Log
                         </button>
                         <button
                           onClick={() => setActiveScreen('acquisition')}
-                          className="px-2 py-1 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] hover:bg-[rgba(13,184,211,0.25)] text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
+                          className="px-2 py-1 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] hover:bg-[var(--primary)]/25 text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
                         >
                           Acquire
                         </button>
@@ -241,7 +241,7 @@ export const CaseDashboard: React.FC = () => {
           )}
         </GlassCard>
       ) : (
-        <div className="p-8 rounded-xl border border-dashed border-[rgba(89,238,153,0.1)] text-center space-y-3">
+        <div className="p-8 rounded-xl border border-dashed border-[var(--primary)]/20 text-center space-y-3">
           <FolderPlus className="w-8 h-8 text-[var(--text)]/30 mx-auto" />
           <p className="text-[12px] font-mono text-[var(--text)]/60">No Case Currently Selected</p>
           <GlowButton
@@ -277,7 +277,7 @@ export const CaseDashboard: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-mono text-[var(--forensic-text-mono)] font-bold">{c.case_id}</span>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--primary)]/15 text-[var(--forensic-accent)] border border-[var(--forensic-border)]">
                     {c.status}
                   </span>
                 </div>

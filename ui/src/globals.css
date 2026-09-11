@@ -8,14 +8,14 @@
   --sanitize-border-dark: rgba(239, 68, 68, 0.25);
   --sanitize-primary-text-dark: #FF6B7A;
 
-  /* Sanitize mode: light theme (muted maroon family) */
+  /* Sanitize mode: light theme (high-contrast ruby & crimson family) */
   --sanitize-bg-light: #FBF1EF;
-  --sanitize-surface-light: #F3DEDD;
-  --sanitize-text-light: #2E0A16;
-  --sanitize-primary-light: #A83B45;
-  --sanitize-primary-hover-light: #8F2E38;
-  --sanitize-border-light: #E3B5A4;
-  --sanitize-primary-text-light: #80222B;  /* darker maroon, readable on light bg */
+  --sanitize-surface-light: #F6E6E4;
+  --sanitize-text-light: #20050B;
+  --sanitize-primary-light: #A8283A;
+  --sanitize-primary-hover-light: #8F1E2E;
+  --sanitize-border-light: rgba(168, 40, 58, 0.25);
+  --sanitize-primary-text-light: #991B1B;  /* rich ruby red, highly readable on light bg */
 
   /* Forensic mode: dark theme (teal-tinted palette matching ombre gradient) */
   --forensic-bg-dark: #071a20;
@@ -26,14 +26,14 @@
   --forensic-border-dark: rgba(15, 174, 135, 0.25);
   --forensic-primary-text-dark: #59EE99;   /* bright teal/green on dark bg */
 
-  /* Forensic mode: light theme (derived tint, same hue family) */
-  --forensic-bg-light: #F2F4F6;
-  --forensic-surface-light: #E3E8ED;
-  --forensic-text-light: #1B2440;
-  --forensic-primary-light: #4B8F8C;
-  --forensic-primary-hover-light: #3A716E;
-  --forensic-border-light: #C5979D;
-  --forensic-primary-text-light: #2A6B68;  /* darker teal, readable on light bg */
+  /* Forensic mode: light theme (green-aligned forensic palette) */
+  --forensic-bg-light: #F0F7F4;
+  --forensic-surface-light: #E1EFEA;
+  --forensic-text-light: #0B241A;
+  --forensic-primary-light: #059669;
+  --forensic-primary-hover-light: #047857;
+  --forensic-border-light: rgba(5, 150, 105, 0.28);
+  --forensic-primary-text-light: #047857;  /* rich forest emerald, readable on light bg */
   --button-ripple-color: oklch(0.145 0 0 / 0.3);
 }
 
@@ -100,9 +100,9 @@
   --border: var(--sanitize-border-light);
   --primary-text: var(--sanitize-primary-text-light);
   --sanitize-text-primary: var(--sanitize-text-light);
-  --sanitize-text-secondary: var(--sanitize-border-light);
+  --sanitize-text-secondary: #7A222C;
   --sanitize-text-mono: var(--sanitize-text-light);
-  --sanitize-accent: var(--sanitize-primary-text-light);
+  --sanitize-accent: #991B1B;
   --sanitize-border: var(--sanitize-border-light);
   --sanitize-navbar-bg: var(--sanitize-surface-light);
   --sanitize-sidebar-bg: var(--sanitize-surface-light);
@@ -167,14 +167,20 @@
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
   --forensic-text-primary: var(--forensic-text-light);
-  --forensic-text-secondary: var(--forensic-border-light);
+  --forensic-text-secondary: #1E5948;
   --forensic-text-mono: var(--forensic-text-light);
-  --forensic-accent: var(--forensic-primary-text-light);
+  --forensic-accent: #047857;
   --forensic-border: var(--forensic-border-light);
   --forensic-navbar-bg: var(--forensic-surface-light);
   --forensic-sidebar-bg: var(--forensic-surface-light);
   --forensic-page-bg: var(--forensic-bg-light);
-  --forensic-bg-gradient: var(--forensic-bg-light);
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #F4FAF7 0%,
+    #EAF5F0 30%,
+    #E0EFE8 70%,
+    #D3E9DF 100%
+  );
 }
 
 /* Default fallback when theme is dark but mode isn't explicitly set */
@@ -224,10 +230,21 @@
   --primary-hover: var(--forensic-primary-hover-light);
   --border: var(--forensic-border-light);
   --primary-text: var(--forensic-primary-text-light);
+  --forensic-text-primary: var(--forensic-text-light);
+  --forensic-text-secondary: #1E5948;
+  --forensic-text-mono: var(--forensic-text-light);
+  --forensic-accent: #047857;
+  --forensic-border: var(--forensic-border-light);
   --forensic-navbar-bg: var(--forensic-surface-light);
   --forensic-sidebar-bg: var(--forensic-surface-light);
   --forensic-page-bg: var(--forensic-bg-light);
-  --forensic-bg-gradient: var(--forensic-bg-light);
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #F4FAF7 0%,
+    #EAF5F0 30%,
+    #E0EFE8 70%,
+    #D3E9DF 100%
+  );
 }
 
 /* Fallback mappings for legacy color variables */

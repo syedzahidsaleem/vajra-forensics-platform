@@ -49,8 +49,8 @@ export const Header: React.FC = () => {
           <span
             className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider uppercase border ${
               isForensic
-                ? 'bg-[rgba(13,184,211,0.08)] text-[var(--forensic-accent)] border-[var(--forensic-border)]'
-                : 'bg-[rgba(255,59,59,0.12)] text-[#FCA5A5] border-[rgba(255,107,122,0.35)]'
+                ? 'bg-[var(--primary)]/10 text-[var(--forensic-accent)] border-[var(--forensic-border)]'
+                : 'bg-[var(--primary)]/10 text-[var(--sanitize-accent)] border-[var(--sanitize-border)]'
             }`}
           >
             v0.1.0
@@ -69,8 +69,8 @@ export const Header: React.FC = () => {
           </div>
         ) : (
           <div className="flex items-center gap-2.5 animate-pulse select-none">
-            <span className="w-2 h-2 rounded-sm rotate-45 bg-[#FF7B88] shadow-[0_0_8px_#FF7B88] shrink-0" />
-            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[#FCA5A5] uppercase">
+            <span className="w-2 h-2 rounded-sm rotate-45 bg-[var(--sanitize-accent)] shadow-[0_0_8px_var(--sanitize-accent)] shrink-0" />
+            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[var(--sanitize-accent)] uppercase">
               Sanitization Mode
             </span>
           </div>
@@ -115,7 +115,7 @@ export const Header: React.FC = () => {
             onClick={() => setMode('sanitization')}
             className={`px-3 py-1 text-[10px] font-industrial font-bold tracking-wider uppercase transition-colors cursor-pointer ${
               !isForensic
-                ? 'bg-[var(--sanitize-accent)]/20 text-[#FCA5A5]'
+                ? 'bg-[var(--sanitize-accent)]/20 text-[var(--sanitize-accent)]'
                 : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]'
             }`}
           >

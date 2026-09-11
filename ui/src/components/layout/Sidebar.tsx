@@ -53,7 +53,7 @@ export const Sidebar: React.FC = () => {
       {/* Section label: Static Text Label */}
       <div
         className={`px-3 mb-2 text-[10px] font-industrial uppercase tracking-[0.2em] font-bold select-none ${
-          isForensic ? 'text-[var(--forensic-text-secondary)]/80' : 'text-[#FCA5A5]'
+          isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-accent)]'
         }`}
       >
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
@@ -72,15 +72,15 @@ export const Sidebar: React.FC = () => {
                 ${
                   isActive
                     ? isForensic
-                      ? 'bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] font-semibold border border-[var(--forensic-border)]'
-                      : 'bg-[rgba(255,59,59,0.2)] text-[#FCA5A5] font-semibold border border-[rgba(255,107,122,0.4)] shadow-[0_0_10px_rgba(239,68,68,0.15)]'
+                      ? 'bg-[var(--primary)]/15 text-[var(--forensic-accent)] font-semibold border border-[var(--forensic-border)]'
+                      : 'bg-[var(--primary)]/15 text-[var(--sanitize-accent)] font-semibold border border-[var(--sanitize-border)] shadow-[0_0_10px_rgba(239,68,68,0.15)]'
                     : isForensic
                     ? 'text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
-                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[#FDEDEC] border border-transparent'
+                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--sanitize-text-primary)] border border-transparent'
                 }
               `}
             >
-              <span className={isActive ? (isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#FCA5A5]') : (isForensic ? 'text-[var(--forensic-text-secondary)]/60' : 'text-[var(--sanitize-text-secondary)]')}>
+              <span className={isActive ? (isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]') : (isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]')}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
@@ -95,20 +95,20 @@ export const Sidebar: React.FC = () => {
         <div className="pt-2 border-t border-[var(--border)]/30 flex flex-col gap-1 text-[10px] font-sans">
           <button
             onClick={() => setActiveScreen('privacy')}
-            className={`text-left px-1.5 py-0.5 rounded transition-colors ${
+            className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'privacy'
-                ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[#FCA5A5] font-bold'
-                : 'text-[var(--forensic-text-secondary)]/60 hover:text-[var(--text)]'
+                ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[var(--sanitize-accent)] font-bold'
+                : isForensic ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--text)]'
             }`}
           >
             Privacy Policy
           </button>
           <button
             onClick={() => setActiveScreen('terms')}
-            className={`text-left px-1.5 py-0.5 rounded transition-colors ${
+            className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'terms'
-                ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[#FCA5A5] font-bold'
-                : 'text-[var(--forensic-text-secondary)]/60 hover:text-[var(--text)]'
+                ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[var(--sanitize-accent)] font-bold'
+                : isForensic ? 'text-[var(--forensic-text-secondary)] hover:text-[var(--text)]' : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--text)]'
             }`}
           >
             Terms & Conditions
@@ -120,12 +120,12 @@ export const Sidebar: React.FC = () => {
             className={`w-2 h-2 rounded-sm rotate-45 shrink-0 ${
               isForensic
                 ? 'bg-[var(--forensic-accent)] shadow-[0_0_6px_var(--forensic-accent)]'
-                : 'bg-[#FF7B88] shadow-[0_0_6px_#FF7B88]'
+                : 'bg-[var(--sanitize-accent)] shadow-[0_0_6px_var(--sanitize-accent)]'
             }`}
           />
           <span
             className={`text-[9px] font-industrial font-bold uppercase tracking-widest ${
-              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#FCA5A5]'
+              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'
             }`}
           >
             {isForensic ? 'Safety Active' : 'Sanitizer Armed'}
@@ -138,8 +138,8 @@ export const Sidebar: React.FC = () => {
             w-full py-1.5 rounded-md border font-industrial font-bold text-[10px] tracking-wider uppercase transition-all duration-200 cursor-pointer
             ${
               isForensic
-                ? 'border-[#EF4444]/40 text-[#EF4444] hover:border-[#EF4444] hover:bg-[rgba(239,68,68,0.1)]'
-                : 'border-[var(--forensic-accent)]/40 text-[var(--forensic-accent)] hover:border-[var(--forensic-accent)] hover:bg-[rgba(13,184,211,0.1)]'
+                ? 'border-[var(--sanitize-accent)]/40 text-[var(--sanitize-accent)] hover:border-[var(--sanitize-accent)] hover:bg-[var(--sanitize-accent)]/10'
+                : 'border-[var(--forensic-accent)]/40 text-[var(--forensic-accent)] hover:border-[var(--forensic-accent)] hover:bg-[var(--forensic-accent)]/10'
             }
           `}
         >
