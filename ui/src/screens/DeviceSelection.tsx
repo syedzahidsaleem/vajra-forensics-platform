@@ -18,9 +18,13 @@ import {
 } from 'lucide-react';
 import { GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
 import { formatDevicePath } from '../lib/utils';
+import { HoverButton } from '../components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
 
 export const DeviceSelection: React.FC = () => {
   const { devices, refreshDevices, mode, activeCase, setSelectedDevice, setActiveScreen } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { toast } = useToast();
   const isForensic = mode === 'forensic';
 
@@ -225,25 +229,31 @@ export const DeviceSelection: React.FC = () => {
                           Vault Evidence
                         </GlowButton>
                       )}
-                      <GlowButton
-                        variant="primary"
-                        size="sm"
-                        icon={<Disc className="w-3.5 h-3.5" />}
+                      <HoverButton
                         onClick={() => handleProceedToAcquisition(device)}
+                        glowColor={isDark ? '#38C193' : '#05664B'}
+                        backgroundColor={isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+                        textColor={isDark ? '#38C193' : '#05664B'}
+                        hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+                        className={`!text-xs !px-3.5 !py-1.5 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-1.5 cursor-pointer rounded-lg`}
                       >
-                        Acquire Image
-                      </GlowButton>
+                        <Disc className="w-3.5 h-3.5 shrink-0" />
+                        <span>Acquire Image</span>
+                      </HoverButton>
                     </>
                   ) : (
-                    <GlowButton
+                    <HoverButton
                       disabled={isSystem}
-                      variant="danger"
-                      size="sm"
-                      icon={<Flame className="w-3.5 h-3.5" />}
                       onClick={() => handleProceedToSanitization(device)}
+                      glowColor="#EF4444"
+                      backgroundColor={isDark ? 'rgba(239, 68, 68, 0.18)' : 'rgba(239, 68, 68, 0.15)'}
+                      textColor={isDark ? '#FF7B88' : '#DC2626'}
+                      hoverTextColor="#FFFFFF"
+                      className={`!text-xs !px-3.5 !py-1.5 border ${isDark ? 'border-[rgba(239,68,68,0.35)]' : 'border-[#EF4444]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-1.5 cursor-pointer rounded-lg`}
                     >
-                      Sanitize Device
-                    </GlowButton>
+                      <Flame className="w-3.5 h-3.5 shrink-0" />
+                      <span>Sanitize Device</span>
+                    </HoverButton>
                   )}
                 </div>
               </div>

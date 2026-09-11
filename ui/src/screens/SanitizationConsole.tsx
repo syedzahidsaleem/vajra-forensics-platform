@@ -20,9 +20,13 @@ import {
 import StorageMap from '../storage-map/StorageMap';
 import { GlassCard, GlowButton, useToast } from '../components/ui/vajra-components';
 import { formatDevicePath } from '../lib/utils';
+import { HoverButton } from '../components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
 
 export const SanitizationConsole: React.FC = () => {
   const { devices, selectedDevice, activeCase, setActiveScreen } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { toast } = useToast();
 
   // Selected Target Device
@@ -338,14 +342,17 @@ export const SanitizationConsole: React.FC = () => {
           )}
 
           <div className="flex justify-end pt-2">
-            <GlowButton
+            <HoverButton
               disabled={isSystemDisk}
-              variant="danger"
-              size="md"
               onClick={handleBeginGate}
+              glowColor="#EF4444"
+              backgroundColor={isDark ? 'rgba(239, 68, 68, 0.2)' : '#EF4444'}
+              textColor={isDark ? '#FF7B88' : '#FFFFFF'}
+              hoverTextColor="#FFFFFF"
+              className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.35)]' : 'border-red-600 shadow-md hover:bg-red-600'} font-industrial font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer rounded-xl select-none`}
             >
-              Initiate Safety Gate Sequence &rarr;
-            </GlowButton>
+              <span>Initiate Safety Gate Sequence &rarr;</span>
+            </HoverButton>
           </div>
         </div>
       )}
@@ -435,9 +442,16 @@ export const SanitizationConsole: React.FC = () => {
             >
               &larr; Back
             </button>
-            <GlowButton variant="danger" size="md" onClick={handleConfirmStep4}>
-              Reconfirm Sanitization &rarr;
-            </GlowButton>
+            <HoverButton
+              onClick={handleConfirmStep4}
+              glowColor="#EF4444"
+              backgroundColor={isDark ? 'rgba(239, 68, 68, 0.2)' : '#EF4444'}
+              textColor={isDark ? '#FF7B88' : '#FFFFFF'}
+              hoverTextColor="#FFFFFF"
+              className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.35)]' : 'border-red-600 shadow-md hover:bg-red-600'} font-industrial font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer rounded-xl select-none`}
+            >
+              <span>Reconfirm Sanitization &rarr;</span>
+            </HoverButton>
           </div>
         </GlassCard>
       )}
@@ -475,14 +489,17 @@ export const SanitizationConsole: React.FC = () => {
             >
               &larr; Back
             </button>
-            <GlowButton
+            <HoverButton
               disabled={typedSerial.trim() !== targetDevice?.serial.trim()}
-              variant="danger"
-              size="md"
               onClick={handleFinalizeAndExecute}
+              glowColor="#EF4444"
+              backgroundColor={isDark ? 'rgba(239, 68, 68, 0.2)' : '#EF4444'}
+              textColor={isDark ? '#FF7B88' : '#FFFFFF'}
+              hoverTextColor="#FFFFFF"
+              className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.35)]' : 'border-red-600 shadow-md hover:bg-red-600'} font-industrial font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer rounded-xl select-none`}
             >
-              Execute Destructive Wiping &rarr;
-            </GlowButton>
+              <span>Execute Destructive Wiping &rarr;</span>
+            </HoverButton>
           </div>
         </GlassCard>
       )}

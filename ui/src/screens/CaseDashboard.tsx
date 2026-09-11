@@ -223,12 +223,16 @@ export const CaseDashboard: React.FC = () => {
                         >
                           Custody Log
                         </button>
-                        <button
+                        <HoverButton
                           onClick={() => setActiveScreen('acquisition')}
-                          className="px-2.5 py-1 rounded bg-[var(--primary)]/20 text-[var(--forensic-accent)] hover:bg-[var(--primary)]/30 font-bold text-[10px] font-mono border border-[var(--forensic-border)] cursor-pointer"
+                          glowColor={isDark ? '#38C193' : '#05664B'}
+                          backgroundColor={isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+                          textColor={isDark ? '#38C193' : '#05664B'}
+                          hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+                          className={`!text-[10px] !px-2.5 !py-1 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-bold uppercase tracking-wider shadow-sm inline-flex items-center gap-1 cursor-pointer rounded-md`}
                         >
                           Acquire
-                        </button>
+                        </HoverButton>
                       </td>
                     </tr>
                   ))}

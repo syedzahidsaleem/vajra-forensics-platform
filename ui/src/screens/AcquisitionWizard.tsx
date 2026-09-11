@@ -422,13 +422,17 @@ export const AcquisitionWizard: React.FC = () => {
             >
               &larr; Back
             </button>
-            <button
+            <HoverButton
               onClick={handleStartImaging}
-              className="flex items-center space-x-2 px-6 py-2.5 bg-[var(--primary)] hover:brightness-110 text-white font-mono font-bold text-xs rounded-xl shadow-lg cursor-pointer transition-all"
+              glowColor={isDark ? '#38C193' : '#05664B'}
+              backgroundColor={isDark ? 'rgba(56, 193, 147, 0.15)' : 'rgba(5, 102, 75, 0.15)'}
+              textColor={isDark ? '#38C193' : '#05664B'}
+              hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+              className={`!text-xs !px-6 !py-2.5 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-lg inline-flex items-center gap-2 cursor-pointer rounded-xl`}
             >
-              <Play className="w-4 h-4 fill-current" />
+              <Play className="w-4 h-4 fill-current shrink-0" />
               <span>Start Forensic Acquisition</span>
-            </button>
+            </HoverButton>
           </div>
         </div>
       )}

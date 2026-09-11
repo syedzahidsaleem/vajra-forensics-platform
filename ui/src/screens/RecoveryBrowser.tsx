@@ -18,6 +18,8 @@ import {
   AnimatedCounter,
   useToast,
 } from '../components/ui/vajra-components';
+import { HoverButton } from '../components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
 
 interface Artifact {
   id: string;
@@ -41,6 +43,8 @@ interface Artifact {
 
 export const RecoveryBrowser: React.FC = () => {
   const { selectedDevice, jumpToHexLba } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const { toast } = useToast();
   const [selectedTier, setSelectedTier] = useState<'All' | 'Tier 1' | 'Tier 2' | 'Tier 3'>('All');
   const [isLoading, setIsLoading] = useState(false);
@@ -149,15 +153,18 @@ export const RecoveryBrowser: React.FC = () => {
         title="Recovery Browser & Artifact Inspector"
         tags={['FORENSIC READ-ONLY']}
         actions={
-          <GlowButton
-            variant="primary"
-            size="md"
-            icon={<Play className="w-3.5 h-3.5" />}
-            loading={isLoading}
+          <HoverButton
             onClick={handleRunPipeline}
+            disabled={isLoading}
+            glowColor={isDark ? '#38C193' : '#05664B'}
+            backgroundColor={isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+            textColor={isDark ? '#38C193' : '#05664B'}
+            hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+            className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer rounded-xl`}
           >
-            Run Recovery Pipeline
-          </GlowButton>
+            {isLoading ? <OrbitalSpinner size={14} /> : <Play className="w-3.5 h-3.5" />}
+            <span>{isLoading ? 'Running Pipeline...' : 'Run Recovery Pipeline'}</span>
+          </HoverButton>
         }
       />
 

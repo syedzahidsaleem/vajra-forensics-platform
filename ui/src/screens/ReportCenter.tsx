@@ -236,13 +236,21 @@ export const ReportCenter: React.FC = () => {
                   </button>
 
                   <div className="flex items-center space-x-2 text-xs font-mono">
-                    <button
+                    <HoverButton
                       onClick={() => setViewingReport(r)}
-                      className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[var(--primary)] hover:brightness-110 text-white font-bold transition-all shadow cursor-pointer"
+                      glowColor={isForensic ? (isDark ? '#38C193' : '#05664B') : '#EF4444'}
+                      backgroundColor={isForensic ? (isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)') : (isDark ? 'rgba(239, 68, 68, 0.18)' : 'rgba(239, 68, 68, 0.15)')}
+                      textColor={isForensic ? (isDark ? '#38C193' : '#05664B') : (isDark ? '#FF7B88' : '#DC2626')}
+                      hoverTextColor="#FFFFFF"
+                      className={`!text-xs !px-3.5 !py-1.5 border ${
+                        isForensic
+                          ? (isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40')
+                          : (isDark ? 'border-[rgba(239,68,68,0.35)]' : 'border-[#EF4444]/40')
+                      } font-industrial font-bold uppercase tracking-wider shadow-sm inline-flex items-center gap-1.5 cursor-pointer rounded-lg`}
                     >
-                      <Eye className="w-3.5 h-3.5" />
+                      <Eye className="w-3.5 h-3.5 shrink-0" />
                       <span>View Report</span>
-                    </button>
+                    </HoverButton>
                     <button
                       onClick={() => handleExportHtml(r)}
                       className="px-2.5 py-1.5 rounded-lg bg-[var(--border)]/20 hover:bg-[var(--border)]/30 text-[var(--text)]/80 border border-[var(--border)]/30 cursor-pointer flex items-center gap-1"
