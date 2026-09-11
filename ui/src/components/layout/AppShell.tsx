@@ -273,10 +273,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               {/* Modal Body Container */}
               <div
                 style={{
-                  background: isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(254, 242, 242, 0.75)',
-                  border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(254, 202, 202, 0.8)',
+                  background: isDark ? '#0c141a' : '#FFFFFF',
+                  border: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(254, 202, 202, 0.8)',
                 }}
-                className="p-4 sm:p-5 rounded-xl text-xs leading-relaxed space-y-3 font-sans"
+                className="p-4 sm:p-5 rounded-xl text-xs leading-relaxed space-y-3 font-sans shadow-md"
               >
                 <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   You are transitioning from{' '}
@@ -292,7 +292,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 {/* Warning Callout Box */}
                 <div
                   style={{
-                    background: isDark ? 'rgba(239, 68, 68, 0.12)' : 'rgba(254, 226, 226, 0.85)',
+                    background: isDark ? '#1a0709' : '#FEF2F2',
                     border: isDark ? '1px solid rgba(239, 68, 68, 0.35)' : '1px solid rgba(252, 165, 165, 0.9)',
                   }}
                   className="p-3 sm:p-3.5 rounded-lg flex items-start space-x-2.5 text-[11px] font-mono leading-normal"
@@ -305,13 +305,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </div>
 
               {/* Modal Footer / Actions */}
-              <div className="flex items-center justify-end space-x-3 pt-2">
+              <div className="flex items-center justify-end space-x-3 pt-2 relative z-20">
                 <button
                   onClick={cancelModeSwitch}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer shadow-sm select-none ${
+                  className={`relative z-10 px-4 py-2.5 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer shadow-md select-none ${
                     isDark
-                      ? 'text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/15'
-                      : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300'
+                      ? 'text-slate-200 hover:text-white bg-[#0f1722] hover:bg-[#182434] border border-white/20'
+                      : 'text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border border-slate-300'
                   }`}
                 >
                   Cancel (Stay in Forensic Mode)
@@ -320,11 +320,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 <HoverButton
                   onClick={confirmModeSwitch}
                   glowColor="#EF4444"
-                  backgroundColor={isDark ? 'rgba(239, 68, 68, 0.2)' : '#EF4444'}
-                  textColor={isDark ? '#FF7B88' : '#FFFFFF'}
+                  backgroundColor={isDark ? '#8F1E28' : '#DC2626'}
+                  textColor="#FFFFFF"
                   hoverTextColor="#FFFFFF"
-                  className={`!text-xs !px-5 !py-2.5 border ${
-                    isDark ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.35)]' : 'border-red-600 shadow-md hover:bg-red-600'
+                  className={`!text-xs !px-5 !py-2.5 border relative z-10 ${
+                    isDark ? 'border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.35)]' : 'border-red-600 shadow-md hover:bg-red-600'
                   } font-industrial font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer select-none`}
                 >
                   <CheckCircle className="w-4 h-4 shrink-0" />
