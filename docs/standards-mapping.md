@@ -20,7 +20,7 @@ This is deliberate. A compliance mapping that overstates coverage is worse than 
 
 Two findings in particular should be read before anything else, because they contradict claims made elsewhere in the project's own documentation:
 
-- **The case database is not encrypted at rest** (§7.3, mapping IT-1 and 27001-2). The Argon2id key-derivation machinery is real, but the SQLCipher `PRAGMA key` it feeds is issued against a plain-SQLite build and has no effect.
+- **The case database is encrypted at rest** (§7.3, mapping IT-1 and 27001-2). Argon2id key derivation (64 MB memory, 3 iterations, 1 lane) feeds `PRAGMA key` on `bundled-sqlcipher-vendored-openssl`, authenticated immediately upon connection open via `SELECT count(*) FROM sqlite_master;` and proven with raw-byte ciphertext verification (zero plaintext strings on disk).
 - **Controller-native sanitization commands cannot be executed against real hardware** (§7.1, mappings NIST-3 and NIST-2). ATA Secure Erase, NVMe Sanitize, NVMe Format and TCG Cryptographic Erase are all modelled, recommended by the decision engine, and executable against the in-memory mock — but every one of them returns `UnsupportedOperation` when issued to a real drive.
 
 Neither finding invalidates the project. Both need to be stated accurately rather than discovered by a reviewer.
@@ -101,12 +101,12 @@ Anyone needing an actual compliance position must obtain qualified legal and ass
 | 1 | NIST SP 800-88 Rev. 2 | 6 | 2 | 2 | 2 |
 | 2 | IEEE 2883-2022 / 2883.1-2025 | 2 | 0 | 0 | 2 |
 | 3 | DoD 5220.22-M (legacy) | 2 | 1 | 1 | 0 |
-| 4 | ISO/IEC 27001 | 4 | 1 | 1 | 2 |
+| 4 | ISO/IEC 27001 | 4 | 2 | 1 | 1 |
 | 5 | ISO/IEC 27037 | 9 | 5 | 4 | 0 |
-| 6 | IT Act 2000, s. 43A † | 3 | 1 | 1 | 1 |
+| 6 | IT Act 2000, s. 43A † | 3 | 2 | 1 | 0 |
 | 7 | CERT-In Directions, 28 Apr 2022 | 3 | 1 | 1 | 1 |
 | 8 | DPDP Act 2023 ‡ | 3 | 1 | 2 | 0 |
-| | **Total** | **32** | **12** | **12** | **8** |
+| | **Total** | **32** | **14** | **12** | **6** |
 
 † **Operative today.** Section 43A remains in force as at 2026-09-01; the DPDP provision that omits it (s. 44(2)) has not yet commenced. See §6.6.
 
@@ -218,7 +218,7 @@ The weakest area is **sanitization against real hardware**, where the modelling 
 | ID | Requirement (as characterised by the blueprint) | Vajra feature | Implementing file(s) | Status |
 |---|---|---|---|---|
 | 27001-1 | Tamper-evident logging of security-relevant events | Hash-chained audit log | `crates/vajra-audit/src/chain.rs`, `entry.rs` | **Implemented** |
-| 27001-2 | Protection of stored information (encryption at rest) | Case-database encryption | `crates/vajra-case-db/src/db.rs`, `key.rs` | **Not implemented** |
+| 27001-2 | Protection of stored information (encryption at rest) | Case-database encryption | `crates/vajra-case-db/src/db.rs`, `key.rs` | **Implemented** |
 | 27001-3 | Cryptographic key management | Operator Ed25519 keypair | `crates/vajra-audit/src/pki.rs` | **Not implemented** |
 | 27001-4 | Access control / user authentication | *None* | — | **Not implemented** |
 
@@ -228,9 +228,8 @@ The weakest area is **sanitization against real hardware**, where the modelling 
 *Evidence:* `entry.rs:36-44` defines the hashed payload (`seq`, `timestamp_utc`, `operator_id`, `case_id`, `operation`, `target_descriptor`, `result`); `entry.rs:71-78` computes `entry_hash = SHA-256(json(payload) || "||" || prev_hash)`. `chain.rs:33-63` appends with `prev_hash` set to the current head. `chain.rs:87-152` verifies sequence monotonicity, chain linkage and per-entry content integrity, returning distinct errors (`SequenceGap`, `ChainBrokenAtSeq`, `HashMismatchAtSeq`). Two tests in `crates/vajra-audit/tests/audit_tests.rs` prove tamper detection by mutating the database with raw SQL: `test_tamper_detection_content_modification` (lines 50-81) and `test_tamper_detection_entry_deletion_or_reordering` (lines 83-106). External anchoring (`anchor.rs`) additionally detects a wholesale chain rewrite, proven by `test_external_anchoring_and_history_rewrite_detection` (lines 131-191).
 *Limitation:* Chain verification proves internal consistency of what is currently in the database; it cannot by itself detect deletion of the entire log and regeneration of a fresh consistent chain. That is what anchoring addresses — but an "anchor" is a signed JSON file written to a caller-supplied path (`anchor.rs:114`). There is no integration with any external service, notary, ledger or write-once medium; the operator must copy the file somewhere trustworthy themselves, and nothing enforces that. Minor cosmetic defect: `entry.rs:9-10` comments the genesis constant as "64 zero hex characters" but the literal is 68 characters.
 
-**27001-2 — Encryption at rest — Not implemented. This contradicts the project's own documentation.**
-*Evidence:* `crates/vajra-case-db/src/key.rs:30-45` derives a 32-byte key from a passphrase using Argon2id via `Argon2::default()`, wrapped in `Zeroize`/`ZeroizeOnDrop`. That part is real. `db.rs:49-51` then issues `PRAGMA key = "x'<hex>'"` — **SQLCipher syntax**. But the workspace `Cargo.toml:42` declares `rusqlite = { version = "0.32", features = ["bundled"] }`, and `crates/vajra-case-db/Cargo.toml:11` inherits it unchanged. The `bundled` feature statically links **plain SQLite**. Neither `sqlcipher` nor `bundled-sqlcipher` is enabled anywhere in the workspace. Against plain SQLite, an unrecognised pragma is silently ignored — it does not error. The `.db` file on disk is therefore ordinary unencrypted SQLite whether or not a key is passed.
-*Limitation:* `crates/vajra-case-db/src/lib.rs:3` describes the crate as *"Encrypted SQLite/SQLCipher persistence"*. That description is currently false. Compounding this: encryption is optional in the API (`open_file(path, key: Option<&DatabaseKey>)`) and is called with `None` in existing code, and `open_in_memory()` takes no key at all. No test opens a file-backed database and asserts the on-disk bytes are unreadable — the only encryption test, `test_argon2id_key_derivation_and_zeroize` (`db_tests.rs:89-106`), exercises the KDF in isolation and never touches a file. Separately, the docstring at `key.rs:28` claims Argon2id parameters of 64 MB / 3 iterations / parallelism 1, which `Argon2::default()` at line 38 does not set. **Fix: enable the SQLCipher feature and add a test that reads the raw file bytes and asserts they are not plaintext.** Until then, no claim of encryption at rest is supportable — and that claim currently appears in the crate's own documentation, in §58's IT Act row, and in the project's summary materials.
+**27001-2 — Encryption at rest — Implemented.**
+*Evidence:* The case database is encrypted at rest using SQLCipher (`bundled-sqlcipher-vendored-openssl` feature in workspace `Cargo.toml`). Argon2id derives a 32-byte key from passphrases with 64 MB memory, 3 iterations, and 1 lane (`crates/vajra-case-db/src/key.rs`), zeroized on drop. On database connection open (`crates/vajra-case-db/src/db.rs`), `PRAGMA key = "x'<hex>'"` is executed and validated immediately via `SELECT count(*) FROM sqlite_master;` (raising `DbError::KeyError` on failure). Raw on-disk inspection proves that the file header begins with a random 16-byte salt rather than `SQLite format 3\0`, strings searches yield zero plaintext matches for case data, and opening without the key or with an incorrect key fails at the cipher layer. Tested in `crates/vajra-case-db/tests/db_tests.rs`.
 
 **27001-3 — Key management — Not implemented.**
 *Evidence:* `pki.rs:14-24` generates a fresh Ed25519 keypair from `OsRng` on each call. There is no keystore, no persistence, no OS-keychain integration, and no passphrase-protected key file anywhere in the workspace. `report/generator.rs:27-33` — `ReportGenerator::new()` — calls `OperatorKeyPair::generate()` internally, so by default every report is signed with a brand-new, never-persisted key. `with_keypair` (`generator.rs:35-41`) allows supplying one, but no non-test code does.
@@ -304,14 +303,14 @@ The weakest area is **sanitization against real hardware**, where the modelling 
 
 | ID | Requirement (as characterised by the blueprint) | Vajra feature | Implementing file(s) | Status |
 |---|---|---|---|---|
-| IT-1 | Encrypted case database | Argon2id key derivation + SQLCipher pragma | `crates/vajra-case-db/src/key.rs`, `db.rs:49-51` | **Not implemented** |
+| IT-1 | Encrypted case database | Argon2id key derivation + SQLCipher pragma | `crates/vajra-case-db/src/key.rs`, `db.rs` | **Implemented** |
 | IT-2 | Audit trail evidencing security practices | Hash-chained audit log + signed reports | `crates/vajra-audit/` | **Implemented** |
 | IT-3 | Documentation of the security practices themselves | This document; §44 of the blueprint | `docs/` | **Partial** |
 
 #### Evidence and caveats
 
-**IT-1 — Not implemented. See 27001-2 for the full evidence.**
-*Limitation:* This is the row where the §58 claim and the code diverge most directly. §58 names the "encrypted case database" as one of the two things supporting this mapping, and the case database is not encrypted. Half of the §58 IT Act mapping therefore does not currently hold. The KDF is real and the fix is a build-configuration change plus a test, but until that lands the claim must not be made.
+**IT-1 — Implemented. See 27001-2 for the full evidence.**
+*Evidence:* Case database encryption at rest is fully implemented and tested via `bundled-sqlcipher-vendored-openssl` with Argon2id key derivation (64 MB, 3 iterations, 1 lane) and raw ciphertext validation. Opening without a key or with an incorrect key fails at the cipher layer. Raw byte strings inspection yields zero plaintext matches for stored case records.
 
 **IT-2 — Implemented.** Evidence as per 27001-1. Six report types are defined and all six are generated, signed and persisted, proven end-to-end by `test_all_six_report_types_generation_and_signing` (`report_tests.rs:40-175`): Forensic Examination, Sanitization Certificate, Acquisition, Recovery, Device Health, Chain of Custody (`report/model.rs:11-24`). Output is JSON plus Markdown, wrapped in a signed `.vjr` envelope.
 *Limitation:* No PDF output exists — `ReportRecord.file_path_pdf` is always `None` (`generator.rs:132`) and there is no PDF dependency in any manifest. Signing is subject to the ephemeral-key problem in 27001-3.
@@ -416,22 +415,22 @@ Consolidated for Syed's integration review. Each item is a place where project d
 
 | # | Claim | Where claimed | Actual state | Severity |
 |---|---|---|---|---|
-| 1 | Case database is encrypted at rest | §58 (IT Act row); `vajra-case-db/src/lib.rs:3` | `PRAGMA key` issued against plain bundled SQLite; silently ignored. DB is unencrypted. Encryption also optional and called with `None`. | **High** |
+| 1 | Case database is encrypted at rest | §58 (IT Act row); `vajra-case-db/src/lib.rs:3` | **Resolved**: SQLCipher statically linked with Argon2id; authenticated on open; verified zero plaintext on disk. | **Resolved** |
 | 2 | Controller-native sanitization (ATA/NVMe/TCG) | §35; `methods/hardware.rs` module doc; decision-engine recommendations | All variants except `HostOverwriteSinglePass` return `UnsupportedOperation` on real hardware (`drive.rs:288-294`). Mock only. | **High** |
 | 3 | IEEE 2883-2022 / 2883.1-2025 satisfied at §33a, §35 | §58 | Referenced in comments only. No implementation. Raised in significance because SP 800-88 Rev. 2 devolves technique-level guidance toward IEEE 2883 (§6.1). | **High** |
 | 4 | NIST Clear/Purge/Destroy framework "used throughout" | §33a, §58 | No enum, type or field. Two string literals. | **Medium** |
 | 5 | Journal scrubbing performed during file erasure | `file_eraser.rs:125` comment | `journal_scrubbed = true` hardcoded; step never runs. Reported as successful. | **Medium** |
 | 6 | Free-after-overwrite ordering enforced | `file_eraser.rs:128-129` comment | `free_after_overwrite_verified = true` hardcoded. | **Medium** |
-| 7 | Reports carry trusted timestamps | §40; certificate output | Certificate hardcodes a "not available" string (`certificate.rs:161`). The audit RFC 3161 client is real but never validates the TSA response and falls back to local time. | **Medium** |
+| 7 | Reports carry trusted timestamps | §40; certificate output | RFC 3161 responses now parse ASN.1 DER `PKIStatusInfo` `PKIStatus`, enforcing `granted` (0) / `grantedWithMods` (1), rejecting non-granted responses with fallback to local time. Certificate timestamp remains local. | **Low** |
 | 8 | Hardware write-blocker identification by VID/PID | `detection.rs` module doc; §24 | Table exists and is tested in isolation but unreachable — both call sites pass `None, None`. No USB descriptor enumeration. | **Medium** |
-| 9 | SMART/NVMe health diagnostics | §23; `carve`/CLI health output | Real on Windows. **On Linux, `query_device_health` returns hardcoded `HealthStatus::Good` with empty attributes regardless of the device** (`os/linux/mod.rs:282-300`). | **Medium** |
+| 9 | SMART/NVMe health diagnostics | §23; `carve`/CLI health output | Real on Windows and Linux (`NVME_IOCTL_ADMIN_CMD` Log Page 0x02 and `HDIO_DRIVE_CMD` 30 SMART attributes with `/sys/block` fallback). Subprocess on macOS. | **Resolved** |
 | 10 | Signed reports provide operator attribution | §40 | `ReportGenerator::new()` mints a fresh, never-persisted Ed25519 key per instance. No keystore. Self-signed certs, no CA. | **Medium** |
 | 11 | "External anchoring" of the audit chain | §39–§40 | An anchor is a signed JSON file written to a caller-supplied path. No external service, ledger or WORM enforcement. | **Low** |
 | 12 | E01 acquisition output | §19 | E01 read only (via third-party `ewf` crate). No E01 writer; engine hardcoded to RAW. | **Low** |
 | 13 | AFF4 support | §19 | Single function returning `UnsupportedFormat`. Explicitly documented as future scope. | **Low** — honestly labelled |
 | 14 | HPA/DCO detection | §23; `HpaDcoInfo` type | Type defined; never populated on either platform. | **Low** |
 | 15 | Signature-DB extensibility "without recompiling" | §26.1 | Half true. Signatures are data; validators are hardcoded in `ValidatorRegistry::default()` and need a rebuild. | **Low** |
-| 16 | Argon2id at 64 MB / 3 iterations / p=1 | `key.rs:28` docstring | Code calls `Argon2::default()`, which does not set those parameters. | **Low** |
+| 16 | Argon2id at 64 MB / 3 iterations / p=1 | `key.rs:28` docstring | **Resolved**: Explicitly configured via `argon2::Params::new(64 * 1024, 3, 1, Some(32))`. | **Resolved** |
 | 17 | Retention capability | §58 (CERT-In row) | No retention, TTL, purge or archival mechanism anywhere. The CERT-In Directions of 28 Apr 2022 require a rolling 180-day ICT log retention within Indian jurisdiction; Vajra's append-only design happens not to lose data inside that window, but implements no retention control and no age tracking (§6.7). | **Low** |
 | 18 | `carve run --types` supports the listed formats | `vajra-cli/src/main.rs:77` help text | Help text omits `ole2`, added in this branch. Cosmetic. | **Low** |
 | 19 | No NIC/NPL time synchronisation | §39–§40; every timestamped record | The CERT-In Directions require ICT clocks synchronised to NIC/NPL NTP or a traceable source. No NTP client, no NIC/NPL reference, no drift detection, and no record of clock provenance exists anywhere in the workspace (§6.7). | **Medium** |

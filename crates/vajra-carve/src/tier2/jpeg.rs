@@ -86,6 +86,12 @@ impl StructuralValidator for JpegValidator {
 
                 // Walk scan data until EOI or invalid byte sequence
                 while offset < data.len() {
+                    // Fast zero-block detection per no_zblocks flag: if an all-zero block is encountered,
+                    // the scan data ended prematurely in disk padding/unallocated space -> V_EOF
+                    if offset + 512 <= data.len() && data[offset..offset + 512].iter().all(|&b| b == 0) {
+                        return ValidationResult::Eof { partial_length: offset.max(1) as u64 };
+                    }
+
                     if data[offset] == 0xFF {
                         if offset + 1 >= data.len() {
                             return ValidationResult::Eof { partial_length: offset as u64 };

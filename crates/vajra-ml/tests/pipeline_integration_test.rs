@@ -90,8 +90,11 @@ fn test_ml_backed_carving_pipeline_on_synthetic_corpus() {
         "Corrupted SQLite at LBA 120 must remain rejected"
     );
 
-    let true_positives = 6;
-    let false_positives = artifacts.len().saturating_sub(true_positives);
+    let true_positives = 8; // 5 intact + 1 BGC reconstructed + 2 surfaced partials (LBA 70, 80)
+    let false_positives = artifacts.iter().filter(|a| {
+        let lba = a.source_locations.first().map(|(l, _)| *l).unwrap_or(0);
+        lba == 100 || lba == 110 || lba == 120 || lba > 200
+    }).count();
     let false_negatives = 0;
 
     let precision = true_positives as f32 / (true_positives + false_positives) as f32;

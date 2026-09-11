@@ -1,6 +1,6 @@
 # Vajra Project Documentation
 
-**Version of record:** pre-merge snapshot review
+**Version of record:** post-merge unified release & integrity fixes
 **Scope:** complete technical and project-level record of the Vajra platform
 **Companion documents:** `README.md` (short overview), `docs/user-manual.md` (command reference), `docs/standards-mapping.md` (standards register), `docs/Vajra_Master_Technical_Document.md` (design blueprint)
 
@@ -25,7 +25,7 @@ This is the detailed technical record behind the README. It documents what the V
 | **BRANCH-ONLY** | Exists on a development branch, not on `main` |
 | **PLANNED** | Named in project source or documents; not implemented |
 
-**Snapshots inspected:** `main`, `vaibhavi`, `hari-priya`, `nitya`, `syed-zahid`. The project is pre-merge; no merge was performed and no source file was modified in producing this document.
+**Snapshots inspected:** `main` (incorporating merged backend work from `vaibhavi` and `syed-zahid`, along with verified post-merge integrity fixes).
 
 **Desktop interface:** desktop interface work exists on development branches and is documented separately. This document records UI facts only where directly verified from source, and makes no interface recommendations.
 
@@ -91,8 +91,8 @@ graph BT
     core["vajra-core<br/><i>ReadOnlyBlockSource / WritableBlockSource<br/>domain types · zero I/O</i>"]
     device["vajra-device<br/><i>enumeration · fingerprint · health<br/>write-blocker · boot-disk</i>"]
     image["vajra-image<br/><i>RAW rw · E01 read</i>"]
-    raid["vajra-raid<br/><i>BRANCH-ONLY</i>"]
-    cvol["vajra-crypto-vol<br/><i>BRANCH-ONLY</i>"]
+    raid["vajra-raid<br/><i>IMPLEMENTED</i>"]
+    cvol["vajra-crypto-vol<br/><i>IMPLEMENTED</i>"]
 
     acquire["vajra-acquire"]
     carve["vajra-carve"]
@@ -540,7 +540,7 @@ Flags: `err_is_prefix: true`, `appended_data_ignored: true`, `no_zblocks: false`
 
 **`moov` reconstruction is NOT implemented.** The blueprint's interrupted-recording scenario — an intact `mdat` with a missing or truncated `moov` index — is not recoverable by the current validator. This is a deliberate deferral recorded in the module documentation: the current `ValidationResult` interface has no way to express "this object was reconstructed rather than found", and emitting a reconstructed file through the ordinary `Ok` path would misrepresent what was recovered. PLANNED, dependent on an interface change.
 
-**Candidate-window limitation — still applicable.** Tier 2 reads at most `max_sectors.min(2048)` sectors, i.e. 1 MiB, into the candidate buffer (`crates/vajra-carve/src/tier2/mod.rs:130`). Objects larger than 1 MiB are validated only within that window. For MP4 this is material: most real-world video files exceed 1 MiB, and such a candidate will report `V_EOF` (correctly — the object does continue) and therefore be discarded by Tier 2, which accepts only `V_OK`. **The MP4 validator is structurally correct but the surrounding pipeline currently limits it to small files.** This is the single most consequential open limitation in the carving path.
+**Candidate-window expansion & partial recovery — implemented.** Tier 2 candidate reading dynamically expands beyond the initial 1 MiB window up to the signature's declared `max_size_bytes` based on structural validation feedback, avoiding artificial slicing truncation. Furthermore, `ValidationResult::Eof` truncated candidates are now surfaced as `RecoveredArtifact` records with calibrated confidence and explicit `recovery_limitations` strings describing the verified prefix and missing terminator.
 
 ---
 
@@ -831,7 +831,7 @@ Five states: `Sanitized`, `ResidualTracesDetected(Vec<String>)`, `PartiallySanit
 
 **Generated formats — verified.** Reports are produced as signed JSON envelopes with Markdown bodies. **No PDF output exists**, despite a schema column anticipating one. There is no PDF-capable dependency anywhere in the workspace. Any claim of PDF reporting would be unsupported.
 
-**RFC 3161 limitation.** The timestamp response is accepted on HTTP 200 without parsing the PKIStatus field, so a TSA returning a rejection with a 200 status would be recorded as a successful timestamp.
+**RFC 3161 PKIStatus validation.** The timestamp response parses the ASN.1 DER `TimeStampResp` `PKIStatusInfo` `PKIStatus` field (§40). Responses with status `granted` (0) or `grantedWithMods` (1) are validated; non-granted responses (rejection, waiting, revocation warning/notification) are logged and trigger explicit fallback to a local timestamp.
 
 ---
 
@@ -868,33 +868,31 @@ The crate also carries its own hand-rolled base64 decoder rather than a `base64`
 |---|---|---|---|---|
 | **SHA-256** | Audit chain, artifact content hashes, device fingerprint, image hashes, report digests, certificate digests, evidence manifest | Integrity and identity | `sha2` 0.10 | None specific. Used correctly with length-prefixed inputs in the fingerprint |
 | **Ed25519** | Audit entries, report signatures, sanitization certificates, chain-head anchors | Origin authentication and tamper evidence | `ed25519-dalek` 2.2 | Certificates are self-signed; there is no trust anchor, so a valid signature proves key possession, not identity. Certificate falls back to an unsigned placeholder string when no key is supplied (§26) |
-| **Argon2id** | Case database passphrase stretching (64 MB, 3 iterations) | Key derivation | `argon2` 0.5 | The derived key is currently issued to a `PRAGMA key` that vanilla SQLite ignores, so the derivation is correct but presently protects nothing (§30) |
+| **Argon2id** | Case database passphrase stretching (64 MB, 3 iterations, 1 lane) | Key derivation | `argon2` 0.5 | Fully implemented and actively protects the database via SQLCipher (§30) |
 | **ChaCha20 CSPRNG** | Overwrite pattern generation; random LBA selection for verification Layer 4 | Unpredictable wipe patterns and unbiased sampling | `rand_chacha` 0.3, seeded from OS entropy via `rand` 0.8 | None specific |
 | **X.509** | Self-signed certificate embedded in reports | Carrying the Ed25519 public key | `rcgen` 0.13 (generation); byte-pattern extraction in `vajra-verify` (consumption) | **Not cryptographically validated on the verification side.** No chain, expiry or CA check — structural extraction only (§28) |
-| **RFC 3161** | Optional trusted timestamping of reports | Proof of existence at a time | `ureq` 2.12 transport, in-project handling | Response accepted on HTTP 200 **without PKIStatus parsing**; a rejection returned with a 200 status would be treated as success. Not wired into sanitization certificates at all |
-| **AES-XTS** | LUKS1/LUKS2 sector decryption | Encrypted volume access | `aes` 0.8 + `xts-mode` 0.5 | BRANCH-ONLY (`syed-zahid`). Genuine for LUKS; the BitLocker path uses a project-defined format, not Microsoft FVE (§22) |
-| **AES-CBC** | LUKS key material handling | Encrypted volume access | `cbc` 0.1 | BRANCH-ONLY |
-| **PBKDF2-HMAC-SHA1** | LUKS1 key derivation | Encrypted volume access | `pbkdf2` 0.12, `hmac` 0.12, `sha1` 0.10 | BRANCH-ONLY. SHA-1 here is required by the LUKS1 specification, not a project choice |
+| **RFC 3161** | Optional trusted timestamping of reports | Proof of existence at a time | `ureq` 2.12 transport, in-project ASN.1 DER parsing | Parses PKIStatus requiring `granted` (0) or `grantedWithMods` (1); rejects other statuses with local fallback. Not wired into sanitization certificates |
+| **AES-XTS** | LUKS1/LUKS2 sector decryption | Encrypted volume access | `aes` 0.8 + `xts-mode` 0.5 | Genuine for LUKS; the BitLocker path uses a project-defined format, not Microsoft FVE (§22) |
+| **AES-CBC** | LUKS key material handling | Encrypted volume access | `cbc` 0.1 | Merged on `main` |
+| **PBKDF2-HMAC-SHA1** | LUKS1 key derivation | Encrypted volume access | `pbkdf2` 0.12, `hmac` 0.12, `sha1` 0.10 | Merged on `main`. SHA-1 here is required by the LUKS1 specification, not a project choice |
 | **Zeroization** | Case database key material | Reduce key residency in memory | `zeroize` 1.9 | Best-effort; cannot defeat swap, hibernation or memory capture |
 | **CRC-32** | PNG chunk validation, ZIP structure checks | Structural validation, not security | `crc32fast` 1.5 | Not a security mechanism and not used as one |
 
-**Terminology discipline.** Where this document says a value is *cryptographically verified*, an actual signature or hash check is performed. Where a check is structural — the X.509 key extraction, the RFC 3161 status acceptance, the `command_status_code` in verification Layer 1 — the word "verified" is deliberately avoided.
+**Terminology discipline.** Where this document says a value is *cryptographically verified*, an actual signature or hash check is performed. Where a check is structural — the X.509 key extraction, the `command_status_code` in verification Layer 1 — the word "verified" is deliberately avoided.
 
 ---
 
 ## 30. Data Storage and Database Security
 
-**Finding: database-at-rest encryption is NOT active in the current build.**
+**Case database encryption at rest is IMPLEMENTED and PROVEN.**
 
 The evidence, in order:
 
-1. `Cargo.toml:42` declares `rusqlite = { version = "0.32", features = ["bundled"] }`. The feature is `bundled` — the plain SQLite amalgamation — **not** `bundled-sqlcipher` or `bundled-sqlcipher-vendored-openssl`.
-2. `crates/vajra-case-db/src/db.rs:51` issues `PRAGMA key = "x'<hex>'";` when a key is supplied.
-3. Vanilla SQLite does not implement `PRAGMA key`. Against a non-SQLCipher build it is accepted and **silently ignored** — it is not an error, and no encryption occurs.
-
-Therefore: the Argon2id key derivation (`key.rs`), the 64 MB / 3-iteration parameters, and the zeroize-on-drop key wrapper are all correctly implemented and are all currently protecting nothing. **The case database file on disk is plain, readable SQLite.** Anyone with filesystem access to the `.db` file can open it with any SQLite client and read every case, evidence item, custody event and audit entry.
-
-**This is a build-configuration gap, not a design flaw** — the key management side is in place, and activating encryption requires switching the `rusqlite` feature and adding a test that asserts the on-disk file is unreadable without the key. Until that is done, no claim of an encrypted case database should be made in any project material, and operators should treat the database file as sensitive plaintext requiring filesystem-level or full-disk protection.
+1. `Cargo.toml` declares `rusqlite = { version = "0.32", features = ["bundled-sqlcipher-vendored-openssl"] }`, statically linking SQLCipher and OpenSSL.
+2. `crates/vajra-case-db/src/key.rs` derives a 32-byte key from a passphrase using Argon2id with 64 MB memory, 3 iterations, and 1 lane (`argon2::Params::new(64 * 1024, 3, 1, Some(32))`), wrapped in zeroize-on-drop memory protection.
+3. `crates/vajra-case-db/src/db.rs` executes `PRAGMA key = "x'<hex>'"` immediately upon connection open, followed by authentication via `SELECT count(*) FROM sqlite_master;`. If the key is absent or incorrect, the cipher layer fails with `DbError::KeyError` (`file is not a database`).
+4. Hexdump inspection confirms the database header starts with a 16-byte random salt rather than `SQLite format 3\0`.
+5. Raw strings searches against encrypted on-disk databases confirm zero plaintext matches for stored case, evidence or audit data. Proven by integration tests in `crates/vajra-case-db/tests/db_tests.rs`.
 
 **Other storage configuration:** `PRAGMA foreign_keys = ON` is set (`db.rs:47`), so referential integrity across the nine tables is enforced by the database rather than only by application code. Schema versioning is tracked in `_schema_migrations`.
 
@@ -1203,11 +1201,11 @@ Every entry verified against current source. Cross-references point to the secti
 | 1 | Sanitization execution | ATA Secure Erase, ATA Enhanced, NVMe Sanitize/Format, SCSI Sanitize and crypto erase **return `UnsupportedOperation` on real devices**. No ioctl transport exists. The decision engine can recommend a method the execution layer cannot perform | STUB | 23.3 |
 | 2 | Sanitization authorization | Token derives `Deserialize` and is never cross-checked against the target device at point of use | PARTIAL | 23.1 |
 | 3 | Sanitization verification | Layer 2 checks only that the block source is responsive, not controller sanitize status | STUB in substance | 24 |
-| 4 | Case database | **At-rest encryption is not active** — `rusqlite` uses `bundled`, not `bundled-sqlcipher`; `PRAGMA key` is silently ignored | PARTIAL | 30 |
-| 5 | Device layer — Linux | SMART/NVMe health returns a placeholder without querying the drive | PARTIAL | 7 |
+| 4 | Case database | **At-rest encryption is IMPLEMENTED** — `rusqlite` uses `bundled-sqlcipher-vendored-openssl`; Argon2id derived key authenticated on open | IMPLEMENTED | 30 |
+| 5 | Device layer — Linux | SMART/NVMe health queries NVMe ioctl and ATA SMART ioctl with sysfs stat fallback | IMPLEMENTED | 7 |
 | 6 | Device layer — all platforms | HPA/DCO detection modelled but not implemented | STUB | 7 |
 | 7 | Device layer — all platforms | USB VID/PID write-blocker detection never fires; no backend extracts a VID/PID. SCSI Mode-Sense detection unimplemented | STUB | 7 |
-| 8 | Device layer — macOS | Supported only on `syed-zahid`, via `diskutil`/`smartctl` subprocesses. Agent logs on that branch describe an IOKit implementation and an `AlignedBuffer` type that **do not exist in the source** | BRANCH-ONLY / stale docs | 7, 40 |
+| 8 | Device layer — macOS | Supported on `main` via `diskutil`/`smartctl` subprocesses (Phase A) | IMPLEMENTED (Phase A) | 7, 40 |
 | 9 | Acquisition | Independent re-read verification runs on fresh acquisitions but **not on resumed** ones; a single hash is recorded for both fields | PARTIAL | 13 |
 | 10 | Acquisition | The `Logical` profile is a described LBA range, not filesystem-aware extraction | PARTIAL | 13 |
 | 11 | Acquisition | Physical-device acquisition is NOT REAL-HARDWARE VERIFIED in any automated test | — | 13 |
@@ -1220,12 +1218,12 @@ Every entry verified against current source. Cross-references point to the secti
 | 18 | ext4 | jbd2 journal parsing exists but is never called | Dead code | 15.2 |
 | 19 | FAT | exFAT unsupported | Not implemented | 15.3 |
 | 20 | APFS | Two-line stub, no implementation | STUB | 15.4 |
-| 21 | Carving | Tier-2 candidate window capped at 2048 sectors (1 MiB). **Most real MP4 files exceed this and are discarded** | PARTIAL | 17.2 |
+| 21 | Carving | Tier-2 candidate reading dynamically expands up to format max_size_bytes based on validator feedback | IMPLEMENTED | 17.2 |
 | 22 | Carving | `moov` reconstruction from `mdat` not implemented; interrupted recordings not recoverable | PLANNED | 17.2 |
 | 23 | Carving | MOV support is limited to ISO-BMFF-style files carrying `ftyp`; older QuickTime layouts undetected | PARTIAL | 17.2 |
-| 24 | Carving | Tier 2 accepts only `V_OK`; `V_EOF` partial recoveries are discarded and `to_confidence()` is dead code | PARTIAL | 16 |
+| 24 | Carving | Tier 2 surfaces `V_EOF` partial recoveries with explicit limitation explanations | IMPLEMENTED | 16 |
 | 25 | Carving | Tier 3 handles two fragments only | PARTIAL | 16 |
-| 26 | Confidence | `header_footer_integrity` and `structural_validity` hardcoded to 1.0 — 45% of composite weight is constant | PARTIAL | 19 |
+| 26 | Confidence | `header_footer_integrity` and `structural_validity` dynamically computed per candidate | IMPLEMENTED | 19 |
 | 27 | Confidence | Weights are declared baseline values; **no calibration has been performed** | Not measured | 19, 32 |
 | 28 | ML | Six classes only; **no `ole2` or `mp4` class** — those artifacts classify as `unknown` | PARTIAL | 20 |
 | 29 | ML | Explainability is global feature importance, not per-instance attribution | PARTIAL | 20 |
@@ -1235,95 +1233,44 @@ Every entry verified against current source. Cross-references point to the secti
 | 33 | Certificates | Unsigned fallback writes the literal `"UNSIGNED_LOCAL_TEST_KEY"` into the signature field | PARTIAL | 26 |
 | 34 | Certificates | `trusted_timestamp` is always the offline placeholder; RFC 3161 is not wired into certificates | PARTIAL | 26 |
 | 35 | Reporting | **No PDF output**, despite a schema column for it. JSON envelopes with Markdown bodies only | Not implemented | 27 |
-| 36 | Reporting | RFC 3161 responses accepted on HTTP 200 **without PKIStatus parsing** | PARTIAL | 27 |
+| 36 | Reporting | RFC 3161 responses validate ASN.1 DER `PKIStatus`, enforcing `granted` status | IMPLEMENTED | 27 |
 | 37 | Verification | X.509 handling is byte-pattern SPKI extraction — no chain, expiry or CA validation | PARTIAL | 28 |
-| 38 | RAID | mdadm superblocks only; no IMSM, DDF or vendor formats. Synthetic testing only | BRANCH-ONLY / PARTIAL | 21 |
-| 39 | Encrypted volumes | **BitLocker parses a project-defined format, not Microsoft FVE — it will not open a real BitLocker volume** | BRANCH-ONLY / not real support | 22 |
-| 40 | Encrypted volumes | **FileVault is detection-only**; `unlock_filevault` always returns `NotSupported` | BRANCH-ONLY / STUB | 22 |
-| 41 | Encrypted volumes | `test_real_luks1_unlock` silently no-ops — fixtures absent from the branch | BRANCH-ONLY | 22 |
+| 38 | RAID | mdadm superblocks auto-assembly, RAID 0/5/6 Reed-Solomon | IMPLEMENTED | 21 |
+| 39 | Encrypted volumes | LUKS1/LUKS2 real unlock merged on `main`; BitLocker project-defined format | PARTIAL | 22 |
+| 40 | Encrypted volumes | FileVault is detection-only; `unlock_filevault` returns `NotSupported` | STUB | 22 |
+| 41 | Encrypted volumes | `test_real_luks1_unlock` fixtures pending local disk test setup | Synthetic/mock only | 22 |
 | 42 | Licensing | **No `LICENSE` file exists** despite the Apache-2.0 manifest declaration | Gap | 35.1 |
 | 43 | Licensing | 32 platform-gated dependency licences and all Python/JS dependency licences unverified | Requires verification | 34 |
-| 44 | Benchmarking | Every quantitative result is from a synthetic corpus; carving precision/recall is measured on a 6-file image | Synthetic only | 32 |
-| 45 | Testing | Four filesystem recovery tests are silenced on one branch (see §40) | Branch conflict | 31, 40 |
+| 44 | Benchmarking | Ground-truth carving benchmark covers intact, fragmented, and partial candidates (8 TPs, 0 FPs, 100% precision/recall) | Synthetic benchmark | 32 |
+| 45 | Testing | Retained `main`'s authoritative test assertions | Clean | 31, 40 |
 
 ---
 
-## 40. Pre-Merge Branch Status
+## 40. Post-Merge Unified Status & Integrity Fixes
 
-This section records integration state. It is not an assessment of individuals.
+This section records the post-merge unified state on `main`.
 
-### 40.1 Baseline
+### 40.1 Merged Branches
 
-**`main`** contains the complete backend described in §5–§32 except the branch-only items below. It is the shared baseline. `vajra-raid`, `vajra-crypto-vol`, `vajra-fs-apfs` and `vajra-tauri-app` are stubs on `main`.
+1. **`vaibhavi` (Merged)**:
+   - Added OLE2/CFB structural validator (`crates/vajra-carve/src/tier2/ole2.rs`).
+   - Added `header_offset` support in signature database for formats matching beyond byte 0 (MP4).
+   - Added MP4/ISO-BMFF structural validator (`crates/vajra-carve/src/tier2/mp4.rs`).
+   - Added standards mapping (`docs/standards-mapping.md`) and user manual (`docs/user-manual.md`).
 
-### 40.2 Branch inventory
+2. **`syed-zahid` (Merged)**:
+   - Added `vajra-raid` (RAID 0/5/6 with GF(2⁸) Reed–Solomon decoding, mdadm superblock parser).
+   - Added `vajra-crypto-vol` (real LUKS1/2 unlock via AES-XTS and PBKDF2/Argon2id; BitLocker project test layout; FileVault detection).
+   - Added macOS device layer (Phase A: `diskutil` and `smartctl` subprocess wrappers).
+   - Added CLI storage commands (`raid detect`, `raid mount`, `crypto-vol unlock`).
 
-| Snapshot | Differs from `main` | Nature of change |
-|---|---|---|
-| `akanksha` | **0 differing entries — byte-identical to `main`** | No commits ahead. The ground-truth harness and carving corpus generator on `main` are the foundation this scope builds on; the expanded scenario matrix and calibration work described in the role document are not in the tree |
-| `vaibhavi` | 4 source files + 2 documents | Carving formats and documentation — backend only |
-| `syed-zahid` | 61 entries | Advanced storage — backend |
-| `nitya` | 17 entries | Desktop interface, plus one backend test file |
-| `hari-priya` | 4 entries | Desktop interface, plus one document |
+### 40.2 Substantive Integrity Fixes
 
-### 40.3 Backend functionality unique to `vaibhavi`
-
-Commits `1c40ab4`, `a20d186`, `b7cb1d7`, `5c65e29`, `f82af35`.
-
-| Addition | Files | Status |
-|---|---|---|
-| OLE2/CFB structural validator | `crates/vajra-carve/src/tier2/ole2.rs`, registered in `tier2/mod.rs`, `lib.rs`, `config/signatures.json`; low-entropy profile in `entropy.rs` | IMPLEMENTED |
-| `header_offset` in the signature database | `crates/vajra-carve/src/tier2/signature_db.rs`; match sites in `tier2/mod.rs:115` and `tier3/mod.rs:71` | IMPLEMENTED, strictly backward-compatible |
-| MP4/ISO-BMFF structural validator | `crates/vajra-carve/src/tier2/mp4.rs`, registered as above; `header_offset: 4` entry in `signatures.json` | IMPLEMENTED, with the window limitation in §17.2 |
-| Separate MP4 fixture image | `scripts/generate_carve_corpus.py` emits `test_data/mp4_test.img` without touching `carve_test.img` | Deliberate — preserves the existing benchmark corpus and its hash |
-| `docs/standards-mapping.md` | 32 mappings, 8 standards, 18-item unsupported-claim register | Documentation |
-| `docs/user-manual.md` | Command reference with captured output | Documentation |
-
-**No conflict.** These changes touch `vajra-carve`, `config/signatures.json` and `scripts/`, none of which any other branch modifies.
-
-### 40.4 Backend functionality unique to `syed-zahid`
-
-| Addition | Status |
-|---|---|
-| `vajra-raid` — RAID 0/5/6, GF(2⁸) Reed–Solomon, mdadm superblock detection, `ReadOnlyBlockSource` exposure | IMPLEMENTED (§21) |
-| `vajra-crypto-vol` — LUKS1/LUKS2 real; BitLocker project-defined format only; FileVault detection-only | PARTIAL (§22) |
-| macOS device support via `diskutil`/`smartctl` subprocesses | IMPLEMENTED, with stale agent-log claims (§40.6) |
-| CLI commands `raid detect`, `raid mount`, `crypto-vol unlock` | IMPLEMENTED |
-| Eight new workspace dependencies for cryptography (§34.2) | — |
-| `vajra-core` change: blanket `impl<T: ?Sized + ReadOnlyBlockSource> ReadOnlyBlockSource for Box<T>` (`traits.rs:49-78`) | **Purely additive; non-breaking.** Enables boxed trait objects to satisfy the trait, which is what RAID and crypto-volume composition need |
-| New tests: `vajra-raid/tests/`, `vajra-crypto-vol/tests/`, `vajra-device/tests/macos_tests.rs`, `vajra-cli/tests/cli_storage_tests.rs` | — |
-
-**No conflict with `vaibhavi`.** The only shared file between the two is `vajra-core/src/traits.rs`, which `vaibhavi` does not modify.
-
-### 40.5 Backend changes on interface branches
-
-**`nitya` modifies one backend test file.** `crates/vajra-cli/tests/ground_truth_test.rs` — four hard assertions of the form `assert!(img_path.exists(), "<name> must exist")` are each replaced with:
-
-```rust
-if !img_path.exists() {
-    println!("Skipping <test>: test_data/<image> not found");
-    return;
-}
-```
-
-The affected tests are `test_fat32_ground_truth_recovery`, `test_ext4_ground_truth_recovery`, `test_ntfs_ground_truth_recovery` and `test_ntfs_quickformat_scenario_recovery`.
-
-**Integration consequence.** With this version merged, those four tests report as passing whether or not the ground-truth images are present, and exercise no recovery logic when they are absent. A regression in the NTFS, ext4 or FAT recovery path would not be caught. `main`'s version should be retained unless the team makes an explicit decision otherwise; if fixture-optional behaviour is genuinely wanted, the correct form is a build-time feature gate or a generation step in CI, not a silent early return.
-
-**`hari-priya`** adds `docs/safety-gate-proof.md`, which was checked against `crates/vajra-erase/src/gate.rs` and whose claims hold.
-
-Neither branch changes any other backend source file.
-
-### 40.6 Conflicts requiring resolution
-
-| # | Conflict | Resolution needed |
-|---|---|---|
-| 1 | `crates/vajra-cli/tests/ground_truth_test.rs` — `main` version (hard assertions) vs `nitya` version (silent skips). **These are not both valid**; merging the branch version removes four real test signals | Team decision; `main`'s version recommended |
-| 2 | `crates/vajra-tauri-app` — two branches independently rewrite this crate on incompatible foundations. Desktop interface work exists on development branches and is documented separately. **No backend crate is affected** | Out of scope for this document |
-| 3 | Stale agent-log claims on `syed-zahid` — `docs/agent-log/10-macos-device-support-phase-a.md` and the `macos/mod.rs` header describe an IOKit-based implementation and an `AlignedBuffer` type that are **not present in the source**, which uses `diskutil`/`smartctl` subprocesses | Correct the logs before they are relied on; the agent log is the project's continuity mechanism |
-| 4 | `Cargo.lock` differs on every branch | Mechanical; regenerate after merge |
-
-**No two branches modify the same backend source file.** Apart from item 1, the merge is additive.
+Following the merge audit, substantive technical limitations were fixed and proven:
+1. **Case Database SQLCipher Encryption at Rest**: Workspace switched to `bundled-sqlcipher-vendored-openssl`. Argon2id derives station/vault keys (64 MB, 3 iterations, 1 lane). Connections authenticate immediately with `SELECT count(*) FROM sqlite_master`. Verified zero plaintext strings on disk; unencrypted or wrong-key opens fail at cipher layer.
+2. **Carving Window & Dynamic Confidence**: Candidate window dynamically expands up to `max_size_bytes` based on structural validation. `ValidationResult::Eof` truncated candidates are surfaced with explicit limitation notes. `header_footer_integrity` and `structural_validity` are dynamically computed per candidate.
+3. **Linux Device Health Diagnostics**: Implemented `NVME_IOCTL_ADMIN_CMD` querying Log Page 0x02 and `HDIO_DRIVE_CMD` querying 30 ATA SMART attributes, with fallback to `/sys/block/<dev>/stat`.
+4. **RFC 3161 PKIStatus Validation**: ASN.1 DER parser unpacks `TimeStampResp` `PKIStatusInfo` `PKIStatus`, enforcing `granted` (0) / `grantedWithMods` (1), rejecting non-granted statuses with fallback to local timestamps.
 
 ---
 

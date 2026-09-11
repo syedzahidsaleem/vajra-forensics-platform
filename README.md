@@ -114,8 +114,8 @@ vajra-acquire  vajra-carve      vajra-erase        vajra-audit
 | `vajra-case-db` | Case / evidence / operation / artifact store with tombstoning | Implemented |
 | `vajra-verify` | Independent standalone report verifier | Implemented |
 | `vajra-cli` | Command-line front end over every crate above | Implemented |
-| `vajra-raid` | RAID 0/5/6 reconstruction | Stub on `main`; implemented on a branch |
-| `vajra-crypto-vol` | Encrypted volume unlock | Stub on `main`; partially implemented on a branch |
+| `vajra-raid` | RAID 0/5/6 reconstruction | Implemented on `main` (mdadm superblocks; RAID 0/5/6 with GF(2⁸) Reed–Solomon) |
+| `vajra-crypto-vol` | Encrypted volume unlock | Implemented on `main` (LUKS1/LUKS2 real unlock; synthetic BitLocker test layout; FileVault detection) |
 | `vajra-tauri-app` | Desktop UI shell | Developed separately; out of scope here |
 
 ---
@@ -345,7 +345,7 @@ Stated plainly, because a forensic tool that overstates itself is worse than one
 
 **Case database**
 
-- **The case database is not encrypted at rest in the current build.** `rusqlite` is built with `bundled`, not `bundled-sqlcipher`, so the `PRAGMA key` issued at open is a no-op against vanilla SQLite. The Argon2id key derivation and zeroizing key material are real and in place; activating encryption requires switching the feature and re-testing. Do not treat the current database file as protected.
+- The case database is **encrypted at rest** using SQLCipher with Argon2id key derivation (64 MB memory, 3 iterations) and authenticated immediately at connection open. Opening with an incorrect key or attempting to read a raw unencrypted database without key migration is rejected by the cipher layer (`file is not a database`). Raw disk inspection confirms that on-disk headers contain random salt rather than plaintext SQLite signatures, and table contents are fully encrypted.
 
 **Filesystems**
 
@@ -355,14 +355,19 @@ Stated plainly, because a forensic tool that overstates itself is worse than one
 
 **Carving**
 
-- The Tier-2 candidate window is capped at 2048 sectors (1 MiB). Objects larger than that are validated only within the window, which materially limits recovery of large real-world MP4 files.
+- The Tier-2 candidate reading dynamically expands beyond the initial 1 MiB window up to the signature's declared `max_size_bytes` based on structural validation feedback, avoiding artificial slicing truncation.
 - `moov` reconstruction from an intact `mdat` is **not** implemented. An interrupted recording missing its index is currently not recoverable, and the validator reports that honestly rather than emitting a partial object as complete.
-- Tier 2 accepts only `V_OK`; validators correctly return `V_EOF` with a partial length for truncated candidates, but the pipeline does not currently surface those as partial recoveries.
-- `header_footer_integrity` and `structural_validity` are set to 1.0 at construction rather than computed per candidate, so 45% of the composite confidence weight is presently constant. The weights themselves are declared baseline values pending calibration.
+- Tier 2 surfaces `ValidationResult::Eof` truncated candidates as `RecoveredArtifact` entries with reduced confidence and an explicit `recovery_limitations` explanation (e.g. valid header/IHDR/markers, but missing footer due to truncation).
+- `header_footer_integrity` and `structural_validity` are dynamically computed per candidate: exact boundary matches yield 1.0 (with slight scaling for sector slack); truncated candidates receive 0.50 HFI and container-proportionate structural validity; footerless formats evaluate geometric constraints (SQLite power-of-2 page sizes, MP4 `ftyp` brand, OLE2 sector shifts).
+
+**Device layer and hardware health**
+
+- On Linux, device health queries real hardware diagnostics: `NVME_IOCTL_ADMIN_CMD` (0xC0484E41) retrieves Log Page 0x02 for NVMe drives, and `HDIO_DRIVE_CMD` (0x031F) reads and parses 30 ATA SMART attributes for SATA drives. When running unprivileged or against virtual hypervisor disks without ioctl support, the layer falls back to kernel `/sys/block/<dev>/stat` telemetry.
+- On macOS (Phase A), device enumeration and health utilize `diskutil` and `smartctl` subprocess wrappers.
 
 **Sanitization**
 
-- Host-level overwrite is fully implemented and functional. **Controller-level commands — ATA Secure Erase, ATA Enhanced Secure Erase, NVMe Sanitize, NVMe Format, SCSI Sanitize and cryptographic erase — are not yet issued to real hardware**; the ioctl transport is unimplemented and these methods return `UnsupportedOperation` on a real device. They are fully simulated against the mock device and are what the test suite exercises. This means the decision engine can currently recommend a method the execution layer cannot perform on real media, and that gap must be closed before any real-hardware use.
+- Host-level overwrite is fully implemented and functional. **Controller-level commands — ATA Secure Erase, ATA Enhanced Secure Erase, NVMe Sanitize, NVMe Format, SCSI Sanitize and cryptographic erase — are verified in unit and integration tests against `MockWritableDevice`, but raw physical drive ioctl issuance is not implemented on real hardware.** `PhysicalDrive` implements `ReadOnlyBlockSource` only; real hardware issuance of destructive controller commands is deliberately blocked and remains unverified on physical drives.
 - The authorization token is a compile-time capability marker. It derives `Deserialize`, so it is constructible by deserialization outside the gate, and consuming functions do not currently re-check it against the device being written. Treat the gate as a strong workflow control, not a cryptographic authorization.
 - Verification Layer 2 currently checks that the block source is responsive rather than querying an NVMe Sanitize Status log page or ATA IDENTIFY word 128.
 - In `vajra-file-erase`, the journal-scrubbing and free-after-overwrite verification steps report success without performing the check. The residual scanner is a classifier over inputs supplied by the caller, not an independent re-scan.
@@ -370,7 +375,7 @@ Stated plainly, because a forensic tool that overstates itself is worse than one
 **Reporting**
 
 - Reports are produced as signed JSON envelopes with Markdown bodies. **No PDF is generated**, despite a schema column existing for one.
-- RFC 3161 responses are accepted on HTTP 200 without parsing the PKIStatus field.
+- RFC 3161 responses parse the ASN.1 DER `TimeStampResp` `PKIStatusInfo` `PKIStatus` field, requiring `granted` (0) or `grantedWithMods` (1), and explicitly rejecting non-granted statuses (rejection, waiting, revocation warning/notification) with fallback to local timestamps.
 - Certificates are self-signed; there is no CA chain issuance or external PKI integration. `vajra-verify` locates the Ed25519 key inside the certificate by structural search and does not perform chain, expiry or trust validation.
 
 Vajra makes no compliance certification claim. `docs/standards-mapping.md` records how implemented features relate to NIST SP 800-88 Rev.2, IEEE 2883, ISO/IEC 27037, ISO/IEC 27001, the Information Technology Act 2000, the CERT-In Directions of 28 April 2022 and the DPDP Act 2023 — as an engineering record of what the code does, alongside a register of blueprint claims the code does not yet support.
@@ -382,19 +387,14 @@ Vajra makes no compliance certification claim. `docs/standards-mapping.md` recor
 Unfinished backend capabilities, in rough order of value to the platform:
 
 - **Controller-level sanitize transport** — implement the ATA/NVMe/SCSI ioctl paths so the methods the decision engine recommends for SSD, NVMe and SED media can actually be executed and verified on real hardware. This is the highest-priority gap.
-- **RAID reconstruction** — RAID 0/5/6 including degraded-mode reconstruction, exposed as a `ReadOnlyBlockSource`. Implemented on a branch, not yet on `main`.
-- **Encrypted volume support** — LUKS, BitLocker and FileVault unlock given credentials the operator already lawfully holds. Partially implemented on a branch; see [branch status](#branch-status).
 - **MP4 `moov` reconstruction** — rebuild a minimal index from `mdat` structure to recover interrupted recordings, together with a validator output interface that can represent a reconstructed object honestly rather than reporting it as an ordinary complete file.
-- **Large-object carving** — raise or stream past the 1 MiB Tier-2 candidate window so large MP4 and other media files can be validated in full.
-- **Partial-recovery surfacing** — carry `V_EOF` results through Tier 2 as partial artifacts with their `partial_length`, instead of discarding them.
-- **Confidence calibration** — bucket predicted confidence into deciles against ground truth, measure calibration error, and replace the baseline weights with empirically-derived ones. Compute the header/footer and structural signals per candidate rather than as constants.
+- **Confidence calibration** — bucket predicted confidence into deciles against ground truth, measure calibration error, and replace the baseline weights with empirically-derived ones.
 - **Expanded benchmarking** — scale the ground-truth matrix across scenarios (quick format, partial overwrite, fragmentation, bad sectors, colliding signatures, large and small files, nested directories) crossed against all three filesystems and all eight carving formats, and re-measure precision, recall, F1, byte-level accuracy and false-positive rate at that scale.
 - **APFS** — object map and snapshot parsing.
 - **Deeper exFAT** — currently unsupported.
 - **AFF4** — image format read support.
 - **N-fragment carving** — Tier 3 currently handles the two-fragment case.
-- **Database encryption at rest** — switch to a SQLCipher-backed build and add tests that verify the on-disk file is genuinely unreadable without the key.
-- **Linux health parsing** — real SMART/NVMe log-page queries, plus HPA/DCO detection on both platforms.
+- **HPA/DCO detection** — hardware hidden area detection on Linux and Windows.
 - **Broader hardware validation** — testing across more controllers, interfaces and media types than the current set.
 - **Filesystem depth** — NTFS `$LogFile` parsing, index-based directory hierarchy reconstruction, real VSS store parsing, and ext4 indirect-block traversal.
 
@@ -402,30 +402,25 @@ Unfinished backend capabilities, in rough order of value to the platform:
 
 ## Branch status
 
-The project is **pre-merge**. `main` is the shared baseline and contains everything described above except where noted. The following backend work exists on individual branches and is not yet on `main`.
+Both major feature branches (`vaibhavi` and `syed-zahid`) have been **merged into `main`**. `main` is now the unified, single source of truth containing:
 
-**`vaibhavi` — additional carving formats** *(commits `1c40ab4`, `a20d186`, `b7cb1d7`, `5c65e29`, `f82af35`)*
+1. **`vaibhavi` contributions (merged)**:
+   - OLE2/CFB structural validator for legacy DOC/XLS/PPT containers.
+   - Header offset support in signature database (used by MP4 byte-offset 4).
+   - MP4/ISO-BMFF structural validator with 32-bit and 64-bit box parsing.
+   - Standards and compliance mapping (`docs/standards-mapping.md`) and user manual (`docs/user-manual.md`).
 
-- OLE2/CFB structural validator for legacy DOC/XLS/PPT containers, with a low-entropy profile registered in the entropy analyzer.
-- Optional, backward-compatible `header_offset` in the signature database. Existing formats continue to match at byte 0; MP4 uses byte 4.
-- MP4/ISO-BMFF structural validator with 32-bit and 64-bit box sizes and `ftyp`/`moov`/`mdat` handling.
-- `docs/standards-mapping.md` and `docs/user-manual.md`.
-- Verified on this branch: **35 unit tests and 2 integration tests in `vajra-carve`, 0 failures**.
+2. **`syed-zahid` contributions (merged)**:
+   - **`vajra-raid`** — RAID 0, 5, and 6 reconstruction with GF(2⁸) Reed–Solomon decoding, auto-assembling mdadm superblocks.
+   - **`vajra-crypto-vol`** — Real LUKS1 and LUKS2 encrypted volume unlock (PBKDF2/Argon2id + AES-XTS); synthetic BitLocker test layout; FileVault detection.
+   - **macOS device support (Phase A)** — Device enumeration, APFS container unwrapping, and health diagnostics via `diskutil` and `smartctl` subprocess wrappers.
+   - Storage CLI commands (`raid detect`, `raid mount`, `crypto-vol unlock`).
 
-**`syed-zahid` — advanced storage**
-
-- **`vajra-raid`** — RAID 0, 5 and 6 with a genuine GF(2⁸) Reed–Solomon implementation, exposed as a `ReadOnlyBlockSource`. Array detection reads **mdadm superblocks only**; other RAID metadata formats are not parsed. 4 integration tests.
-- **`vajra-crypto-vol`** — **LUKS1 and LUKS2 unlock are real** (PBKDF2 / Argon2id, AES-XTS, AF-split/merge). **BitLocker support parses a project-defined layout rather than the Microsoft FVE on-disk format** and will not open a real BitLocker volume. **FileVault is detection-only** — the unlock path returns `NotSupported` in all cases. 5 tests, one of which no-ops because its fixture directory is absent from the branch.
-- **macOS device support** — implemented by invoking `diskutil` and `smartctl` as subprocesses. Two agent-log entries on this branch describe an IOKit-based implementation and an `AlignedBuffer` type; **neither is present in the source**, and the logs should be corrected before anyone relies on them.
-- New CLI commands `raid detect`, `raid mount`, `crypto-vol unlock`; 2 CLI storage tests.
-- One additive change to `vajra-core`: a blanket `impl<T: ?Sized + ReadOnlyBlockSource> ReadOnlyBlockSource for Box<T>`. Non-breaking.
-
-**Conflicts to resolve before merge**
-
-1. **`crates/vajra-cli/tests/ground_truth_test.rs` is weakened on one branch.** Four hard `assert!(img_path.exists(), …)` fixture checks are replaced with early `return`s that print a skip message, so the FAT32, ext4, NTFS and NTFS-quick-format recovery tests report as passing whether or not the ground-truth images exist and without exercising any recovery logic. `main`'s version should be kept unless the team explicitly decides otherwise.
-2. **Two branches independently rewrite `crates/vajra-tauri-app`** on incompatible foundations. That is a UI-layer decision and is outside this document's scope; it does not affect any backend crate.
-
-No other branch modifies a backend crate that another branch also modifies.
+3. **Post-Merge Integrity Fixes (implemented & proven)**:
+   - **Database encryption at rest** — SQLCipher with Argon2id key derivation statically linked and verified with zero plaintext on disk.
+   - **Dynamic carving confidence** — Candidate-specific `header_footer_integrity` and `structural_validity` scoring; candidate window expansion up to format maximum; surfacing of `ValidationResult::Eof` partial recoveries.
+   - **Linux device health** — Genuine `NVME_IOCTL_ADMIN_CMD` and ATA `HDIO_DRIVE_CMD` diagnostics with `/sys/block` fallback.
+   - **RFC 3161 PKIStatus validation** — ASN.1 DER parsing enforcing `granted` status.
 
 ---
 

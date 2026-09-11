@@ -104,3 +104,67 @@ fn test_argon2id_key_derivation_and_zeroize() {
     let short_salt_err = DatabaseKey::from_passphrase("pass", b"short");
     assert!(short_salt_err.is_err());
 }
+
+#[test]
+fn test_sqlcipher_encryption_at_rest_and_wrong_key_rejection() {
+    let temp_dir = std::env::temp_dir();
+    let db_path = temp_dir.join(format!("vajra_test_vault_{}.db", uuid::Uuid::new_v4()));
+
+    let salt = b"salt_for_encryption_test_123";
+    let correct_key = DatabaseKey::from_passphrase("correct_investigator_passphrase", salt)
+        .expect("Valid Argon2id key");
+    let wrong_key = DatabaseKey::from_passphrase("wrong_investigator_passphrase", salt)
+        .expect("Valid Argon2id key");
+
+    // 1. Create encrypted database on disk with correct_key
+    {
+        let db = CaseDb::open_file(&db_path, Some(&correct_key))
+            .expect("Should create and open encrypted database");
+
+        // Assert SQLCipher is linked and returns genuine cipher version
+        let cipher_ver = db.cipher_version().expect("Query cipher_version failed");
+        assert!(cipher_ver.is_some(), "PRAGMA cipher_version must return a version string in SQLCipher build");
+        let ver = cipher_ver.unwrap();
+        assert!(!ver.is_empty(), "cipher_version must not be empty");
+        println!("[+] SQLCipher Active Version: {}", ver);
+
+        // Insert case with verifiable proof string
+        db.create_case("CASE-PROOF-01", "PROOF-STRING-VERIFY-ENCRYPTION-XYZ123", "INV-VERIFY")
+            .expect("Should insert case into encrypted database");
+    }
+
+    // 2. Read raw on-disk bytes directly from file and assert proof string is NOT in raw bytes
+    {
+        let raw_bytes = std::fs::read(&db_path).expect("Read raw database file");
+        let needle = b"PROOF-STRING-VERIFY-ENCRYPTION-XYZ123";
+        let found = raw_bytes.windows(needle.len()).any(|w| w == needle);
+        assert!(!found, "Raw database file must NOT contain plaintext proof string; it must be ciphertext!");
+
+        // Also check SQLite magic header: SQLite format 3\0 (offset 0..16)
+        // In SQLCipher, the first 16 bytes are a random salt, NOT 'SQLite format 3\0'
+        assert_ne!(&raw_bytes[0..15], b"SQLite format 3", "SQLCipher database header must be encrypted/salted, not plain SQLite");
+    }
+
+    // 3. Attempt to open with WRONG key -> Must fail at SQLCipher level
+    {
+        let wrong_res = CaseDb::open_file(&db_path, Some(&wrong_key));
+        assert!(wrong_res.is_err(), "Opening encrypted database with wrong key must fail");
+    }
+
+    // 4. Attempt to open WITHOUT key -> Must fail at SQLCipher level
+    {
+        let no_key_res = CaseDb::open_file(&db_path, None);
+        assert!(no_key_res.is_err(), "Opening encrypted database without key must fail");
+    }
+
+    // 5. Open with CORRECT key -> Must succeed and retrieve the case
+    {
+        let db = CaseDb::open_file(&db_path, Some(&correct_key))
+            .expect("Should open with correct key");
+        let fetched = db.get_case("CASE-PROOF-01").expect("Should fetch case");
+        assert_eq!(fetched.case_name, "PROOF-STRING-VERIFY-ENCRYPTION-XYZ123");
+    }
+
+    // Clean up
+    let _ = std::fs::remove_file(&db_path);
+}

@@ -112,6 +112,19 @@ impl RecoveryPipeline {
                 options.max_bgc_search_radius,
                 custom_analyzer,
             )?;
+            // If Tier 3 reconstructed a complete file starting at LBA X,
+            // remove any Tier 2 partial candidate that started at the same LBA X.
+            for t3_art in &tier3_artifacts {
+                if let Some(&(t3_start, _)) = t3_art.source_locations.first() {
+                    all_artifacts.retain(|a| {
+                        if let Some(&(a_start, _)) = a.source_locations.first() {
+                            !(a_start == t3_start && a.recovery_limitations.is_some())
+                        } else {
+                            true
+                        }
+                    });
+                }
+            }
             all_artifacts.extend(tier3_artifacts);
         }
 
