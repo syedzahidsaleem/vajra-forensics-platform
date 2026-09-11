@@ -4,9 +4,13 @@ import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { AlertTriangle, ShieldAlert, CheckCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext';
+import { HoverButton } from '../ui/hover-glow-button';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { mode, activeScreen, setActiveScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const isForensic = mode === 'forensic';
   const [timeStr, setTimeStr] = useState<string>('');
   const currentMode = mode === 'sanitization' ? 'sanitize' : 'forensic';
@@ -102,57 +106,114 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {/* Mode Switch Intercept Modal */}
       {pendingModeSwitch === 'sanitization' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="w-full max-w-lg bg-[var(--surface)] border border-[#DC2626]/40 dark:border-[#EF4444]/40 rounded-2xl p-6 shadow-2xl space-y-5">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div
+            style={{
+              background: isDark
+                ? 'linear-gradient(145deg, #0d161d 0%, #070e12 100%)'
+                : 'linear-gradient(145deg, #ffffff 0%, #fdf7f7 100%)',
+              border: isDark ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(239, 68, 68, 0.35)',
+              boxShadow: isDark
+                ? '0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px -10px rgba(239, 68, 68, 0.3)'
+                : '0 25px 60px -15px rgba(239, 68, 68, 0.15)',
+            }}
+            className="w-full max-w-lg rounded-2xl p-6 sm:p-7 space-y-5 relative overflow-hidden"
+          >
+            {/* Top Red Accent Glow Line in Dark Mode */}
+            {isDark && (
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#EF4444] to-transparent shadow-[0_0_10px_#EF4444]" />
+            )}
+
+            {/* Modal Header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center space-x-3">
-                <div className="p-2.5 bg-red-100 dark:bg-[rgba(239,68,68,0.15)] text-[#DC2626] dark:text-[#EF4444] border border-red-300 dark:border-[#EF4444]/40 rounded-xl">
+                <div
+                  className={`p-2.5 rounded-xl border flex items-center justify-center shrink-0 ${
+                    isDark
+                      ? 'bg-red-500/15 border-red-500/40 text-[#FF7B88] shadow-[0_0_15px_rgba(239,68,68,0.25)]'
+                      : 'bg-red-100 border-red-300 text-[#DC2626]'
+                  }`}
+                >
                   <ShieldAlert className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-industrial font-black text-[#DC2626] dark:text-[#EF4444] tracking-wide uppercase">
+                  <h3 className="text-base sm:text-lg font-industrial font-black text-[#DC2626] dark:text-[#FF7B88] tracking-wider uppercase leading-tight">
                     ATTENTION: ENTERING SANITIZATION MODE
                   </h3>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 font-sans font-medium">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono font-medium mt-0.5 tracking-wide">
                     Part VIII: Destructive Operation Protocol
                   </p>
                 </div>
               </div>
               <button
                 onClick={cancelModeSwitch}
-                className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1 rounded-lg hover:bg-slate-200/60 dark:hover:bg-white/10 transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-slate-200 dark:hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors cursor-pointer"
                 title="Cancel"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="p-4 rounded-xl bg-red-50/70 dark:bg-[rgba(239,68,68,0.08)] border border-red-200 dark:border-[#EF4444]/30 text-xs text-slate-800 dark:text-slate-200 leading-relaxed space-y-3 font-sans">
-              <p>
-                You are transitioning from <strong className="text-slate-950 dark:text-white font-bold">Forensic Mode</strong> (where all connected drives are guarded by read-only block source wrappers) to <strong className="text-[#DC2626] dark:text-[#FF6B7A] font-bold">Sanitization Mode</strong>.
+            {/* Modal Body Container */}
+            <div
+              style={{
+                background: isDark ? 'rgba(0, 0, 0, 0.45)' : 'rgba(254, 242, 242, 0.75)',
+                border: isDark ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid rgba(254, 202, 202, 0.8)',
+              }}
+              className="p-4 sm:p-5 rounded-xl text-xs leading-relaxed space-y-3 font-sans"
+            >
+              <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                You are transitioning from{' '}
+                <strong className={isDark ? 'text-[#59EE99] font-bold' : 'text-[#05664B] font-bold'}>
+                  Forensic Mode
+                </strong>{' '}
+                (where all connected drives are guarded by read-only block source wrappers) to{' '}
+                <strong className={isDark ? 'text-[#FF7B88] font-bold' : 'text-[#DC2626] font-bold'}>
+                  Sanitization Mode
+                </strong>.
               </p>
-              <div className="p-3 rounded-lg bg-red-100/70 dark:bg-[rgba(239,68,68,0.18)] border border-red-300 dark:border-[#EF4444]/50 flex items-start space-x-2.5 text-[11px] font-mono text-[#991B1B] dark:text-[#FCA5A5] leading-normal">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-[#DC2626] dark:text-[#EF4444]" />
-                <span>
+
+              {/* Warning Callout Box */}
+              <div
+                style={{
+                  background: isDark ? 'rgba(239, 68, 68, 0.12)' : 'rgba(254, 226, 226, 0.85)',
+                  border: isDark ? '1px solid rgba(239, 68, 68, 0.35)' : '1px solid rgba(252, 165, 165, 0.9)',
+                }}
+                className="p-3 sm:p-3.5 rounded-lg flex items-start space-x-2.5 text-[11px] font-mono leading-normal"
+              >
+                <AlertTriangle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${isDark ? 'text-[#FF7B88]' : 'text-[#DC2626]'}`} />
+                <span className={isDark ? 'text-red-200' : 'text-[#991B1B]'}>
                   Operations executed in Sanitization Mode are permanent and irrecoverable. The system-disk hard block and two-phase authorization gate will remain strictly enforced.
                 </span>
               </div>
             </div>
 
+            {/* Modal Footer / Actions */}
             <div className="flex items-center justify-end space-x-3 pt-2">
               <button
                 onClick={cancelModeSwitch}
-                className="px-4 py-2 rounded-lg text-xs font-mono font-semibold text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white bg-white/70 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 border border-slate-300 dark:border-white/20 transition-all cursor-pointer shadow-sm select-none"
+                className={`px-4 py-2.5 rounded-xl text-xs font-mono font-semibold transition-all cursor-pointer shadow-sm select-none ${
+                  isDark
+                    ? 'text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/15'
+                    : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-300'
+                }`}
               >
                 Cancel (Stay in Forensic Mode)
               </button>
-              <button
+
+              <HoverButton
                 onClick={confirmModeSwitch}
-                className="px-4 py-2 rounded-lg text-xs font-mono font-bold bg-[#EF4444] hover:bg-[#DC2626] text-white shadow-[0_0_16px_rgba(239,68,68,0.4)] flex items-center space-x-2 transition-all cursor-pointer select-none"
+                glowColor="#EF4444"
+                backgroundColor={isDark ? 'rgba(239, 68, 68, 0.2)' : '#EF4444'}
+                textColor={isDark ? '#FF7B88' : '#FFFFFF'}
+                hoverTextColor="#FFFFFF"
+                className={`!text-xs !px-5 !py-2.5 border ${
+                  isDark ? 'border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.35)]' : 'border-red-600 shadow-md hover:bg-red-600'
+                } font-industrial font-black uppercase tracking-wider inline-flex items-center gap-2 cursor-pointer select-none`}
               >
-                <CheckCircle className="w-4 h-4 text-white shrink-0" />
-                <span className="text-white font-bold">Authorize & Enter Sanitization Mode</span>
-              </button>
+                <CheckCircle className="w-4 h-4 shrink-0" />
+                <span>Authorize & Enter Sanitization Mode</span>
+              </HoverButton>
             </div>
           </div>
         </div>
