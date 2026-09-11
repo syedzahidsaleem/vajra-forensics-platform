@@ -76,7 +76,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       >
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-sm rotate-45 bg-[#05664B] dark:bg-[#59EE99] opacity-90 shadow-[0_0_4px_rgba(5,102,75,0.3)] dark:shadow-[0_0_4px_#59EE99]" />
+            <span className="w-1.5 h-1.5 rounded-sm rotate-45 bg-[#05664B] dark:bg-[#38C193] opacity-90 shadow-[0_0_4px_rgba(5,102,75,0.3)] dark:shadow-[0_0_4px_#38C193]" />
             <span className={isForensic ? 'text-[var(--forensic-text-primary)] font-bold' : 'text-[var(--sanitize-text-primary)] font-bold'}>
               AIRGAP VERIFIED
             </span>
@@ -164,7 +164,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             >
               <p className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                 You are transitioning from{' '}
-                <strong className={isDark ? 'text-[#59EE99] font-bold' : 'text-[#05664B] font-bold'}>
+                <strong className={isDark ? 'text-[#38C193] font-bold' : 'text-[#05664B] font-bold'}>
                   Forensic Mode
                 </strong>{' '}
                 (where all connected drives are guarded by read-only block source wrappers) to{' '}

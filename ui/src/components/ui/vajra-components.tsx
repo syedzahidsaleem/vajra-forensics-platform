@@ -95,8 +95,8 @@ export function GlowButton({
       hover:bg-[#034430]
       border border-[#044E38]
       shadow-sm
-      dark:bg-[#59EE99] dark:text-[#00120B]
-      dark:hover:bg-[#6fffaa]
+      dark:bg-[#38C193] dark:text-[#00120B]
+      dark:hover:bg-[#4FD9AC]
       dark:border-transparent
       dark:shadow-none
     `,
@@ -110,13 +110,13 @@ export function GlowButton({
       bg-transparent text-[var(--text)]
       border border-[var(--border)]/40
       hover:border-[#05664B]/50 hover:text-[#05664B] hover:bg-[#05664B]/10
-      dark:hover:border-[#59EE99]/50 dark:hover:text-[#59EE99] dark:hover:bg-[#59EE99]/5
+      dark:hover:border-[#38C193]/50 dark:hover:text-[#38C193] dark:hover:bg-[#38C193]/5
     `,
     outline: `
       bg-transparent text-[#05664B] border-[#05664B]/40
       hover:border-[#05664B] hover:bg-[#05664B]/10
-      dark:text-[#59EE99] dark:border-[#59EE99]/40
-      dark:hover:border-[#59EE99] dark:hover:bg-[#59EE99]/8
+      dark:text-[#38C193] dark:border-[#38C193]/40
+      dark:hover:border-[#38C193] dark:hover:bg-[#38C193]/8
     `,
   };
 
@@ -148,7 +148,7 @@ interface OrbitalSpinnerProps {
 
 export function OrbitalSpinner({
   size = 24,
-  color = '#59EE99',
+  color = '#38C193',
 }: OrbitalSpinnerProps) {
   return (
     <svg

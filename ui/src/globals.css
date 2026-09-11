@@ -24,7 +24,7 @@
   --forensic-primary-dark: #4B8F8C;
   --forensic-primary-hover-dark: #5FA8A4;
   --forensic-border-dark: rgba(15, 174, 135, 0.25);
-  --forensic-primary-text-dark: #59EE99;   /* bright teal/green on dark bg */
+  --forensic-primary-text-dark: #38C193;   /* muted emerald green on dark bg */
 
   /* Forensic mode: light theme (high-contrast, deep forest green forensic palette) */
   --forensic-bg-light: #F0F7F4;
@@ -261,7 +261,7 @@
   --surface-base: var(--surface);
   --lavender: var(--text);
   --dark-slate: var(--border);
-  --light-green: #59EE99;
+  --light-green: #38C193;
 }
 
 /* Page wrapper element styling - root html/body level */

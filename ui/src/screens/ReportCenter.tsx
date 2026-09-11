@@ -27,11 +27,11 @@ export const ReportCenter: React.FC = () => {
   const buttonConfig = isForensic
     ? isDark
       ? {
-          glowColor: '#59EE99',
-          backgroundColor: 'rgba(89, 238, 153, 0.12)',
-          textColor: '#59EE99',
+          glowColor: '#38C193',
+          backgroundColor: 'rgba(56, 193, 147, 0.12)',
+          textColor: '#38C193',
           hoverTextColor: '#FFFFFF',
-          border: 'border-[rgba(89,238,153,0.35)]',
+          border: 'border-[rgba(56,193,147,0.35)]',
         }
       : {
           glowColor: '#05664B',

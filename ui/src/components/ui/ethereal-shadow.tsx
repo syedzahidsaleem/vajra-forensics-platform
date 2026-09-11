@@ -14,7 +14,7 @@ function mapRange(v: number, a: number, b: number, c: number, d: number) {
 }
 
 export function EtherealShadow({
-  color = 'rgba(89,238,153,0.15)',
+  color = 'rgba(56,193,147,0.15)',
   speed = 60,
   scale = 40,
   className,

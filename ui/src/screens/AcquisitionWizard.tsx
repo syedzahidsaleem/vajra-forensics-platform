@@ -567,7 +567,7 @@ export const AcquisitionWizard: React.FC = () => {
                   <ShieldCheck className="w-4 h-4" />
                   <span>Acquisition Integrity Verified (Dual-Phase SHA-256 Match)</span>
                 </div>
-                <div className="p-2 rounded bg-black/60 font-mono text-[11px] text-[#59EE99] break-all select-all">
+                <div className="p-2 rounded bg-black/60 font-mono text-[11px] text-[#38C193] break-all select-all">
                   SHA-256: {progress.sha256_checksum}
                 </div>
                 <p className="text-[11px] text-[var(--text)]/60">
@@ -602,11 +602,11 @@ export const AcquisitionWizard: React.FC = () => {
 
                   <HoverButton
                     onClick={() => setActiveScreen('reports')}
-                    glowColor={isDark ? '#59EE99' : '#05664B'}
-                    backgroundColor={isDark ? 'rgba(89, 238, 153, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
-                    textColor={isDark ? '#59EE99' : '#05664B'}
+                    glowColor={isDark ? '#38C193' : '#05664B'}
+                    backgroundColor={isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+                    textColor={isDark ? '#38C193' : '#05664B'}
                     hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
-                    className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-[rgba(89,238,153,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-lg inline-flex items-center gap-2 cursor-pointer`}
+                    className={`!text-xs !px-5 !py-2.5 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-lg inline-flex items-center gap-2 cursor-pointer`}
                   >
                     <FileCode className="w-4 h-4" />
                     <span>Generate Acquisition Report</span>

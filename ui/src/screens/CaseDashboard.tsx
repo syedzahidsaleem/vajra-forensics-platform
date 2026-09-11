@@ -121,11 +121,11 @@ export const CaseDashboard: React.FC = () => {
 
         <HoverButton
           onClick={() => setShowNewCaseModal(true)}
-          glowColor={isDark ? '#59EE99' : '#05664B'}
-          backgroundColor={isDark ? 'rgba(89, 238, 153, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
-          textColor={isDark ? '#59EE99' : '#05664B'}
+          glowColor={isDark ? '#38C193' : '#05664B'}
+          backgroundColor={isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+          textColor={isDark ? '#38C193' : '#05664B'}
           hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
-          className={`!text-xs !px-4 !py-2 border ${isDark ? 'border-[rgba(89,238,153,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer`}
+          className={`!text-xs !px-4 !py-2 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer`}
         >
           <FolderPlus className="w-3.5 h-3.5" />
           <span>Create New Case</span>

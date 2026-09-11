@@ -17,8 +17,8 @@
 
 .dark,
 [data-theme="dark"] {
-  --light-green: #59EE99;
-  --green-glow: rgba(89,238,153,0.25);
+  --light-green: #38C193;
+  --green-glow: rgba(56,193,147,0.25);
 }
 
 * {
@@ -88,14 +88,14 @@ html, body, #root {
   background: rgba(53, 96, 90, 0.12);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(89, 238, 153, 0.1);
+  border: 1px solid rgba(56, 193, 147, 0.1);
 }
 
 /* Animated gradient background for the app shell */
 .app-bg {
   background:
     radial-gradient(ellipse 80% 50% at 50% -20%, rgba(53,96,90,0.4) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(89,238,153,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56,193,147,0.06) 0%, transparent 50%),
     var(--onyx);
 }
 
@@ -107,7 +107,7 @@ html, body, #root {
 
 /* Reduce visual noise on all borders */
 * {
-  border-color: rgba(89, 238, 153, 0.06);
+  border-color: rgba(56, 193, 147, 0.06);
 }
 .border-danger {
   border-color: rgba(239, 68, 68, 0.25) !important;

@@ -72,7 +72,7 @@ export const Sidebar: React.FC = () => {
                 ${
                   isActive
                     ? isForensic
-                      ? 'bg-[#05664B]/10 dark:bg-emerald-500/20 text-[#05664B] dark:text-[#59EE99] font-bold border border-[#05664B]/30 dark:border-emerald-500/30'
+                      ? 'bg-[#05664B]/10 dark:bg-[#38C193]/20 text-[#05664B] dark:text-[#38C193] font-bold border border-[#05664B]/30 dark:border-[#38C193]/30'
                       : 'bg-red-900/10 dark:bg-red-500/20 text-[#680E18] dark:text-[#FF7B88] font-bold border border-red-600/30 dark:border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.15)]'
                     : isForensic
                     ? 'font-semibold text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
@@ -84,7 +84,7 @@ export const Sidebar: React.FC = () => {
                 className={
                   isActive
                     ? isForensic
-                      ? 'text-[#05664B] dark:text-[#59EE99]'
+                      ? 'text-[#05664B] dark:text-[#38C193]'
                       : 'text-[#680E18] dark:text-[#FF7B88]'
                     : isForensic
                     ? 'text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)]'
@@ -97,7 +97,7 @@ export const Sidebar: React.FC = () => {
                 className={`truncate font-bold ${
                   isActive
                     ? isForensic
-                      ? 'text-[#05664B] dark:text-[#59EE99]'
+                      ? 'text-[#05664B] dark:text-[#38C193]'
                       : 'text-[#680E18] dark:text-[#FF7B88]'
                     : isForensic
                     ? 'text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)]'
@@ -120,7 +120,7 @@ export const Sidebar: React.FC = () => {
             className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'privacy'
                 ? isForensic
-                  ? 'text-[#05664B] dark:text-[#59EE99] font-bold'
+                  ? 'text-[#05664B] dark:text-[#38C193] font-bold'
                   : 'text-[#680E18] dark:text-[#FF7B88] font-bold'
                 : isForensic
                 ? 'font-medium text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[var(--text)]'
@@ -134,7 +134,7 @@ export const Sidebar: React.FC = () => {
             className={`text-left px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
               activeScreen === 'terms'
                 ? isForensic
-                  ? 'text-[#05664B] dark:text-[#59EE99] font-bold'
+                  ? 'text-[#05664B] dark:text-[#38C193] font-bold'
                   : 'text-[#680E18] dark:text-[#FF7B88] font-bold'
                 : isForensic
                 ? 'font-medium text-[#0D3B2E] dark:text-[var(--forensic-text-secondary)] hover:text-[var(--text)]'
