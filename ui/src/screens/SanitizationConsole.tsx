@@ -182,7 +182,7 @@ export const SanitizationConsole: React.FC = () => {
         };
         setCertificate(cert);
         setGateStep(7);
-        toast('Sanitization complete — Certificate generated', 'danger');
+        toast('Sanitization complete: Certificate generated', 'danger');
       } else {
         setOverallPercent(progressVal);
         setPasses([
@@ -212,7 +212,7 @@ export const SanitizationConsole: React.FC = () => {
       <div className="mb-6">
         <div className="flex items-center gap-3">
           <span className="text-[var(--sanitize-accent)] opacity-80 text-sm">🔥</span>
-          <h1 className="text-lg font-sans font-medium text-[var(--sanitize-text-primary)]">
+          <h1 className="text-xl sm:text-2xl font-industrial font-black tracking-wider text-[var(--sanitize-text-primary)] uppercase">
             Destructive Sanitization Console
           </h1>
         </div>
@@ -226,7 +226,7 @@ export const SanitizationConsole: React.FC = () => {
         {stepsList.map((step, i) => (
           <React.Fragment key={step}>
             <div
-              className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap shrink-0 transition-all ${
+              className={`px-3 py-1 rounded-md text-[10px] font-mono whitespace-nowrap shrink-0 transition-all ${
                 i + 1 === gateStep
                   ? 'bg-[rgba(239,68,68,0.15)] text-[#EF4444] border border-[#EF4444]/30 font-bold'
                   : i + 1 < gateStep
@@ -254,7 +254,7 @@ export const SanitizationConsole: React.FC = () => {
       {gateStep === 1 && (
         <div className="space-y-4">
           <GlassCard danger={false} className="p-5">
-            <p className="label-muted mb-4">Phase 1 — Target Identity Fingerprint</p>
+            <p className="label-muted mb-4">Phase 1: Target Identity Fingerprint</p>
 
             <div className="grid grid-cols-2 gap-4 font-mono text-[11px] mb-5">
               <div>
@@ -268,7 +268,7 @@ export const SanitizationConsole: React.FC = () => {
                     const devInfo = formatDevicePath(d.path);
                     return (
                       <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
-                        {devInfo.primary} ({devInfo.raw}) — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
+                        {devInfo.primary} ({devInfo.raw}) : {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
                       </option>
                     );
                   })}
@@ -330,7 +330,7 @@ export const SanitizationConsole: React.FC = () => {
               <span className="text-[#EF4444] text-sm shrink-0 mt-0.5 font-bold">⊘</span>
               <div>
                 <p className="text-[11px] font-mono text-[#EF4444] font-bold mb-0.5">
-                  OS Boot Disk — Hard Block
+                  OS Boot Disk: Hard Block
                 </p>
                 <p className="text-[10px] font-mono text-[var(--text)]/70">
                   Destructive operations are structurally refused on system disks.
@@ -358,7 +358,7 @@ export const SanitizationConsole: React.FC = () => {
         <GlassCard danger={true} hover={false} className="p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#EF4444] font-mono text-xs font-bold">
             <AlertTriangle className="w-4 h-4 text-amber-400" />
-            <span>Phase 2 — Initial Device Verification</span>
+            <span>Phase 2: Initial Device Verification</span>
           </div>
 
           <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
@@ -424,7 +424,7 @@ export const SanitizationConsole: React.FC = () => {
         <GlassCard danger={true} hover={false} className="p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#EF4444] font-mono text-xs font-bold">
             <ShieldAlert className="w-4 h-4" />
-            <span>Phase 4 — Second Independent Reconfirmation</span>
+            <span>Phase 4: Second Independent Reconfirmation</span>
           </div>
 
           <p className="text-[11px] font-mono text-[var(--text)]/70 leading-relaxed">
@@ -450,7 +450,7 @@ export const SanitizationConsole: React.FC = () => {
         <GlassCard danger={true} hover={false} className="p-5 space-y-4">
           <div className="flex items-center gap-2 text-[#EF4444] font-mono text-xs font-bold">
             <Lock className="w-4 h-4" />
-            <span>Phase 5 — Type-to-Confirm Serial Gate</span>
+            <span>Phase 5: Type-to-Confirm Serial Gate</span>
           </div>
 
           <div className="space-y-3 font-mono text-[11px]">
@@ -503,9 +503,9 @@ export const SanitizationConsole: React.FC = () => {
             <span className="text-xl font-bold text-[var(--text)]">{overallPercent}%</span>
           </div>
 
-          <div className="w-full h-1.5 bg-[var(--surface)] rounded-full overflow-hidden">
+          <div className="w-full h-2 bg-[var(--surface)] rounded overflow-hidden">
             <div
-              className="h-full rounded-full bg-[#EF4444] shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300"
+              className="h-full rounded bg-[#EF4444] shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-all duration-300"
               style={{ width: `${overallPercent}%` }}
             />
           </div>

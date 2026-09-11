@@ -10,7 +10,9 @@ export type ScreenId =
   | 'hex'
   | 'sanitization'
   | 'reports'
-  | 'audit';
+  | 'audit'
+  | 'privacy'
+  | 'terms';
 
 export type MediaType =
   | 'HDD'

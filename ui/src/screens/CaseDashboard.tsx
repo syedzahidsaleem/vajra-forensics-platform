@@ -110,7 +110,7 @@ export const CaseDashboard: React.FC = () => {
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
+          <h1 className="text-xl sm:text-2xl font-industrial font-black tracking-wider text-[var(--forensic-text-primary)] uppercase">
             Evidence Vault
           </h1>
         </div>
@@ -250,7 +250,7 @@ export const CaseDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* All Cases Section — 2 Column Minimal Cards Grid */}
+      {/* All Cases Section: 2 Column Minimal Cards Grid */}
       <div className="space-y-3">
         <p className="text-[10px] font-mono text-[var(--forensic-text-secondary)] uppercase tracking-widest">
           All Cases ({cases.length})

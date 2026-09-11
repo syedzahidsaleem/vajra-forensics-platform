@@ -50,10 +50,10 @@ export const Sidebar: React.FC = () => {
           : 'bg-[var(--sanitize-sidebar-bg)] border-r border-[var(--sanitize-border)]'
       }`}
     >
-      {/* Section label — Static Text Label */}
+      {/* Section label: Static Text Label */}
       <div
-        className={`px-3 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] font-semibold select-none ${
-          isForensic ? 'text-[var(--forensic-text-secondary)]/70' : 'text-[#FCA5A5]'
+        className={`px-3 mb-2 text-[10px] font-industrial uppercase tracking-[0.2em] font-bold select-none ${
+          isForensic ? 'text-[var(--forensic-text-secondary)]/80' : 'text-[#FCA5A5]'
         }`}
       >
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
@@ -68,7 +68,7 @@ export const Sidebar: React.FC = () => {
               key={item.id}
               onClick={() => setActiveScreen(item.id)}
               className={`
-                w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-sans text-left transition-colors cursor-pointer
+                w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-sans text-left transition-colors cursor-pointer
                 ${
                   isActive
                     ? isForensic
@@ -89,18 +89,42 @@ export const Sidebar: React.FC = () => {
         })}
       </nav>
 
-      {/* Bottom section — Safety Engine & Slim Switch Button */}
-      <div className="mt-auto px-4 pb-2">
-        <div className="flex items-center gap-2 mb-3">
+      {/* Bottom section: Safety Engine & Slim Switch Button */}
+      <div className="mt-auto px-3 pb-2 space-y-3">
+        {/* Compliance / Legal Links */}
+        <div className="pt-2 border-t border-[var(--border)]/30 flex flex-col gap-1 text-[10px] font-sans">
+          <button
+            onClick={() => setActiveScreen('privacy')}
+            className={`text-left px-1.5 py-0.5 rounded transition-colors ${
+              activeScreen === 'privacy'
+                ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[#FCA5A5] font-bold'
+                : 'text-[var(--forensic-text-secondary)]/60 hover:text-[var(--text)]'
+            }`}
+          >
+            Privacy Policy
+          </button>
+          <button
+            onClick={() => setActiveScreen('terms')}
+            className={`text-left px-1.5 py-0.5 rounded transition-colors ${
+              activeScreen === 'terms'
+                ? isForensic ? 'text-[var(--forensic-accent)] font-bold' : 'text-[#FCA5A5] font-bold'
+                : 'text-[var(--forensic-text-secondary)]/60 hover:text-[var(--text)]'
+            }`}
+          >
+            Terms & Conditions
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2">
           <span
-            className={`w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${
+            className={`w-2 h-2 rounded-sm rotate-45 shrink-0 ${
               isForensic
-                ? 'bg-[var(--forensic-accent)] shadow-[0_0_5px_var(--forensic-accent)]'
-                : 'bg-[#FF7B88] shadow-[0_0_5px_#FF7B88]'
+                ? 'bg-[var(--forensic-accent)] shadow-[0_0_6px_var(--forensic-accent)]'
+                : 'bg-[#FF7B88] shadow-[0_0_6px_#FF7B88]'
             }`}
           />
           <span
-            className={`text-[9px] font-mono uppercase tracking-wider ${
+            className={`text-[9px] font-industrial font-bold uppercase tracking-widest ${
               isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#FCA5A5]'
             }`}
           >
@@ -111,7 +135,7 @@ export const Sidebar: React.FC = () => {
         <button
           onClick={() => setMode(isForensic ? 'sanitization' : 'forensic')}
           className={`
-            w-full py-1.5 rounded border font-mono text-[10px] tracking-wider uppercase transition-all duration-200 cursor-pointer
+            w-full py-1.5 rounded-md border font-industrial font-bold text-[10px] tracking-wider uppercase transition-all duration-200 cursor-pointer
             ${
               isForensic
                 ? 'border-[#EF4444]/40 text-[#EF4444] hover:border-[#EF4444] hover:bg-[rgba(239,68,68,0.1)]'

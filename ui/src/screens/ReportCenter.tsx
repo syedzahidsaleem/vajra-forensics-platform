@@ -126,8 +126,8 @@ export const ReportCenter: React.FC = () => {
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
-            Report Center & Independent Verifier
+          <h1 className={`text-xl sm:text-2xl font-industrial font-black tracking-wider uppercase ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
+            {isForensic ? 'Report Center & Independent Verifier' : 'Media Sanitization Certificates'}
           </h1>
         </div>
 
@@ -292,7 +292,7 @@ export const ReportCenter: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="inline-block bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-xs font-mono font-bold">
+                  <span className="inline-block bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded text-xs font-mono font-bold">
                     CRYPTOGRAPHICALLY SIGNED
                   </span>
                   <div className="text-xs font-mono text-[var(--text)]/60 mt-1">ID: {viewingReport.report_id}</div>

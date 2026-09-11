@@ -9,6 +9,8 @@ import { SanitizationConsole } from './screens/SanitizationConsole';
 import { ReportCenter } from './screens/ReportCenter';
 import { RecoveryBrowser } from './screens/RecoveryBrowser';
 import { HexExplorer } from './screens/HexExplorer';
+import { PrivacyPolicy } from './screens/PrivacyPolicy';
+import { TermsConditions } from './screens/TermsConditions';
 
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -31,6 +33,10 @@ const ScreenRouter: React.FC = () => {
       return <RecoveryBrowser />;
     case 'hex':
       return <HexExplorer />;
+    case 'privacy':
+      return <PrivacyPolicy />;
+    case 'terms':
+      return <TermsConditions />;
     default:
       return <CaseDashboard />;
   }

@@ -61,7 +61,7 @@ export function AnimatedCounter({
 
 /* ─────────────────────────────────────────
    2. GLOW BUTTON
-   For: primary CTAs — Acquire Image, Generate Report, Run Pipeline
+   For: primary CTAs: Acquire Image, Generate Report, Run Pipeline
 ───────────────────────────────────────── */
 interface GlowButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'danger' | 'ghost' | 'outline';
@@ -290,11 +290,11 @@ export function TierBadge({ tier }: { tier: 'Tier1Metadata' | 'Tier2Signature' |
 
   return (
     <span
-      className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-semibold"
+      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono font-semibold"
       style={{ backgroundColor: config.bg, color: config.color }}
     >
       <span
-        className="w-1.5 h-1.5 rounded-full"
+        className="w-1.5 h-1.5 rounded-sm rotate-45 shrink-0"
         style={{ backgroundColor: config.color, boxShadow: `0 0 6px ${config.color}` }}
       />
       {config.label}
@@ -329,9 +329,9 @@ export function ConfidenceBar({
 
   return (
     <div className="flex items-center gap-2 w-full">
-      <div className="flex-1 h-1.5 rounded-full bg-[rgba(216,228,255,0.08)] overflow-hidden">
+      <div className="flex-1 h-1.5 rounded bg-[rgba(216,228,255,0.08)] overflow-hidden">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full rounded"
           initial={{ width: 0 }}
           animate={{ width: `${value * 100}%` }}
           transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
@@ -541,7 +541,7 @@ export function SectionHeader({
     <div className="flex items-start justify-between mb-6">
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <h1 className="text-xl font-sans font-semibold text-[var(--text)] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-industrial font-black uppercase tracking-wider text-[var(--text)]">
             {title}
           </h1>
           {tags?.map((tag) => (
@@ -599,9 +599,9 @@ export function LinearProgress({
           />
         </div>
       )}
-      <div className="w-full h-1 rounded-full bg-[rgba(216,228,255,0.06)] overflow-hidden">
+      <div className="w-full h-1 rounded bg-[rgba(216,228,255,0.06)] overflow-hidden">
         <motion.div
-          className="h-full rounded-full"
+          className="h-full rounded"
           initial={{ width: 0 }}
           animate={{ width: `${Math.min(100, value)}%` }}
           transition={{ duration: 0.4, ease: 'easeOut' }}

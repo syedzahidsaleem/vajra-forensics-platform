@@ -44,6 +44,7 @@ export default {
       fontFamily: {
         mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        industrial: ['Oxanium', 'Orbitron', 'JetBrains Mono', 'monospace', 'sans-serif'],
       },
       animation: {
         'pulse-hazard': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',

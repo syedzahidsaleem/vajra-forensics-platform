@@ -130,7 +130,7 @@ export const RecoveryBrowser: React.FC = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      toast('Pipeline complete — 4 artifacts identified across Tiers 1-3', 'success');
+      toast('Pipeline complete: 4 artifacts identified across Tiers 1-3', 'success');
     }, 1500);
   };
 
@@ -215,7 +215,7 @@ export const RecoveryBrowser: React.FC = () => {
       {/* Empty state */}
       {!isLoading && filteredArtifacts.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="w-12 h-12 rounded-full bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 flex items-center justify-center">
             <Binary className="w-5 h-5 text-[var(--primary)]/50" />
           </div>
           <p className="text-sm font-mono text-[var(--text)]/50">No artifacts recovered</p>

@@ -6,7 +6,7 @@ import { AlertTriangle, ShieldAlert, CheckCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { mode, activeScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
+  const { mode, activeScreen, setActiveScreen, pendingModeSwitch, confirmModeSwitch, cancelModeSwitch } = useApp();
   const isForensic = mode === 'forensic';
   const [timeStr, setTimeStr] = useState<string>('');
   const currentMode = mode === 'sanitization' ? 'sanitize' : 'forensic';
@@ -64,17 +64,40 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {/* Bottom Status Bar Footer */}
       <footer
-        className={`h-5 px-6 flex items-center justify-between font-mono text-[9px] z-40 ${
+        className={`h-6 px-4 sm:px-6 flex items-center justify-between font-mono text-[9px] z-40 ${
           isForensic
             ? 'bg-[var(--forensic-navbar-bg)] border-t border-[var(--forensic-border)] text-[var(--forensic-text-secondary)]'
             : 'bg-[var(--sanitize-navbar-bg)] border-t border-[var(--sanitize-border)] text-[var(--sanitize-text-secondary)]'
         }`}
       >
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#59EE99] opacity-75 shadow-[0_0_4px_#59EE99]" />
-          <span className={isForensic ? 'text-[var(--forensic-text-primary)] font-bold' : 'text-[var(--sanitize-text-primary)] font-bold'}>AIRGAP VERIFIED</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-sm rotate-45 bg-[#59EE99] opacity-75 shadow-[0_0_4px_#59EE99]" />
+            <span className={isForensic ? 'text-[var(--forensic-text-primary)] font-bold' : 'text-[var(--sanitize-text-primary)] font-bold'}>
+              AIRGAP VERIFIED
+            </span>
+          </div>
+          <span className="text-[var(--border)] hidden sm:inline">|</span>
+          <span className="text-[var(--text)]/40 hidden sm:inline">vajra-forensics.org</span>
         </div>
-        <div>{timeStr || 'UTC'}</div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setActiveScreen('privacy')}
+            className={`hover:underline cursor-pointer ${activeScreen === 'privacy' ? 'font-bold text-[var(--text)]' : ''}`}
+          >
+            Privacy Policy
+          </button>
+          <span className="text-[var(--border)]">|</span>
+          <button
+            onClick={() => setActiveScreen('terms')}
+            className={`hover:underline cursor-pointer ${activeScreen === 'terms' ? 'font-bold text-[var(--text)]' : ''}`}
+          >
+            Terms & Conditions
+          </button>
+          <span className="text-[var(--border)]">|</span>
+          <div>{timeStr || 'UTC'}</div>
+        </div>
       </footer>
 
       {/* Mode Switch Intercept Modal */}
@@ -87,11 +110,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   <ShieldAlert className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-mono font-bold text-[#EF4444] tracking-wide">
+                  <h3 className="text-base font-industrial font-bold text-[#EF4444] tracking-wide uppercase">
                     ATTENTION: ENTERING SANITIZATION MODE
                   </h3>
                   <p className="text-[11px] text-[var(--text)]/40 font-sans">
-                    Part VIII — Destructive Operation Protocol
+                    Part VIII: Destructive Operation Protocol
                   </p>
                 </div>
               </div>

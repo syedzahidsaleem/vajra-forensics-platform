@@ -103,7 +103,7 @@ export const HexExplorer: React.FC = () => {
       {/* Header & Device Context */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 className="text-lg font-sans font-medium text-[var(--forensic-text-primary)]">
+          <h1 className="text-xl sm:text-2xl font-industrial font-black tracking-wider uppercase text-[var(--forensic-text-primary)]">
             Hex Data & Raw Sector Explorer
           </h1>
           <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[var(--forensic-accent)]/10 border border-[var(--forensic-border)] font-mono">
@@ -363,7 +363,7 @@ export const HexExplorer: React.FC = () => {
           style={{ background: 'color-mix(in srgb, var(--surface) 60%, transparent)' }}
         >
           <span>Sector Size: 512 Bytes · LBA {currentLba.toLocaleString()}</span>
-          <span>Range: 0x00000000 — 0x000001FF</span>
+          <span>Range: 0x00000000 to 0x000001FF</span>
           <span className="text-[var(--primary-text)] font-semibold">Forensic Read-Only Invariant</span>
         </div>
       </div>

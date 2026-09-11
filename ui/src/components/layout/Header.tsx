@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
       }`}
     >
       {/* Left: Brand & Sidebar Toggle */}
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-3">
         <button
           onClick={toggleSidebar}
           aria-label="Toggle Sidebar"
@@ -31,33 +31,48 @@ export const Header: React.FC = () => {
           <Menu className="w-4 h-4" />
         </button>
 
-        <span
-          className={`w-1.5 h-1.5 rounded-full animate-pulse ${
-            isForensic
-              ? 'bg-[var(--forensic-accent)] shadow-[0_0_6px_var(--forensic-accent)]'
-              : 'bg-[var(--sanitize-accent)] shadow-[0_0_6px_var(--sanitize-accent)]'
-          }`}
-        />
-        <span
-          className={`font-mono font-bold text-[11px] tracking-wider ${
-            isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'
-          }`}
-        >
-          VAJRA <span className={`text-[9px] ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}>v0.1.0</span>
-        </span>
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-2 h-2 rounded-sm rotate-45 shrink-0 ${
+              isForensic
+                ? 'bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)]'
+                : 'bg-[var(--sanitize-accent)] shadow-[0_0_8px_var(--sanitize-accent)]'
+            }`}
+          />
+          <span
+            className={`font-industrial font-black text-sm sm:text-base tracking-[0.18em] uppercase ${
+              isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'
+            }`}
+          >
+            VAJRA
+          </span>
+          <span
+            className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold tracking-wider uppercase border ${
+              isForensic
+                ? 'bg-[rgba(13,184,211,0.08)] text-[var(--forensic-accent)] border-[var(--forensic-border)]'
+                : 'bg-[rgba(255,59,59,0.12)] text-[#FCA5A5] border-[rgba(255,107,122,0.35)]'
+            }`}
+          >
+            v0.1.0
+          </span>
+        </div>
       </div>
 
-      {/* Center: Mode Badge */}
+      {/* Center: Command Mode Header (Prominent Cyber-Industrial Typography) */}
       <div className="flex items-center">
         {isForensic ? (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[rgba(13,184,211,0.12)] border border-[var(--forensic-border)] text-[var(--forensic-accent)] font-mono text-[10px] tracking-widest uppercase">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--forensic-accent)] shadow-[0_0_6px_var(--forensic-accent)]" />
-            Forensic Mode
+          <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-[rgba(13,184,211,0.08)] border border-[var(--forensic-accent)]/35 shadow-[0_0_15px_rgba(13,184,211,0.1)]">
+            <span className="w-2 h-2 rounded-sm rotate-45 bg-[var(--forensic-accent)] shadow-[0_0_8px_var(--forensic-accent)] shrink-0" />
+            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[var(--forensic-accent)] uppercase">
+              Forensic Mode
+            </span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[rgba(255,59,59,0.15)] border border-[rgba(255,107,122,0.35)] text-[#FCA5A5] font-mono text-[10px] tracking-widest uppercase animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF7B88] shadow-[0_0_6px_#FF7B88]" />
-            Sanitization Mode
+          <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-md bg-[rgba(255,59,59,0.12)] border border-[rgba(255,107,122,0.4)] shadow-[0_0_15px_rgba(239,68,68,0.15)] animate-pulse">
+            <span className="w-2 h-2 rounded-sm rotate-45 bg-[#FF7B88] shadow-[0_0_8px_#FF7B88] shrink-0" />
+            <span className="font-industrial font-black text-sm sm:text-base tracking-[0.24em] text-[#FCA5A5] uppercase">
+              Sanitization Mode
+            </span>
           </div>
         )}
       </div>
@@ -88,9 +103,9 @@ export const Header: React.FC = () => {
         }`}>
           <button
             onClick={() => setMode('forensic')}
-            className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
+            className={`px-3 py-1 text-[10px] font-industrial font-bold tracking-wider uppercase transition-colors cursor-pointer ${
               isForensic
-                ? 'bg-[var(--forensic-accent)]/20 text-[var(--forensic-accent)] font-bold'
+                ? 'bg-[var(--forensic-accent)]/20 text-[var(--forensic-accent)]'
                 : 'text-[var(--sanitize-text-secondary)] hover:text-[var(--sanitize-text-primary)]'
             }`}
           >
@@ -98,9 +113,9 @@ export const Header: React.FC = () => {
           </button>
           <button
             onClick={() => setMode('sanitization')}
-            className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
+            className={`px-3 py-1 text-[10px] font-industrial font-bold tracking-wider uppercase transition-colors cursor-pointer ${
               !isForensic
-                ? 'bg-[var(--sanitize-accent)]/20 text-[#FCA5A5] font-bold'
+                ? 'bg-[var(--sanitize-accent)]/20 text-[#FCA5A5]'
                 : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]'
             }`}
           >

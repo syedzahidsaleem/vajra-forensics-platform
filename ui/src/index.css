@@ -31,7 +31,7 @@ html, body, #root {
   overflow: hidden;
 }
 
-/* Scrollbars — functional, visible & themed */
+/* Scrollbars: functional, visible & themed */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -54,6 +54,12 @@ html, body, #root {
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--border) rgba(0, 0, 0, 0.15);
+}
+
+/* Cyber-Industrial Display Font (Inspired by NBD "RENDER" Industrial Spec) */
+.font-industrial {
+  font-family: 'Oxanium', 'Orbitron', 'JetBrains Mono', monospace, sans-serif;
+  letter-spacing: 0.06em;
 }
 
 /* Global monospace for technical data */
@@ -87,7 +93,7 @@ html, body, #root {
     var(--onyx);
 }
 
-/* Spacing overrides — more room to breathe */
+/* Spacing overrides: more room to breathe */
 .vajra-page {
   padding: 32px 36px;
   max-width: 1100px;

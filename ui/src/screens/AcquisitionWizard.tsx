@@ -115,7 +115,7 @@ export const AcquisitionWizard: React.FC = () => {
     <div data-mode="forensic" className="space-y-6">
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <h1 className="text-lg font-sans font-medium text-[var(--text)] shrink-0">
+        <h1 className="text-xl sm:text-2xl font-industrial font-black tracking-wider text-[var(--text)] uppercase shrink-0">
           Forensic Evidence Acquisition Wizard
         </h1>
 
@@ -132,7 +132,7 @@ export const AcquisitionWizard: React.FC = () => {
           ].map((s, i) => (
             <React.Fragment key={s.num}>
               <div
-                className={`px-3 py-1 rounded-full text-[10px] font-mono whitespace-nowrap shrink-0 transition-all ${
+                className={`px-3 py-1 rounded-md text-[10px] font-mono whitespace-nowrap shrink-0 transition-all ${
                   step === s.num
                     ? 'bg-[var(--primary)]/20 text-[var(--primary-text)] border border-[var(--primary-text)]/40 font-bold'
                     : step > s.num
@@ -168,7 +168,7 @@ export const AcquisitionWizard: React.FC = () => {
                   const devInfo = formatDevicePath(d.path);
                   return (
                     <option key={d.path} value={d.path} className="bg-[var(--surface)] text-[var(--text)]">
-                      {devInfo.primary} ({devInfo.raw}) — {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
+                      {devInfo.primary} ({devInfo.raw}) : {d.model} ({formatBytes(d.size_bytes)}) {d.is_system_disk ? '[OS DISK]' : ''}
                     </option>
                   );
                 })}
@@ -442,7 +442,7 @@ export const AcquisitionWizard: React.FC = () => {
                       : 'Live Imaging in Progress...'}
                   </span>
                   <span
-                    className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold uppercase ${
+                    className={`px-2.5 py-0.5 rounded text-xs font-mono font-bold uppercase ${
                       progress.state === 'completed'
                         ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/60'
                         : 'bg-[var(--primary-text)]/15 text-[var(--primary-text)] border border-[var(--primary-text)]/40 animate-pulse'
@@ -467,11 +467,11 @@ export const AcquisitionWizard: React.FC = () => {
             {/* Progress Bar */}
             <div className="space-y-1.5">
               <div
-                className="w-full h-3 rounded-full overflow-hidden p-0.5 border border-[var(--border)]/40"
+                className="w-full h-2.5 rounded overflow-hidden p-0.5 border border-[var(--border)]/40"
                 style={{ background: 'color-mix(in srgb, var(--surface) 60%, black)' }}
               >
                 <div
-                  className={`h-full rounded-full transition-all duration-300 ${
+                  className={`h-full rounded transition-all duration-300 ${
                     progress.state === 'completed'
                       ? 'bg-emerald-500 shadow-sm shadow-emerald-500'
                       : 'bg-gradient-to-r from-[var(--primary)] to-cyan-400 forensic-glow'

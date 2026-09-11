@@ -93,7 +93,7 @@ export const DeviceSelection: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className={`text-lg font-sans font-medium ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
+          <h1 className={`text-xl sm:text-2xl font-industrial font-black tracking-wider uppercase ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
             {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
           </h1>
         </div>
@@ -111,7 +111,7 @@ export const DeviceSelection: React.FC = () => {
         </GlowButton>
       </div>
 
-      {/* Device Grid — Vertical Cards */}
+      {/* Device Grid: Vertical Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {devices.map((device: DeviceDescriptor) => {
           const isSystem = device.is_system_disk;
@@ -371,7 +371,7 @@ export const DeviceSelection: React.FC = () => {
                   <input
                     type="text"
                     disabled
-                    value={`${formatDevicePath(registeringDevice.path).primary} (${registeringDevice.path}) — ${registeringDevice.model}`}
+                    value={`${formatDevicePath(registeringDevice.path).primary} (${registeringDevice.path}) : ${registeringDevice.model}`}
                     className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
                   />
                 </div>

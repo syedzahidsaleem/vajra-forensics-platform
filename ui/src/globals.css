@@ -1,5 +1,5 @@
 :root {
-  /* Sanitize mode — dark theme (muted deep maroon palette) */
+  /* Sanitize mode: dark theme (muted deep maroon palette) */
   --sanitize-bg-dark: #0D0304;
   --sanitize-surface-dark: #1E070B;
   --sanitize-text-dark: #F5E9E2;
@@ -8,7 +8,7 @@
   --sanitize-border-dark: rgba(239, 68, 68, 0.25);
   --sanitize-primary-text-dark: #FF6B7A;
 
-  /* Sanitize mode — light theme (muted maroon family) */
+  /* Sanitize mode: light theme (muted maroon family) */
   --sanitize-bg-light: #FBF1EF;
   --sanitize-surface-light: #F3DEDD;
   --sanitize-text-light: #2E0A16;
@@ -17,7 +17,7 @@
   --sanitize-border-light: #E3B5A4;
   --sanitize-primary-text-light: #80222B;  /* darker maroon, readable on light bg */
 
-  /* Forensic mode — dark theme (teal-tinted palette matching ombre gradient) */
+  /* Forensic mode: dark theme (teal-tinted palette matching ombre gradient) */
   --forensic-bg-dark: #071a20;
   --forensic-surface-dark: #0b2832;
   --forensic-text-dark: #EDE7EA;
@@ -26,7 +26,7 @@
   --forensic-border-dark: rgba(15, 174, 135, 0.25);
   --forensic-primary-text-dark: #59EE99;   /* bright teal/green on dark bg */
 
-  /* Forensic mode — light theme (derived tint, same hue family) */
+  /* Forensic mode: light theme (derived tint, same hue family) */
   --forensic-bg-light: #F2F4F6;
   --forensic-surface-light: #E3E8ED;
   --forensic-text-light: #1B2440;
