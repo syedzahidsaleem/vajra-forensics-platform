@@ -441,4 +441,55 @@ body[data-mode] {
   color: #ffffff !important;
 }
 
+/* ==========================================================================
+   Entering Sanitization Mode Modal - Decrypt Texture Background Effect
+   ========================================================================== */
+.modal-decrypt-card {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-decrypt-card .bg-texture-dim {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: rgba(210, 60, 70, 0.05);
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 15px;
+  letter-spacing: 3px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.modal-decrypt-card .bg-texture-glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: rgba(224, 80, 90, 0.24);
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 15px;
+  letter-spacing: 3px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  mask-image: radial-gradient(circle 170px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 35%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle 170px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 35%, transparent 72%);
+}
+
+.modal-decrypt-card:hover .bg-texture-glow,
+.modal-decrypt-card[data-hovered="true"] .bg-texture-glow {
+  opacity: 1;
+}
+
 
