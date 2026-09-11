@@ -81,7 +81,7 @@ export function GlowButton({
   ...props
 }: GlowButtonProps) {
   const base =
-    'relative inline-flex items-center gap-2 font-mono font-semibold tracking-wide rounded-md transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none';
+    'relative inline-flex items-center gap-2 font-mono font-semibold tracking-wide rounded-md transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed select-none hover:-translate-y-0.5 active:translate-y-0';
 
   const sizes = {
     sm: 'px-3 py-1.5 text-xs',
@@ -94,29 +94,34 @@ export function GlowButton({
       bg-[#05664B] text-white
       hover:bg-[#034430]
       border border-[#044E38]
-      shadow-sm
+      shadow-sm hover:shadow-md
       dark:bg-[#38C193] dark:text-[#00120B]
       dark:hover:bg-[#4FD9AC]
       dark:border-transparent
-      dark:shadow-none
+      dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]
+      dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.45)]
     `,
     danger: `
       bg-[#EF4444] text-white
       hover:bg-[#DC2626]
       border border-[#EF4444]
-      shadow-sm
+      shadow-sm hover:shadow-md
+      dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)]
+      dark:hover:shadow-[0_4px_16px_rgba(0,0,0,0.45)]
     `,
     ghost: `
       bg-transparent text-[var(--text)]
       border border-[var(--border)]/40
-      hover:border-[#05664B]/50 hover:text-[#05664B] hover:bg-[#05664B]/10
+      hover:border-[#05664B]/50 hover:text-[#05664B] hover:bg-[#05664B]/10 hover:shadow-sm
       dark:hover:border-[#38C193]/50 dark:hover:text-[#38C193] dark:hover:bg-[#38C193]/5
+      dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.25)]
     `,
     outline: `
       bg-transparent text-[#05664B] border-[#05664B]/40
-      hover:border-[#05664B] hover:bg-[#05664B]/10
+      hover:border-[#05664B] hover:bg-[#05664B]/10 hover:shadow-sm
       dark:text-[#38C193] dark:border-[#38C193]/40
       dark:hover:border-[#38C193] dark:hover:bg-[#38C193]/8
+      dark:hover:shadow-[0_2px_8px_rgba(0,0,0,0.25)]
     `,
   };
 
