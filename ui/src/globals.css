@@ -34,6 +34,12 @@
   --forensic-primary-hover-light: #3A716E;
   --forensic-border-light: #C5979D;
   --forensic-primary-text-light: #2A6B68;  /* darker teal, readable on light bg */
+  --button-ripple-color: oklch(0.145 0 0 / 0.3);
+}
+
+.dark,
+[data-theme="dark"] {
+  --button-ripple-color: oklch(0.985 0 0 / 0.5);
 }
 
 /* Scoped mode + theme custom properties */

@@ -11,6 +11,7 @@ import {
   Check,
 } from 'lucide-react';
 import { GlassCard, GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
+import { HoverButton } from '@/components/ui/hover-glow-button';
 
 export const CaseDashboard: React.FC = () => {
   const { activeCase, cases, setActiveCase, refreshCases, setActiveScreen } = useApp();
@@ -115,14 +116,17 @@ export const CaseDashboard: React.FC = () => {
           </h1>
         </div>
 
-        <GlowButton
-          variant="primary"
-          size="sm"
-          icon={<FolderPlus className="w-3.5 h-3.5" />}
+        <HoverButton
           onClick={() => setShowNewCaseModal(true)}
+          glowColor="#14B8A6"
+          backgroundColor="rgba(13, 184, 211, 0.12)"
+          textColor="var(--forensic-accent)"
+          hoverTextColor="#59EE99"
+          className="!text-xs !px-4 !py-2 border border-[var(--forensic-border)] font-industrial font-bold uppercase tracking-wider shadow-md inline-flex items-center gap-2 cursor-pointer"
         >
-          Create New Case
-        </GlowButton>
+          <FolderPlus className="w-3.5 h-3.5 inline-block mr-1.5" />
+          <span>Create New Case</span>
+        </HoverButton>
       </div>
 
       {/* Active Case Hero Card */}

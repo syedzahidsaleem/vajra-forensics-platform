@@ -40,6 +40,7 @@ export default {
           card: '#1F1010',
           border: '#3E1C1C',
         },
+        'button-ripple': 'var(--button-ripple-color)',
       },
       fontFamily: {
         mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
@@ -61,6 +62,20 @@ export default {
           "50%": { "background-position": "100% 100%" },
           to: { "background-position": "0% 0%" },
         },
+      },
+      borderRadius: {
+        none: '0px',
+        xs: '0.125rem',
+        DEFAULT: '0.375rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        full: '9999px',
+      },
+      scale: {
+        120: '1.2',
+      },
+      transitionDuration: {
+        400: '400ms',
       },
     },
   },
