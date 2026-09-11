@@ -55,8 +55,8 @@ export const Header: React.FC = () => {
             Forensic Mode
           </div>
         ) : (
-          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[rgba(255,59,59,0.12)] border border-[var(--sanitize-border)] text-[var(--sanitize-accent)] font-mono text-[10px] tracking-widest uppercase animate-pulse">
-            <span className="w-1.5 h-1.5 rounded-full bg-[var(--sanitize-accent)] shadow-[0_0_6px_var(--sanitize-accent)]" />
+          <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-[rgba(255,59,59,0.15)] border border-[rgba(255,107,122,0.35)] text-[#FCA5A5] font-mono text-[10px] tracking-widest uppercase animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF7B88] shadow-[0_0_6px_#FF7B88]" />
             Sanitization Mode
           </div>
         )}
@@ -100,7 +100,7 @@ export const Header: React.FC = () => {
             onClick={() => setMode('sanitization')}
             className={`px-3 py-1 text-[10px] font-mono transition-colors cursor-pointer ${
               !isForensic
-                ? 'bg-[var(--sanitize-accent)]/20 text-[var(--sanitize-accent)] font-bold'
+                ? 'bg-[var(--sanitize-accent)]/20 text-[#FCA5A5] font-bold'
                 : 'text-[var(--forensic-text-secondary)] hover:text-[var(--forensic-text-primary)]'
             }`}
           >

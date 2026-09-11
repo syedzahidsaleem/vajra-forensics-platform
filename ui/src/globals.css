@@ -47,11 +47,11 @@
   --primary: var(--sanitize-primary-dark);
   --primary-hover: var(--sanitize-primary-hover-dark);
   --border: var(--sanitize-border-dark);
-  --primary-text: var(--sanitize-primary-text-dark);
-  --sanitize-text-primary: var(--sanitize-text-dark);
-  --sanitize-text-secondary: var(--sanitize-border-dark);
-  --sanitize-text-mono: var(--sanitize-text-dark);
-  --sanitize-accent: var(--sanitize-primary-text-dark);
+  --primary-text: #FF7B88;
+  --sanitize-text-primary: #FDEDEC;
+  --sanitize-text-secondary: #E8A6A6;
+  --sanitize-text-mono: #FFD1D1;
+  --sanitize-accent: #FF7B88;
   --sanitize-border: var(--sanitize-border-dark);
   --sanitize-navbar-bg: #000000;
   --sanitize-sidebar-bg: #000000;

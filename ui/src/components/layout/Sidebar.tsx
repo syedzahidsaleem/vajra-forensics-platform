@@ -53,7 +53,7 @@ export const Sidebar: React.FC = () => {
       {/* Section label — Static Text Label */}
       <div
         className={`px-3 mb-2 text-[9px] font-mono uppercase tracking-[0.15em] font-semibold select-none ${
-          isForensic ? 'text-[var(--forensic-text-secondary)]/70' : 'text-[var(--sanitize-text-secondary)]/70'
+          isForensic ? 'text-[var(--forensic-text-secondary)]/70' : 'text-[#FCA5A5]'
         }`}
       >
         {isForensic ? 'Forensic Workflows' : 'Destructive Workflows'}
@@ -73,14 +73,14 @@ export const Sidebar: React.FC = () => {
                   isActive
                     ? isForensic
                       ? 'bg-[rgba(13,184,211,0.15)] text-[var(--forensic-accent)] font-semibold border border-[var(--forensic-border)]'
-                      : 'bg-[rgba(255,59,59,0.15)] text-[var(--sanitize-accent)] font-semibold border border-[var(--sanitize-border)]'
+                      : 'bg-[rgba(255,59,59,0.2)] text-[#FCA5A5] font-semibold border border-[rgba(255,107,122,0.4)] shadow-[0_0_10px_rgba(239,68,68,0.15)]'
                     : isForensic
                     ? 'text-[var(--forensic-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--forensic-text-primary)] border border-transparent'
-                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[var(--sanitize-text-primary)] border border-transparent'
+                    : 'text-[var(--sanitize-text-secondary)] hover:bg-[var(--border)]/20 hover:text-[#FDEDEC] border border-transparent'
                 }
               `}
             >
-              <span className={isActive ? (isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]') : (isForensic ? 'text-[var(--forensic-text-secondary)]/60' : 'text-[var(--sanitize-text-secondary)]/60')}>
+              <span className={isActive ? (isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#FCA5A5]') : (isForensic ? 'text-[var(--forensic-text-secondary)]/60' : 'text-[var(--sanitize-text-secondary)]')}>
                 {item.icon}
               </span>
               <span className="truncate">{item.label}</span>
@@ -96,12 +96,12 @@ export const Sidebar: React.FC = () => {
             className={`w-1.5 h-1.5 rounded-full animate-pulse shrink-0 ${
               isForensic
                 ? 'bg-[var(--forensic-accent)] shadow-[0_0_5px_var(--forensic-accent)]'
-                : 'bg-[var(--sanitize-accent)] shadow-[0_0_5px_var(--sanitize-accent)]'
+                : 'bg-[#FF7B88] shadow-[0_0_5px_#FF7B88]'
             }`}
           />
           <span
             className={`text-[9px] font-mono uppercase tracking-wider ${
-              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'
+              isForensic ? 'text-[var(--forensic-accent)]' : 'text-[#FCA5A5]'
             }`}
           >
             {isForensic ? 'Safety Active' : 'Sanitizer Armed'}
