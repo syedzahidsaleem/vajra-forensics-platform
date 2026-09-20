@@ -1,0 +1,421 @@
+import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
+import { tauriApi } from '../api/tauri';
+import { DeviceDescriptor, DeviceFingerprint, SmartHealthSnapshot } from '../types';
+import {
+  ShieldCheck,
+  ShieldAlert,
+  Activity,
+  Disc,
+  Flame,
+  Plus,
+  RefreshCw,
+  X,
+  AlertOctagon,
+  CheckCircle,
+  Thermometer,
+  Cpu,
+} from 'lucide-react';
+import { GlowButton, FileTypeBadge, useToast } from '../components/ui/vajra-components';
+import { formatDevicePath } from '../lib/utils';
+import { HoverButton } from '../components/ui/hover-glow-button';
+import { useTheme } from '../context/ThemeContext';
+
+export const DeviceSelection: React.FC = () => {
+  const { devices, refreshDevices, mode, activeCase, setSelectedDevice, setActiveScreen } = useApp();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const { toast } = useToast();
+  const isForensic = mode === 'forensic';
+
+  // Selected device for modal inspection
+  const [inspectingDevice, setInspectingDevice] = useState<DeviceDescriptor | null>(null);
+  const [fingerprint, setFingerprint] = useState<DeviceFingerprint | null>(null);
+  const [health, setHealth] = useState<SmartHealthSnapshot | null>(null);
+  const [loadingModal, setLoadingModal] = useState(false);
+
+  // Evidence Registration State
+  const [registeringDevice, setRegisteringDevice] = useState<DeviceDescriptor | null>(null);
+  const [evidenceDesc, setEvidenceDesc] = useState('');
+  const [registeringSuccess, setRegisteringSuccess] = useState(false);
+
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const handleInspectDevice = async (device: DeviceDescriptor) => {
+    setInspectingDevice(device);
+    setLoadingModal(true);
+    try {
+      const [fp, hl] = await Promise.all([
+        tauriApi.getDeviceFingerprint(device.path),
+        tauriApi.getDeviceHealth(device.path),
+      ]);
+      setFingerprint(fp);
+      setHealth(hl);
+    } catch (err) {
+      console.error('Error fetching device diagnostics:', err);
+    } finally {
+      setLoadingModal(false);
+    }
+  };
+
+  const handleRegisterEvidence = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!registeringDevice || !activeCase) return;
+    try {
+      await tauriApi.addEvidence(activeCase.case_id, registeringDevice.path, evidenceDesc || registeringDevice.model);
+      setRegisteringSuccess(true);
+      toast('Device registered in case vault', 'success');
+      setTimeout(() => {
+        setRegisteringDevice(null);
+        setRegisteringSuccess(false);
+        setEvidenceDesc('');
+        setActiveScreen('dashboard');
+      }, 1200);
+    } catch (err) {
+      console.error('Error registering evidence:', err);
+    }
+  };
+
+  const handleProceedToAcquisition = (device: DeviceDescriptor) => {
+    setSelectedDevice(device);
+    setActiveScreen('acquisition');
+  };
+
+  const handleProceedToSanitization = (device: DeviceDescriptor) => {
+    setSelectedDevice(device);
+    setActiveScreen('sanitization');
+  };
+
+  return (
+    <div data-mode={isForensic ? "forensic" : "sanitize"} className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className={`text-xl sm:text-2xl font-industrial font-black tracking-wider uppercase ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
+            {isForensic ? 'Storage Device Enumeration' : 'Sanitization Target Selection'}
+          </h1>
+        </div>
+
+        <GlowButton
+          variant="ghost"
+          size="sm"
+          icon={<RefreshCw className="w-3.5 h-3.5" />}
+          onClick={() => {
+            refreshDevices();
+            toast('Devices re-scanned', 'info');
+          }}
+        >
+          Re-scan
+        </GlowButton>
+      </div>
+
+      {/* Device Grid: Vertical Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {devices.map((device: DeviceDescriptor) => {
+          const isSystem = device.is_system_disk;
+          const isWriteBlocked = device.is_write_blocked;
+          const devInfo = formatDevicePath(device.path);
+
+          return (
+            <div
+              key={device.path}
+              style={{ borderRadius: '14px' }}
+              className="device-card p-5 bg-[var(--surface)] text-[var(--text)] rounded-xl flex flex-col justify-between gap-4 h-full shadow-sm border border-[var(--border)] transition-all duration-200"
+            >
+              {/* Drive Top Row: Identity on Left, Capacity on Right */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1.5 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`font-mono text-xs font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-accent)]'}`}>
+                      {devInfo.primary}
+                    </span>
+                    <span className="font-mono text-[10px] text-[var(--text)]/50">
+                      {devInfo.raw}
+                    </span>
+                    <FileTypeBadge type={device.media_type} />
+                    {device.bus_type && (
+                      <span
+                        style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                        className={`px-1.5 py-0.5 rounded text-[9px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}
+                      >
+                        {device.bus_type}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className={`font-medium text-sm font-sans ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
+                    {device.model}
+                  </h3>
+                  <div className={`text-[10px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}>
+                    S/N: <span className={isForensic ? 'text-[var(--forensic-text-mono)] font-semibold' : 'text-[var(--sanitize-text-mono)] font-semibold'}>{device.serial}</span>
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0 pl-3">
+                  <div className={`text-base font-mono font-bold ${isForensic ? 'text-[var(--forensic-text-primary)]' : 'text-[var(--sanitize-text-primary)]'}`}>
+                    {formatBytes(device.size_bytes)}
+                  </div>
+                  <div className={`text-[10px] font-mono ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}>
+                    Sector: {device.block_size} B
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle Row: Safety Badges */}
+              <div className="grid grid-cols-2 gap-2 pt-3 border-t border-[var(--border)]/20 text-[10px] font-mono">
+                {isSystem ? (
+                  <div
+                    style={{ background: 'color-mix(in srgb, #EF4444 14%, transparent)', border: '1px solid rgba(239, 68, 68, 0.35)' }}
+                    className="flex items-center gap-1.5 p-2 rounded-lg text-[#EF4444]"
+                  >
+                    <AlertOctagon className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="font-semibold text-[10px]">OS BOOT DISK (LOCKED §24)</span>
+                  </div>
+                ) : (
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className={`flex items-center gap-1.5 p-2 rounded-lg ${isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'}`}
+                  >
+                    <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Secondary Target Disk</span>
+                  </div>
+                )}
+
+                {isWriteBlocked ? (
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className={`flex items-center gap-1.5 p-2 rounded-lg ${isForensic ? 'text-[var(--forensic-accent)]' : 'text-[var(--sanitize-accent)]'}`}
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span>Write-Blocker Active</span>
+                  </div>
+                ) : (
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className={`flex items-center gap-1.5 p-2 rounded-lg ${isForensic ? 'text-[var(--forensic-text-secondary)]' : 'text-[var(--sanitize-text-secondary)]'}`}
+                  >
+                    <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
+                    <span>Direct Device Access</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Row: Action Buttons */}
+              <div className="flex items-center justify-between pt-3 border-t border-[var(--border)]/20">
+                <GlowButton
+                  variant="ghost"
+                  size="sm"
+                  icon={<Activity className="w-3.5 h-3.5" />}
+                  onClick={() => handleInspectDevice(device)}
+                >
+                  Inspect & Health
+                </GlowButton>
+
+                <div className="flex items-center gap-2">
+                  {isForensic ? (
+                    <>
+                      {activeCase && (
+                        <GlowButton
+                          variant="ghost"
+                          size="sm"
+                          icon={<Plus className="w-3.5 h-3.5" />}
+                          onClick={() => setRegisteringDevice(device)}
+                        >
+                          Vault Evidence
+                        </GlowButton>
+                      )}
+                      <HoverButton
+                        onClick={() => handleProceedToAcquisition(device)}
+                        glowColor={isDark ? '#38C193' : '#05664B'}
+                        backgroundColor={isDark ? 'rgba(56, 193, 147, 0.12)' : 'rgba(5, 102, 75, 0.15)'}
+                        textColor={isDark ? '#38C193' : '#05664B'}
+                        hoverTextColor={isDark ? '#FFFFFF' : '#034430'}
+                        className={`!text-xs !px-3.5 !py-1.5 border ${isDark ? 'border-[rgba(56,193,147,0.35)]' : 'border-[#05664B]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-1.5 cursor-pointer rounded-lg`}
+                      >
+                        <Disc className="w-3.5 h-3.5 shrink-0" />
+                        <span>Acquire Image</span>
+                      </HoverButton>
+                    </>
+                  ) : (
+                    <HoverButton
+                      disabled={isSystem}
+                      onClick={() => handleProceedToSanitization(device)}
+                      glowColor="#EF4444"
+                      backgroundColor={isDark ? 'rgba(239, 68, 68, 0.18)' : 'rgba(239, 68, 68, 0.15)'}
+                      textColor={isDark ? '#FF7B88' : '#DC2626'}
+                      hoverTextColor="#FFFFFF"
+                      className={`!text-xs !px-3.5 !py-1.5 border ${isDark ? 'border-[rgba(239,68,68,0.35)]' : 'border-[#EF4444]/40'} font-industrial font-black uppercase tracking-wider shadow-md inline-flex items-center gap-1.5 cursor-pointer rounded-lg`}
+                    >
+                      <Flame className="w-3.5 h-3.5 shrink-0" />
+                      <span>Sanitize Device</span>
+                    </HoverButton>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Inspect & Health Modal */}
+      {inspectingDevice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-xl bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-[var(--primary-text)]" />
+                <span className="font-bold text-[var(--text)]">
+                  Diagnostics: {inspectingDevice.model}
+                </span>
+              </div>
+              <button
+                onClick={() => setInspectingDevice(null)}
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {loadingModal ? (
+              <div className="py-8 text-center text-[var(--text)]/50">Reading drive SMART & fingerprint...</div>
+            ) : (
+              <div className="space-y-3">
+                {/* Fingerprint Card */}
+                {fingerprint && (
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className="p-3 rounded-lg space-y-1"
+                  >
+                    <p className="label-muted">Hardware Identity Fingerprint</p>
+                    <div className="text-[10px] text-[var(--text)]/70 truncate">
+                      SHA-256 Digest: <span className="text-[var(--primary-text)] font-semibold">{fingerprint.sha256_hash}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Health Snapshot */}
+                {health && (
+                  <div
+                    style={{ background: 'color-mix(in srgb, var(--surface) 50%, transparent)', border: '1px solid var(--border)' }}
+                    className="p-3 rounded-lg space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <p className="label-muted">SMART / NVMe Health Telemetry</p>
+                      <span className="px-1.5 py-0.5 rounded bg-[var(--primary-text)]/10 text-[var(--primary-text)] text-[9px] font-bold">
+                        {health.overall_health}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 text-[10px] text-[var(--text)]/70">
+                      <div className="flex items-center gap-1">
+                        <Thermometer className="w-3 h-3 text-[var(--primary-text)]" />
+                        <span>Temp: {health.temperature_celsius}°C</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Cpu className="w-3 h-3 text-[var(--primary-text)]" />
+                        <span>Power Hours: {health.power_on_hours}h</span>
+                      </div>
+                      <div>
+                        <span>Reallocated: {health.reallocated_sectors}</span>
+                      </div>
+                    </div>
+
+                    <p className="text-[10px] text-[var(--text)]/60 font-sans leading-relaxed pt-1 border-t border-[var(--border)]/20">
+                      {health.recommendation}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex justify-end pt-2">
+              <button
+                onClick={() => setInspectingDevice(null)}
+                className="px-3 py-1.5 bg-[var(--border)]/20 text-[var(--text)]/80 hover:text-[var(--text)] rounded text-[10px]"
+              >
+                Close Diagnostics
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vault Evidence Modal */}
+      {registeringDevice && activeCase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[var(--surface)] border border-[var(--border)]/30 rounded-xl p-5 shadow-2xl space-y-4 font-mono text-[11px]">
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-[var(--primary-text)]">Register Evidence Media</span>
+              <button
+                onClick={() => setRegisteringDevice(null)}
+                className="text-[var(--text)]/50 hover:text-[var(--text)]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {registeringSuccess ? (
+              <div className="py-6 text-center text-[var(--primary-text)] space-y-1">
+                <CheckCircle className="w-6 h-6 mx-auto" />
+                <p>Registered to Case {activeCase.case_id}!</p>
+              </div>
+            ) : (
+              <form onSubmit={handleRegisterEvidence} className="space-y-3">
+                <div>
+                  <label className="label-muted block mb-1">Target Case</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${activeCase.case_id} (${activeCase.case_name})`}
+                    className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
+                  />
+                </div>
+
+                <div>
+                  <label className="label-muted block mb-1">Device Path</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${formatDevicePath(registeringDevice.path).primary} (${registeringDevice.path}) : ${registeringDevice.model}`}
+                    className="w-full font-mono text-xs opacity-60 cursor-not-allowed"
+                  />
+                </div>
+
+                <div>
+                  <label className="label-muted block mb-1">Evidence Description & Notes</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Seized USB drive from suspect workstation..."
+                    value={evidenceDesc}
+                    onChange={(e) => setEvidenceDesc(e.target.value)}
+                    className="w-full font-mono text-xs"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setRegisteringDevice(null)}
+                    className="px-3 py-1.5 rounded text-[var(--text)]/60 hover:bg-[var(--border)]/20"
+                  >
+                    Cancel
+                  </button>
+                  <GlowButton type="submit" variant="primary" size="sm">
+                    Register Evidence
+                  </GlowButton>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DeviceSelection;

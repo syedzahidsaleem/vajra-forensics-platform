@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --onyx: #00120B;
+  --dark-slate: #35605A;
+  --light-green: #59EE99;
+  --amethyst-smoke: #AA77A9;
+  --lavender: #D8E4FF;
+}
+
+body {
+  background-color: var(--onyx);
+  color: var(--lavender);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+}
