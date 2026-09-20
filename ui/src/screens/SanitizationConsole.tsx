@@ -17,7 +17,7 @@ import {
   Download,
   AlertOctagon,
 } from 'lucide-react';
-import StorageMap from '../storage-map/StorageMap';
+import StorageMap from '../components/storage-map/StorageMap';
 import { GlassCard, GlowButton, useToast } from '../components/ui/vajra-components';
 import { formatDevicePath } from '../lib/utils';
 import { HoverButton } from '../components/ui/hover-glow-button';
