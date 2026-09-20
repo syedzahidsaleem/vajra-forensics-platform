@@ -76,10 +76,11 @@ Section "Vajra Core Application" SecCore
 
     SetOutPath "$INSTDIR"
 
-    ; Core Executables
+    ; Core Executables & Dynamic Runtime
     File "..\..\target\x86_64-pc-windows-gnu\release\vajra-tauri-app.exe"
     File "..\..\target\x86_64-pc-windows-gnu\release\vajra-cli.exe"
     File "..\..\target\x86_64-pc-windows-gnu\release\vajra-verify.exe"
+    File "..\..\target\x86_64-pc-windows-gnu\release\WebView2Loader.dll"
 
     ; Configuration and Signatures
     CreateDirectory "$INSTDIR\config"
@@ -155,6 +156,7 @@ Section "Uninstall"
     Delete "$INSTDIR\vajra-tauri-app.exe"
     Delete "$INSTDIR\vajra-cli.exe"
     Delete "$INSTDIR\vajra-verify.exe"
+    Delete "$INSTDIR\WebView2Loader.dll"
     Delete "$INSTDIR\license.txt"
     Delete "$INSTDIR\README.md"
     Delete "$INSTDIR\config\signatures.json"
