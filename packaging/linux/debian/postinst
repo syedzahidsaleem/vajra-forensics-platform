@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+
+# Set permissions
+chmod 755 /usr/bin/vajra-cli || true
+chmod 755 /usr/bin/vajra-verify || true
+
+# Display privilege elevation / raw device access guidance
+echo "======================================================================"
+echo "Vajra Digital Forensics Platform installed successfully."
+echo "======================================================================"
+echo "Raw block device operations (acquisition, disk health, sanitization)"
+echo "require elevated privileges on Linux."
+echo ""
+echo "Recommended execution:"
+echo "  sudo vajra-cli list"
+echo "  sudo vajra-cli health /dev/nvme0n1"
+echo ""
+echo "Optional Linux capabilities setup for unprivileged execution:"
+echo "  sudo setcap cap_sys_rawio,cap_sys_admin+ep /usr/bin/vajra-cli"
+echo "======================================================================"
+
+exit 0

@@ -1,0 +1,11 @@
+Package: vajra
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Vajra Project Team <team@vajra.org>
+Depends: libc6 (>= 2.31), libgcc-s1 (>= 4.2)
+Description: Offline-First Digital Forensics & Secure Data Sanitization Platform
+ Vajra provides end-to-end digital evidence recovery with an itemized
+ composite confidence score, paired with multi-layer-verified data sanitization
+ and tamper-evident audit logging.
