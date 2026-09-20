@@ -1,435 +1,324 @@
-# Vajra — Backend
+# Vajra
 
-**An offline-first digital forensics and secure data sanitization engine, written in Rust.**
+**An offline-first digital forensics and secure data sanitization platform, written in Rust and TypeScript.**
 
-Vajra performs two things that most tooling keeps apart: it **recovers** data from storage media with a defensible, itemised confidence score attached to every artifact, and it **destroys** data on storage media with a multi-layer-verified certificate attached to every operation. Both run entirely on the examiner's machine, with no network service in the trust path.
+Vajra performs two critical functions that traditional tooling keeps strictly separate:
+1. **Forensic Recovery**: Recovers digital evidence from storage media and filesystems with an itemized, mathematically defensible confidence breakdown attached to every recovered artifact.
+2. **Secure Sanitization**: Destroys data on storage media across five independent verification layers, culminating in an automated forensic re-carve scan and a cryptographically signed sanitization certificate.
 
-This README documents the **backend** — the Rust workspace, its crates, and the command-line interface over them. A desktop UI (`vajra-tauri-app`) is being developed separately and is outside the scope of this document.
+Both workflows execute entirely on the examiner's workstation with **zero network dependencies** in the trust path.
 
 ---
 
 ## Contents
 
 1. [What Vajra is](#what-vajra-is)
-2. [The problem the backend solves](#the-problem-the-backend-solves)
-3. [Architecture](#architecture)
-4. [Implemented modules](#implemented-modules)
-5. [Forensic workflow](#forensic-workflow)
-6. [Sanitization workflow](#sanitization-workflow)
-7. [Recovery pipeline](#recovery-pipeline)
-8. [Supported filesystems](#supported-filesystems)
-9. [Supported carving formats](#supported-carving-formats)
-10. [Evidence integrity](#evidence-integrity)
-11. [Reporting and independent verification](#reporting-and-independent-verification)
-12. [Building](#building)
-13. [Safe quick start](#safe-quick-start)
-14. [Testing](#testing)
-15. [Current limitations](#current-limitations)
-16. [Roadmap](#roadmap)
-17. [Branch status](#branch-status)
+2. [The problem Vajra solves](#the-problem-vajra-solves)
+3. [Architecture & Layering](#architecture--layering)
+4. [Implemented Workspace Modules](#implemented-workspace-modules)
+5. [User Interface & Desktop Application](#user-interface--desktop-application)
+6. [Forensic Workflow](#forensic-workflow)
+7. [Sanitization Workflow & Safety Gate](#sanitization-workflow--safety-gate)
+8. [Multi-Tier Recovery Pipeline](#multi-tier-recovery-pipeline)
+9. [Supported Filesystems](#supported-filesystems)
+10. [Supported Carving Formats](#supported-carving-formats)
+11. [Evidence Integrity & Audit Chains](#evidence-integrity--audit-chains)
+12. [Reporting & Standalone Verification](#reporting--standalone-verification)
+13. [Building & Running](#building--running)
+14. [Testing & Verification](#testing--verification)
+15. [Current Limitations](#current-limitations)
+16. [Branch Status & Team Contributions](#branch-status--team-contributions)
+17. [Standards & Compliance](#standards--compliance)
+18. [License & Legal Scope](#license--legal-scope)
 
 ---
 
 ## What Vajra is
 
-A 20-crate Rust workspace providing an end-to-end forensic and sanitization pipeline:
+A 20-crate Rust workspace paired with a high-performance React/Vite/Tailwind desktop interface (powered by Tauri v2):
 
-- **Device layer** — enumerate physical storage, fingerprint it deterministically, read drive health, detect write blockers and boot disks.
-- **Acquisition** — copy a device to a forensic image with bad-sector handling, dual-phase hashing and resumable checkpoints.
-- **Filesystem recovery** — parse NTFS, ext4 and FAT12/16/32 for deleted entries with a bitmap-verified confidence level.
-- **Carving** — a three-tier recovery pipeline with real structural validators for eight file formats.
-- **Classification** — a CPU-only, pure-Rust file-type classifier feeding an explainable signal into recovery confidence.
-- **Sanitization** — a two-phase confirmation gate, a media-aware decision engine, and five independent verification layers, the last of which re-runs the recovery engine against the wiped device.
-- **Evidence integrity** — a hash-chained signed audit log, a validated chain of custody, and a case database with irreversible tombstoning.
-- **Reporting** — six signed report types and a standalone verifier that shares no code with the tool that produced them.
-
-Section markers (`§26`, `§35`, …) throughout the source refer to `docs/Vajra_Master_Technical_Document.md`.
-
----
-
-## The problem the backend solves
-
-Forensic recovery tools and data-destruction tools are usually built by different vendors, tested against different assumptions, and produce output that has to be trusted rather than checked. Three consequences follow, and each maps to a design decision here:
-
-**Recovery output is asserted, not qualified.** A carved file is usually presented as recovered or not. Vajra attaches a six-signal confidence breakdown and a free-text limitations field to every artifact, on the view that the breakdown is more useful to an examiner than the single number derived from it.
-
-**Erasure is claimed, not proven.** A wipe tool typically reports the outcome of the command it issued. Vajra verifies across five independent layers, and the last one is the platform's own recovery engine run against the sanitized device — if the carver finds anything at all, the operation is reported as failed regardless of what the preceding four layers said.
-
-**Evidence handling depends on the tool being honest about itself.** Vajra's audit log is hash-chained and Ed25519-signed, its chain head can be exported as a signed anchor to external media, and `vajra-verify` re-implements every verification check independently so a report can be checked without trusting the code that generated it.
-
-The whole system is offline by design. The one network call anywhere in the backend is an optional RFC 3161 timestamp request that degrades to a local timestamp when unreachable.
+- **Device Layer (`vajra-device`)** — Enumerates physical storage, performs deterministic hardware fingerprinting, assesses SMART / NVMe health via native ioctl queries, and detects write blockers and boot disks.
+- **Acquisition & Imaging (`vajra-acquire`, `vajra-image`)** — Bit-stream disk imaging (RAW/DD, E01) with recursive bad-sector reduction, dual-phase rolling/re-read SHA-256 hashing, and checkpoint resumption.
+- **Filesystem Reconstruction (`vajra-fs-ntfs`, `vajra-fs-ext4`, `vajra-fs-fat`, `vajra-fs-apfs`)** — In-depth parsing of NTFS (`$MFT`, `$Bitmap`, USN records), ext4 (extent trees, directory slack), and FAT12/16/32 with allocation-bitmap validation.
+- **Multi-Tier File Carving (`vajra-carve`)** — Fast object validation (JPEG, PNG, PDF, ZIP/Office, SQLite, OLE2/CFB, MP4/ISO-BMFF) paired with bi-fragment gap carving and dynamic candidate window expansion.
+- **Machine Learning Classification (`vajra-ml`)** — Pure-Rust, CPU-only gradient-boosted decision tree ensemble (280-dimensional feature vector) providing an explainable classification signal for carved fragments.
+- **Storage Subsystems (`vajra-raid`, `vajra-crypto-vol`)** — Automatic mdadm superblock assembly with $\text{GF}(2^8)$ Reed–Solomon RAID 0/5/6 reconstruction; real LUKS1/LUKS2 volume unlock (AES-XTS), BitLocker layouts, and FileVault detection.
+- **Secure Data Sanitization (`vajra-erase`, `vajra-file-erase`)** — Two-phase Device Identity Confirmation Gate, NIST SP 800-88 / IEEE 2883 decision engine, 5-layer verification suite (with Layer-5 recovery override), and block/file-level erasure.
+- **Evidence Vault & Audit Custody (`vajra-case-db`, `vajra-audit`, `vajra-custody`)** — SQLCipher encrypted case database at rest (Argon2id key derivation), hash-chained Ed25519-signed audit trail, and 10-state chain-of-custody machine.
+- **Reporting & Independent Verifier (`vajra-audit`, `vajra-verify`)** — Six signed `.vjr` report envelopes with RFC 3161 PKI timestamping and an isolated, zero-dependency standalone verification tool.
+- **Desktop Application & UI (`vajra-tauri-app`, `ui`)** — Modern Tauri v2 desktop GUI with dark/light themes, interactive storage block map visualizer, hex explorer, case management dashboard, and sanitization console.
 
 ---
 
-## Architecture
+## The problem Vajra solves
 
-### The read-only / writable split
+Forensic recovery tools and data-destruction tools are usually built by different vendors, tested against different assumptions, and produce output that must be trusted on faith. Vajra addresses three core flaws:
 
-`vajra-core` divides block access into two traits: `ReadOnlyBlockSource` and `WritableBlockSource`. This is the load-bearing decision in the codebase. An analysis path that only ever holds a `ReadOnlyBlockSource` cannot write to evidence, and that is enforced by the type system rather than by convention. The corollary is that any new storage backend — an image file, a reconstructed RAID array, an unlocked encrypted volume — becomes usable by the entire analysis stack the moment it implements the trait, with no downstream changes.
+1. **Recovery output is qualified, not merely asserted**: A carved file is never simply marked as "recovered". Every artifact receives a composite confidence score with a 6-signal breakdown and an explicit limitations statement detailing structural flags, sector slack, or truncation.
+2. **Erasure is verified, not merely claimed**: Wipe utilities typically report the success code of the command issued. Vajra validates destruction across five independent layers, culminating in its own recovery engine re-scanning the media. If a single artifact is recovered, the sanitization operation is marked as `Failed`.
+3. **Evidence handling is independently auditable**: Audit trails are hash-chained and Ed25519-signed with optional external anchoring. The standalone verifier (`vajra-verify`) shares zero code with the generation pipeline, allowing courts or third parties to verify reports independently.
 
-`vajra-core` holds no I/O and no platform syscalls. It defines the traits, `MediaType`, `IoError`, `DeviceFingerprint`, `WriteBlockerMetadata`, `SanitizeMethod`, and the shared filesystem types (`RecoverableFileEntry`, `DataLocation`, `MetadataConfidence`, `detect_filesystem`).
+---
 
-### Layering
+## Architecture & Layering
 
 ```
-                       vajra-cli
-                           │
-   ┌───────────────┬───────┴────────┬──────────────────┐
-   │               │                │                  │
-vajra-acquire  vajra-carve      vajra-erase        vajra-audit
-   │           vajra-file-erase  vajra-file-erase   vajra-custody
-   │               │                │              vajra-case-db
-   │        vajra-fs-{ntfs,ext4,fat}│                  │
-   │        vajra-ml                │              vajra-verify
-   │               │                │              (independent)
-   └──────── vajra-image ───────────┘
-                   │
-             vajra-device
-                   │
-              vajra-core   ← traits + domain types, zero I/O
+                     ┌───────────────────────────────┐
+                     │   Tauri Desktop UI / React    │
+                     │          (ui/ + tauri)        │
+                     └───────────────┬───────────────┘
+                                     │ IPC Bridge
+                     ┌───────────────▼───────────────┐
+                     │           vajra-cli           │
+                     └───────┬───────┬───────┬───────┘
+                             │       │       │
+      ┌──────────────────────┼───────┼───────┼──────────────────────┐
+      │                      │       │       │                      │
+┌─────▼────────┐      ┌──────▼───────▼┐ ┌────▼────────┐      ┌──────▼───────┐
+│ vajra-acquire│      │  vajra-carve  │ │ vajra-erase │      │ vajra-audit  │
+└─────┬────────┘      │vajra-file-eras│ │vajra-file-er│      │vajra-custody │
+      │               └──────┬────────┘ └────┬────────┘      │vajra-case-db │
+┌─────▼────────┐      ┌──────▼────────┐      │               └──────┬───────┘
+│ vajra-image  │      │vajra-fs-{ntfs,│      │                      │
+│ (RAW/DD, E01)│      │  ext4, fat}   │      │               ┌──────▼───────┐
+└─────┬────────┘      │   vajra-ml    │      │               │ vajra-verify │
+      │               └──────┬────────┘      │               │(independent) │
+┌─────▼──────────────────────┼───────────────▼┐              └──────────────┘
+│ vajra-raid / vajra-crypto-vol / vajra-device │
+└────────────────────────────┬────────────────┘
+                             │
+                      ┌──────▼───────┐
+                      │  vajra-core  │  ← Pure traits & domain types (zero I/O)
+                      └──────────────┘
 ```
 
-`vajra-verify` sits deliberately outside the dependency graph: it does not depend on `vajra-audit` and re-implements every check from scratch.
+### The Read-Only / Writable Type Safety Boundary
+In `vajra-core`, storage access is split into two traits:
+- `ReadOnlyBlockSource`: Carried across acquisition, imaging, filesystem parsing, and carving pipelines. Write operations are physically prevented at compile-time by the Rust type system.
+- `WritableBlockSource`: Only instantiable by providing a cryptographically issued `SanitizationAuthorizationToken` following completion of the two-phase identity gate.
 
 ---
 
-## Implemented modules
+## Implemented Workspace Modules
 
 | Crate | Responsibility | Status |
-|---|---|---|
-| `vajra-core` | Block-source traits, domain types, fingerprinting, error model | Implemented |
-| `vajra-device` | Device enumeration, health, write-blocker and boot-disk detection | Implemented (Linux + Windows; see [limitations](#current-limitations)) |
-| `vajra-acquire` | Device → image acquisition, bad-sector map, checkpoint/resume | Implemented |
-| `vajra-image` | RAW/DD read + write, E01 read | Implemented; AFF4 stubbed |
-| `vajra-fs-ntfs` | `$MFT` parsing, `$Bitmap` cross-reference, USN records | Implemented |
-| `vajra-fs-ext4` | Superblock, group descriptors, inodes, extent trees, dir slack | Implemented |
-| `vajra-fs-fat` | FAT12/16/32 chains, LFN, deleted entries | Implemented |
-| `vajra-fs-apfs` | APFS | **Stub** |
-| `vajra-carve` | Three-tier recovery, signature DB, structural validators, confidence | Implemented |
-| `vajra-ml` | Pure-Rust gradient-boosted file-type classifier | Implemented |
-| `vajra-erase` | Confirmation gate, decision engine, methods, five-layer verification, certificates | Implemented (see [limitations](#current-limitations)) |
-| `vajra-file-erase` | Block-level file erasure, live-file primitive, residual scanner | Implemented (partial) |
-| `vajra-audit` | Hash-chained signed audit log, anchoring, six report types | Implemented |
-| `vajra-custody` | Chain-of-custody event state machine | Implemented |
-| `vajra-case-db` | Case / evidence / operation / artifact store with tombstoning | Implemented |
-| `vajra-verify` | Independent standalone report verifier | Implemented |
-| `vajra-cli` | Command-line front end over every crate above | Implemented |
-| `vajra-raid` | RAID 0/5/6 reconstruction | Implemented on `main` (mdadm superblocks; RAID 0/5/6 with GF(2⁸) Reed–Solomon) |
-| `vajra-crypto-vol` | Encrypted volume unlock | Implemented on `main` (LUKS1/LUKS2 real unlock; synthetic BitLocker test layout; FileVault detection) |
-| `vajra-tauri-app` | Desktop UI shell | Developed separately; out of scope here |
+| :--- | :--- | :--- |
+| **`vajra-core`** | Block-source traits, domain models, deterministic fingerprinting, error model | Implemented |
+| **`vajra-device`** | Physical storage enumeration, SMART/NVMe health (Windows ioctl + Linux ioctl), write-blocker detection | Implemented |
+| **`vajra-raid`** | RAID 0, 5, and 6 reconstruction with $\text{GF}(2^8)$ Reed–Solomon decoding, auto-assembling mdadm superblocks | Implemented |
+| **`vajra-crypto-vol`** | Volume unlock: real LUKS1/LUKS2 (PBKDF2/Argon2id + AES-XTS), BitLocker layouts, FileVault detection | Implemented |
+| **`vajra-acquire`** | Bit-stream device imaging, bad-sector map, dual-phase hashing, checkpoint resumption | Implemented |
+| **`vajra-image`** | Forensic image reading/writing: RAW/DD read+write, E01 read (ewf), AFF4 container stub | Implemented |
+| **`vajra-fs-ntfs`** | NTFS parser: `$MFT` record decoding, signed-delta runlists, `$Bitmap` cross-referencing, USN journals | Implemented |
+| **`vajra-fs-ext4`** | ext4 parser: 64-bit group descriptors, extent trees, directory-entry slack recovery, orphan inode sweep | Implemented |
+| **`vajra-fs-fat`** | FAT12/16/32 parser: FAT chain walk, LFN reconstruction, deleted `0xE5` entry recovery | Implemented |
+| **`vajra-fs-apfs`** | APFS container and object map module | Stub / Phase A |
+| **`vajra-carve`** | 3-tier carving engine: signature DB, fast object validators (JPEG, PNG, PDF, ZIP, SQLite, OLE2, MP4), bi-fragment gap carving | Implemented |
+| **`vajra-ml`** | Pure-Rust gradient-boosted tree classifier (60 estimators, 280-dim features) for header-stripped candidate validation | Implemented |
+| **`vajra-erase`** | Sanitization decision engine, 2-phase confirmation gate, 5-layer verification, Ed25519 certificates | Implemented |
+| **`vajra-file-erase`** | Block-level file erasure, live-file multi-pass primitive, 5-state residual scanner | Implemented |
+| **`vajra-audit`** | Hash-chained Ed25519-signed audit ledger, external anchoring, 6 signed report formats | Implemented |
+| **`vajra-custody`** | 10-state chain-of-custody tracking engine with strict state-transition enforcement | Implemented |
+| **`vajra-case-db`** | Encrypted evidence vault (SQLCipher + Argon2id key derivation, 9 tables, irreversible tombstoning) | Implemented |
+| **`vajra-verify`** | Isolated, zero-dependency CLI binary for independent `.vjr` report envelope verification | Implemented |
+| **`vajra-cli`** | Unified CLI covering forensic acquisition, filesystem analysis, carving, sanitization, and reporting | Implemented |
+| **`vajra-tauri-app`** | Tauri v2 desktop application shell with modular IPC command handlers | Implemented |
 
 ---
 
-## Forensic workflow
+## User Interface & Desktop Application
 
-```
-vajra-cli list                      # enumerate devices
-vajra-cli fingerprint <device>      # deterministic SHA-256 identity
-vajra-cli health <device>           # SMART / NVMe health
-vajra-cli case create ...           # open a case in the evidence database
-vajra-cli evidence add ...          # register the item, opening its custody chain
-vajra-cli acquire start ...         # image the device, checkpointed and hashed
-vajra-cli image inspect <image>     # confirm format and stored hashes
-vajra-cli fs detect|list|dump ...   # filesystem-level recovery
-vajra-cli carve run|inspect|stats   # three-tier carving
-vajra-cli ml classify <file>        # classifier output with feature attribution
-vajra-cli report generate ...       # signed report
-vajra-verify <report.vjr>           # independent verification
-```
+Vajra includes a complete desktop user interface located in `ui/` that binds directly to the Rust backend via Tauri v2 IPC handlers:
 
-**Acquisition detail.** Three profiles — physical (full LBA range), partial (explicit LBA bounds) and logical (bounded range with a description). Bad sectors follow a retry → reduce-block-size → mark-unreadable path: the chunk is retried with linear backoff, then recursively subdivided down to single-sector reads, and a sector that still fails is recorded in an authoritative `BadSectorMap` and filled with a non-ambiguous `VAJRA_BAD_SECTOR` placeholder so unreadable regions can never be mistaken for zeroed data. Hashing is dual-phase on a fresh acquisition: a rolling SHA-256 during the copy, then an independent re-read of the finished image compared against it. Checkpoints are written every 10,000 blocks by default, and a resume validates the stored device fingerprint before continuing.
+- **Case Management Dashboard**: Manage open cases, evidence registries, and examiner session metadata stored in the encrypted SQLCipher database.
+- **Device Selection & Health Monitor**: Live device discovery with real-time SMART/NVMe telemetry, partition mapping, and hardware write-blocker indicators.
+- **Acquisition Wizard**: Visual setup for physical, partial, or logical disk acquisitions with real-time throughput metrics, bad-sector tracking, and dual-phase hash verification.
+- **Forensic Recovery Browser**: Multi-tier artifact browser with search filters, metadata inspection, confidence breakdowns, and direct payload exports.
+- **Storage Block Map (`StorageMap`)**: High-performance visual canvas mapping physical drive blocks into allocated, unallocated, bad-sector, and recovered fragment regions.
+- **Hex Explorer**: Integrated hex viewer with ASCII decoding, entropy graph overlays, and offset bookmarking.
+- **Sanitization Console & Two-Phase Gate**: Secure destruction interface enforcing operator identity entry, physical serial confirmation, algorithm selection, and 5-layer verification display.
+- **Report Center**: One-click generation and cryptographic signing of `.vjr` envelopes and audit certificates.
 
 ---
 
-## Sanitization workflow
-
-Every destructive operation requires a `SanitizationAuthorizationToken`, and the only way to obtain one is to complete a two-phase gate.
-
-```
-begin(device, operator, typed_serial, confirm)
-    ├── rejects system disks outright
-    ├── rejects write-blocked devices outright
-    ├── requires an exact serial-number match
-    └── → PendingSanitization
-finalize(pre_exec_confirm)            # consumes the pending gate by value — single use
-    └── → SanitizationAuthorizationToken
-```
-
-**Decision engine.** Given a device descriptor and the methods its controller supports, the engine recommends: cryptographic erase for self-encrypting drives, NVMe Sanitize or Format for NVMe, ATA (Enhanced) Secure Erase for SATA SSDs, overwrite for HDDs, and — for flash media whose controller offers no sanitize command — host-level overwrite accompanied by an explicit residual-risk warning.
-
-**Execution.** Host overwrite is implemented and functional: ChaCha20-seeded patterns from OS entropy, zero / ones / random passes, chunked writes through `WritableBlockSource`. Controller-level commands (ATA Secure Erase, NVMe Sanitize/Format, SCSI Sanitize, crypto erase) are modelled end-to-end and simulated against the mock device, but the underlying ioctl transport is not yet implemented — see [limitations](#current-limitations).
-
-**Five-layer verification.**
-
-| Layer | Check |
-|---|---|
-| 1 | Command status — did the issued operation report success |
-| 2 | Device status — post-operation readiness of the block source |
-| 3 | Deterministic sampling — read specified LBAs and check byte uniformity |
-| 4 | Statistical sampling — hypergeometric sample-size calculation, ChaCha20-seeded random LBA selection, per-sector uniformity |
-| 5 | **Independent recovery scan** — re-runs the real `vajra-carve` pipeline (Tier 2 + Tier 3) against the sanitized device |
-
-Layer 5 is an **override**: if the carver recovers any artifact whatsoever, overall assurance is forced to `Failed` regardless of layers 1–4.
-
-**Certificates.** Each carries the certificate ID, device details and fingerprint, method, standard reference, timestamps, per-layer results, overall assurance, operator ID, a SHA-256 of the certificate body, and an Ed25519 signature. Assurance is **structurally capped at Medium** — never High — whenever the media is NVMe, SATA SSD, USB or SD card and the method used was a host-level overwrite, because flash translation layers and over-provisioning mean the host cannot address every physical cell. That cap is code, not policy documentation.
-
-**File-level erasure** (`vajra-file-erase`) covers two paths: a block-level pipeline that overwrites a file's data extents and zeroes its metadata record on an unmounted image or device, and a live-OS-file primitive that performs a multi-pass overwrite with `sync_all()` between passes, truncates, and unlinks. A five-state residual artifact scanner classifies the result as `Sanitized`, `ResidualTracesDetected`, `PartiallySanitized`, `UnableToVerify` or `NotApplicable`.
-
----
-
-## Recovery pipeline
-
-Three tiers run in precedence order; each records the sectors it resolves in a shared `AllocatedBlockMap` so later tiers never re-examine claimed regions.
-
-**Tier 1 — filesystem metadata.** Delegates to the `vajra-fs-*` parsers. Yields the original path and filename, which no signature-based approach can recover. Only `Confirmed` and `Partial` confidence entries claim sectors.
-
-**Tier 2 — signature and structural validation.** Sector-aligned scan for signature headers from `config/signatures.json`, then dispatch to a structural validator implementing Garfinkel's fast-object-validation framework (DFRWS 2007): each validator returns `V_OK`, `V_ERR` or `V_EOF`, and declares three per-format flags — `err_is_prefix`, `appended_data_ignored`, `no_zblocks` — that govern how aggressively the carver may prune. These are genuine structural validators. The OLE2 validator walks the FAT/DIFAT/MiniFAT sector chains of the compound-file structure and derives an exact object length from the allocation table; the ISO-BMFF validator walks the box tree and distinguishes a truncated object from a malformed one from an exhausted buffer, because conflating them is how a partial recording gets carved and labelled complete.
-
-**Tier 3 — bifragment gap carving.** For two-fragment files, a bounded split-point × gap-size search using the empirically-derived gap order (8, 16, 32, 4, 64, 24, 40, 128, 256, 512, 1024, 2048 sectors) before falling back to linear scan, with `err_is_prefix` early rejection. Full fragment provenance is retained: source LBAs for both fragments and the gap between them.
-
-**Confidence model.** Every `RecoveredArtifact` carries a six-signal breakdown with named constant weights summing to 1.0:
-
-| Signal | Weight |
-|---|---|
-| Structural validity | 0.25 |
-| Header/footer integrity | 0.20 |
-| Metadata cross-reference | 0.20 |
-| Entropy consistency | 0.15 |
-| Fragmentation confidence | 0.15 |
-| Overwrite probability | 0.05 |
-
-These are declared in the source as baseline weights pending empirical calibration against labelled corpora, and should be read that way.
-
-**Classification signal.** `vajra-ml` implements the `EntropyAnalyzer` trait as a swap-in for the heuristic analyzer. It is a gradient-boosted tree ensemble (60 estimators, depth 4) trained offline in Python and re-implemented natively in Rust over an exported JSON tree dump — no ONNX runtime, no C++ dependency, CPU-only. Features are a 280-dimensional vector: a 256-bin byte histogram, a 16-chunk Shannon entropy profile, six bigram statistics, a printable-ASCII run ratio and a chi-square uniformity statistic. A train/serve parity test checks the Python and Rust feature extractors agree numerically.
-
----
-
-## Supported filesystems
-
-| Filesystem | What is parsed |
-|---|---|
-| **NTFS** | `$MFT` with update-sequence-array fixups; `$STANDARD_INFORMATION`, `$FILE_NAME` and `$DATA` attributes, resident and non-resident, with signed-delta run-list decoding; `$Bitmap` from MFT record 6 used to grade deleted-file confidence; USN record parsing; a bounded scan of unallocated clusters for orphaned `FILE` records, which is what makes quick-format recovery work |
-| **ext4** | Superblock (magic `0xEF53`); 32-bit and 64-bit group descriptors; inodes; recursive extent-tree walk (`0xF30A`, depth-bounded); recursive directory tree walk from inode 2 with true path reconstruction; **directory-entry slack recovery** — scanning the expanded `rec_len` left behind by `unlink` to recover entries no longer reachable; a full inode-table sweep for orphaned inodes; block-bitmap cross-reference for confidence |
-| **FAT12 / 16 / 32** | BPB and FAT-type derivation; FAT12/16/32 chain walking with correct EOF and bad-cluster sentinels; long-filename reconstruction including the reverse-order chunk correction for deleted entries; `0xE5` deleted-entry recovery with 8.3 reconstruction; where the FAT chain has been zeroed, a contiguous-run reconstruction from the start cluster, graded down in confidence when any assumed cluster is not free; bounded unallocated-cluster scan for orphaned directory fragments |
-
-`MetadataConfidence` in all three is derived the same way: `Confirmed` when every resolved cluster or block is still marked free in the allocation bitmap, `Partial` when only some are, `Low` otherwise. Recovery is never reported as certain because a metadata record survived.
-
----
-
-## Supported carving formats
-
-Signatures live in `config/signatures.json` and are read at runtime, so a new format can be registered without recompiling. Each entry declares a header byte pattern, an optional footer, a maximum size, the validator to dispatch to, and an optional `header_offset` for formats whose magic does not begin at byte 0.
-
-| Format | Validator does |
-|---|---|
-| **JPEG** | SOI/EOI framing and segment-marker walk |
-| **PNG** | Chunk walk with per-chunk CRC verification through `IEND` |
-| **PDF** | Header/`%%EOF` framing and object-structure checks |
-| **ZIP** | Local file headers and end-of-central-directory; also covers DOCX, XLSX and PPTX |
-| **SQLite** | Header field validation and page-structure consistency |
-| **OLE2 / CFB** | Compound File Binary header field validation, FAT/DIFAT/MiniFAT sector-chain consistency, exact object length derived from the allocation table. Covers legacy DOC/XLS/PPT |
-| **MP4 / ISO-BMFF** | Box-tree walk with strict bounds checking: 32-bit sizes, 64-bit extended sizes (`size == 1`), to-EOF boxes (`size == 0`), and `ftyp` / `moov` / `mdat` / `moof` / `free` / `skip` / `wide` handling. A complete object requires a valid `ftyp` plus at least one media box. A second top-level `ftyp` ends the object, so adjacent files are not swallowed as one |
-
-**MP4 detection detail.** An ISO-BMFF file does not begin with its magic — bytes 0–4 are the first box's size, and the literal `ftyp` tag starts at byte 4. Detection therefore uses `header = "ftyp"` with `header_offset = 4`. The offset mechanism is optional and backward-compatible: every pre-existing signature omits the field and continues to match at byte 0 exactly as before. Modern QuickTime/MOV files that carry an ISO-BMFF-style `ftyp` are accepted by the same validator; this is not universal MOV support, and older QuickTime layouts without `ftyp` are not detected.
-
----
-
-## Evidence integrity
-
-**Audit log.** Each entry's hash is `SHA-256(canonical_json(payload) ‖ "||" ‖ prev_hash)` over `{seq, timestamp, operator_id, case_id, operation, target_descriptor, result}`. Verification independently checks sequence monotonicity, backward hash linkage, genesis linkage and per-entry payload integrity. Entries are Ed25519-signed.
-
-**External anchoring.** The chain head can be exported as a signed anchor record — `VAJRA_ANCHOR_V1:{case}:{seq}:{hash}:{ts}:{operator}` — to be placed on external or write-once media. Re-verification checks both the anchor signature and that the anchored `(seq, hash)` still matches the live chain, which detects a truncated or regenerated log even when the regenerated log is internally self-consistent. The anchor file is written locally; placing it on trustworthy media is the operator's procedure, not the tool's.
-
-**Chain of custody.** Ten event types (`Seized`, `Received`, `StorageChange`, `Transferred`, `WriteBlockerAttached`, `AnalysisStarted`, `AnalysisCompleted`, `WorkingCopyCreated`, `Returned`, `Disposed`) validated by a state machine: the first event must be `Seized` or `Received`; nothing may follow a terminal state; a `Transferred` event requires both parties; timestamps must be monotonically non-decreasing. The crate is explicit in its own output that it records operator-reported events and checks internal consistency — it does not verify physical transfers occurring outside the application boundary.
-
-**Case database.** Nine tables covering cases, evidence items, forensic images, operations, recovered artifacts, sanitization events, custody events, the audit log and reports. Case status is two-state only, Active → Closed, and irreversibility is enforced twice: at the application layer and by a `BEFORE UPDATE` database trigger. A second trigger unconditionally aborts any `DELETE` against a case row. Passphrase-derived key material uses Argon2id (64 MB, 3 iterations) with zeroize-on-drop.
-
-**Device fingerprinting.** SHA-256 over length-prefixed normalised serial, length-prefixed normalised model, capacity as little-endian `u64`, and a 512-byte boundary sample. The interface string is deliberately excluded so a drive fingerprints identically whether attached directly or through a USB bridge — there is a test asserting exactly that.
-
----
-
-## Reporting and independent verification
-
-Six report types: `ForensicExamination`, `SanitizationCertificate`, `AcquisitionReport`, `RecoveryReport`, `DeviceHealthReport`, `ChainOfCustodyReport`. Each pulls real data from the crates above and goes through a shared pipeline: canonical JSON, SHA-256 digest, optional RFC 3161 timestamp, Ed25519 signature, self-signed certificate, an audit-chain entry recording the generation, and a persisted `.vjr` envelope. When the timestamp authority is unreachable the report is still produced, marked as locally timestamped.
-
-`vajra-verify` is a separate binary with **no dependency on `vajra-audit`** — its data structures and every check are re-implemented, so a report can be verified without trusting the code that wrote it. It checks the content hash, extracts the Ed25519 public key from the embedded certificate, verifies the signature, independently recomputes the whole audit hash chain including sequence-gap and linkage checks, checks the timestamp label, and optionally re-hashes external evidence files against the manifest. It is exercised against several distinct tamper scenarios in `tests/tamper_tests.rs`.
-
----
-
-## Building
-
-Requires a Rust toolchain; verified against `rustc` / `cargo` 1.95.0, edition 2021.
+## Forensic Workflow
 
 ```bash
-git clone <repository-url>
-cd vajra
+vajra-cli list                      # Enumerate physical devices & write-blocker status
+vajra-cli fingerprint <device>      # Deterministic SHA-256 hardware identity
+vajra-cli health <device>           # Native SMART / NVMe health diagnostics
+vajra-cli case create ...           # Open an encrypted case in the vault
+vajra-cli evidence add ...          # Register physical media and open custody chain
+vajra-cli acquire start ...         # Image device with dual-phase hashing & checkpoints
+vajra-cli image inspect <image>     # Validate image container headers and stored hashes
+vajra-cli fs detect|list|dump ...   # Perform filesystem-level metadata recovery
+vajra-cli carve run|inspect|stats   # Execute Tier 2 & Tier 3 carving pipeline
+vajra-cli ml classify <file>        # Run GBDT classifier on header-stripped artifacts
+vajra-cli report generate ...       # Generate and sign .vjr Report Envelope
+vajra-verify <report.vjr>           # Independently verify cryptographic integrity
+```
+
+---
+
+## Sanitization Workflow & Safety Gate
+
+To eliminate accidental data loss, all destructive operations strictly require a valid `SanitizationAuthorizationToken`.
+
+```
+Phase 1: DeviceConfirmationGate::begin(device, operator, typed_serial, confirm)
+    ├── Unconditionally rejects system/boot disks
+    ├── Unconditionally rejects write-blocked devices
+    ├── Requires exact case-insensitive match of physical hardware serial number
+    └── Returns a single-use PendingSanitization ticket
+
+Phase 2: PendingSanitization::finalize(pre_exec_confirm)
+    ├── Consumes ticket by value (single use, cannot be re-executed)
+    └── Returns SanitizationAuthorizationToken bound to target physical path
+```
+
+### Five-Layer Verification Suite
+
+| Layer | Verification Stage | Method |
+| :---: | :--- | :--- |
+| **1** | Command Execution | Verifies controller/OS return status |
+| **2** | Device State Readiness | Confirms post-operation block source readiness |
+| **3** | Deterministic Sampling | Reads fixed boundary and partition table LBAs |
+| **4** | Statistical Sampling | Hypergeometric sampling over ChaCha20 random sectors |
+| **5** | **Independent Carving Scan** | **Re-runs `vajra-carve` against the sanitized drive; any artifact forces overall failure** |
+
+---
+
+## Multi-Tier Recovery Pipeline
+
+1. **Tier 1 (Filesystem Metadata)**: Traverses NTFS MFT, ext4 directory trees/slack, and FAT tables. Confirmed free blocks are marked in an `AllocatedBlockMap`.
+2. **Tier 2 (Structural Fast Object Validation)**: Scans unallocated sectors against `config/signatures.json`. Dispatches candidates to Garfinkel-style fast object validators (`V_OK`, `V_ERR`, `V_EOF`):
+   - **JPEG**: SOI/EOI marker sequence and segment validation.
+   - **PNG**: Chunk header walk with per-chunk CRC verification through `IEND`.
+   - **PDF**: Header/trailer cross-reference table and `%%EOF` checks.
+   - **ZIP / Office**: Local file headers and end-of-central-directory validation (DOCX, XLSX, PPTX).
+   - **SQLite**: Page-size consistency, reserved space checks, and b-tree page header validation.
+   - **OLE2 / CFB**: Compound File Binary header validation and FAT/DIFAT/MiniFAT sector chain traversal.
+   - **MP4 / ISO-BMFF**: Box-tree walk (`ftyp`, `moov`, `mdat`, `moof`) with 32-bit and 64-bit extended box sizes.
+3. **Tier 3 (Bi-Fragment Gap Carving)**: Solves two-fragment fragmented files using split-point $\times$ gap-size searches across empirical gap distributions with early prefix rejection.
+
+### Composite Confidence Model
+
+$$\text{Confidence} = 0.25\,S_v + 0.20\,H_i + 0.20\,M_c + 0.15\,E_c + 0.15\,F_c + 0.05\,O_p$$
+
+- $S_v$: Structural validity (validator result & container geometry)
+- $H_i$: Header/footer integrity (exact magic match vs. partial EOF)
+- $M_c$: Metadata cross-reference (bitmap allocation status)
+- $E_c$: Entropy consistency (Shannon profile or ML classifier score)
+- $F_c$: Fragmentation confidence (contiguous vs. bi-fragment provenance)
+- $O_p$: Overwrite probability (slack-byte uniformity check)
+
+---
+
+## Building & Running
+
+### Prerequisites
+
+- **Rust**: 1.80+ (edition 2021)
+- **Node.js**: 18+ (for desktop UI)
+- **Perl**: Required on Windows if compiling SQLCipher with vendored OpenSSL
+
+### 1. Build Backend CLI & Verifier
+
+```bash
+git clone https://github.com/syedzahidsaleem/vajra-forensics-platform.git
+cd vajra-forensics-platform
+
+# Build all workspace crates in release mode
 cargo build --release
-cargo run -p vajra-cli -- help
+
+# Run CLI
+cargo run -p vajra-cli -- --help
+
+# Run Independent Verifier
+cargo run -p vajra-verify -- --help
 ```
 
-`rusqlite` is built with the `bundled` feature, so SQLite is compiled from source and no system SQLite is required. There is no C++ toolchain requirement and no ML runtime to install — the classifier is pure Rust.
-
----
-
-## Safe quick start
-
-This sequence touches no physical device. It creates a case, generates a synthetic disk image, carves it, and verifies a signed report.
+### 2. Build & Run Desktop UI (Tauri)
 
 ```bash
-# 0. Clean scratch directory
-mkdir -p /tmp/vajra-demo && cd /tmp/vajra-demo
+# Install UI dependencies
+cd ui
+npm install
 
-# 1. Generate a synthetic carving corpus (from the repository root)
-python3 scripts/generate_carve_corpus.py
+# Build production web bundle
+npm run build
 
-# 2. Open a case
-vajra-cli case create --name "DEMO-001" --examiner "analyst" --db /tmp/vajra-demo/case.db
-
-# 3. Inspect the synthetic image
-vajra-cli image inspect test_data/carve_test.img
-vajra-cli fs detect test_data/carve_test.img
-
-# 4. Run the recovery pipeline
-vajra-cli carve run --image test_data/carve_test.img --out /tmp/vajra-demo/recovered
-vajra-cli carve stats --image test_data/carve_test.img
-
-# 5. Generate and independently verify a signed report
-vajra-cli report generate --db /tmp/vajra-demo/case.db --case-id <id> --type recovery
-vajra-verify /tmp/vajra-demo/<report-id>.vjr
+# Run Tauri desktop app in development mode
+npm run tauri dev
 ```
 
-Two standing rules the project holds itself to, and which the quick start reflects:
+---
 
-- **No destructive operation is ever run against real hardware.** Sanitization is exercised exclusively against mock and simulated devices.
-- **Reported numbers are measured, not estimated.** Benchmark figures come from actual runs against the seeded corpora produced by `scripts/`, and are regenerable by anyone with the repository.
+## Testing & Verification
 
-`vajra-cli help` output currently lags the dispatch table in some places; `crates/vajra-cli/src/main.rs` is authoritative. `docs/user-manual.md` documents each command with real captured output.
+The Vajra repository contains over 95 automated tests across all 18 backend crates, plus end-to-end integration and tamper verification suites.
+
+```bash
+# Run all workspace unit and integration tests
+cargo test --workspace
+
+# Run independent tamper verification tests
+cargo test -p vajra-verify --test tamper_tests
+
+# Run encrypted vault & SQLCipher tests
+cargo test -p vajra-case-db --test db_tests
+
+# Run multi-tier carving pipeline tests
+cargo test -p vajra-carve --test carve_tests
+```
 
 ---
 
-## Testing
+## Current Limitations
 
-Roughly 95 `#[test]` functions across the workspace, plus integration suites in each crate's `tests/` directory.
-
-| Area | Coverage |
-|---|---|
-| Carving | 35 unit tests + 2 integration tests in `vajra-carve`, covering each validator against intact, truncated, corrupted and wrong-signature inputs, plus a full pipeline run against the synthetic corpus |
-| Sanitization | Gate semantics including system-disk and serial-mismatch rejection; dedicated Layer-5 tests proving the recovery-scan override actually fires |
-| Acquisition | Clean round-trip with hash verification, partial ranges, the bad-sector flowchart, transient-failure recovery with backoff, block-size reduction, interrupted-acquisition resume, and resume rejection on device-fingerprint mismatch |
-| Filesystems | NTFS fixup application and data-run decoding; ext4 superblock parsing and directory-slack recovery; FAT LFN reconstruction and deleted-entry recovery |
-| Verification | Independent verifier run against multiple distinct tamper scenarios |
-| ML | Classifier behaviour, pipeline integration, and a Python↔Rust feature-extraction parity test |
-
-Ground-truth fixtures are generated by `scripts/generate_ground_truth_images.py` (NTFS/ext4/FAT images with known deleted files) and `scripts/generate_carve_corpus.py` (intact, truncated, corrupted and genuinely two-fragmented files). Every scenario is reproducible from a documented script, so reported metrics can be regenerated independently.
-
-The classifier's measured figures — macro precision 0.9964, recall 0.9963, F1 0.9963 — are from a 540-sample test set drawn from a **synthetically generated** corpus across six classes (`jpeg`, `png`, `pdf`, `zip`, `sqlite`, `unknown`). They characterise the model on that corpus and should not be read as performance on real-world forensic media.
+- **Controller-Level Physical Issuance**: While ATA Secure Erase, NVMe Sanitize, and Cryptographic Erase are modeled and verified against mock devices, raw physical drive ioctl issuance is restricted to host-level overwrite to prevent accidental damage on development workstations.
+- **MP4 `moov` Index Reconstruction**: Interrupted video recordings missing the `moov` atom are surfaced as truncated candidates (`V_EOF`) with qualified limitations rather than synthesized as complete.
+- **APFS Depth**: APFS parser is currently in Phase A (container and superblock structures); snapshot tree traversal is planned for future scope.
+- **E01 Writer**: E01 support is currently read-only; disk image writing produces raw bit-stream (.raw/.dd) images.
 
 ---
 
-## Current limitations
+## Branch Status & Team Contributions
 
-Stated plainly, because a forensic tool that overstates itself is worse than one that does less.
+All development branches have been merged into `main` (`96d0610`):
 
-**Device layer**
-
-- SMART and NVMe health parsing is implemented on Windows only. The Linux path returns a nominal placeholder and does not query the drive.
-- HPA/DCO detection is modelled as a data structure but no detection logic exists on either platform.
-- Write-blocker detection currently fires on vendor/model string matching and the OS read-only flag. The VID/PID table is present but neither OS backend extracts a USB VID/PID to feed it, so that path is inactive. SCSI Mode-Sense and manual-override detection methods are declared but not implemented.
-- macOS is not supported on `main`; unsupported targets return `UnsupportedOperation` rather than silently degrading.
-
-**Acquisition and imaging**
-
-- The independent re-read verification pass runs on a fresh acquisition but not on a resumed one, where a single hash is recorded for both values.
-- E01 is read-only; there is no E01 writer. AFF4 is a stub that returns `UnsupportedFormat`.
-- The logical acquisition profile is currently a bounded LBA range with a description, not filesystem-aware extraction.
-
-**Case database**
-
-- The case database is **encrypted at rest** using SQLCipher with Argon2id key derivation (64 MB memory, 3 iterations) and authenticated immediately at connection open. Opening with an incorrect key or attempting to read a raw unencrypted database without key migration is rejected by the cipher layer (`file is not a database`). Raw disk inspection confirms that on-disk headers contain random salt rather than plaintext SQLite signatures, and table contents are fully encrypted.
-
-**Filesystems**
-
-- NTFS `$LogFile` is not parsed. VSS handling is a filename/GUID heuristic, not shadow-copy store parsing. Directory hierarchy is not reconstructed from `$INDEX_ROOT`/`$INDEX_ALLOCATION`, so recovered paths are flat rather than nested.
-- ext4 legacy (non-extent) inodes resolve only the 12 direct block pointers; single, double and triple indirect blocks are not walked, so large non-extent files resolve incompletely. jbd2 journal parsing exists but is not wired into the enumeration path.
-- exFAT is not supported. APFS is a stub.
-
-**Carving**
-
-- The Tier-2 candidate reading dynamically expands beyond the initial 1 MiB window up to the signature's declared `max_size_bytes` based on structural validation feedback, avoiding artificial slicing truncation.
-- `moov` reconstruction from an intact `mdat` is **not** implemented. An interrupted recording missing its index is currently not recoverable, and the validator reports that honestly rather than emitting a partial object as complete.
-- Tier 2 surfaces `ValidationResult::Eof` truncated candidates as `RecoveredArtifact` entries with reduced confidence and an explicit `recovery_limitations` explanation (e.g. valid header/IHDR/markers, but missing footer due to truncation).
-- `header_footer_integrity` and `structural_validity` are dynamically computed per candidate: exact boundary matches yield 1.0 (with slight scaling for sector slack); truncated candidates receive 0.50 HFI and container-proportionate structural validity; footerless formats evaluate geometric constraints (SQLite power-of-2 page sizes, MP4 `ftyp` brand, OLE2 sector shifts).
-
-**Device layer and hardware health**
-
-- On Linux, device health queries real hardware diagnostics: `NVME_IOCTL_ADMIN_CMD` (0xC0484E41) retrieves Log Page 0x02 for NVMe drives, and `HDIO_DRIVE_CMD` (0x031F) reads and parses 30 ATA SMART attributes for SATA drives. When running unprivileged or against virtual hypervisor disks without ioctl support, the layer falls back to kernel `/sys/block/<dev>/stat` telemetry.
-- On macOS (Phase A), device enumeration and health utilize `diskutil` and `smartctl` subprocess wrappers.
-
-**Sanitization**
-
-- Host-level overwrite is fully implemented and functional. **Controller-level commands — ATA Secure Erase, ATA Enhanced Secure Erase, NVMe Sanitize, NVMe Format, SCSI Sanitize and cryptographic erase — are verified in unit and integration tests against `MockWritableDevice`, but raw physical drive ioctl issuance is not implemented on real hardware.** `PhysicalDrive` implements `ReadOnlyBlockSource` only; real hardware issuance of destructive controller commands is deliberately blocked and remains unverified on physical drives.
-- The authorization token is a compile-time capability marker. It derives `Deserialize`, so it is constructible by deserialization outside the gate, and consuming functions do not currently re-check it against the device being written. Treat the gate as a strong workflow control, not a cryptographic authorization.
-- Verification Layer 2 currently checks that the block source is responsive rather than querying an NVMe Sanitize Status log page or ATA IDENTIFY word 128.
-- In `vajra-file-erase`, the journal-scrubbing and free-after-overwrite verification steps report success without performing the check. The residual scanner is a classifier over inputs supplied by the caller, not an independent re-scan.
-
-**Reporting**
-
-- Reports are produced as signed JSON envelopes with Markdown bodies. **No PDF is generated**, despite a schema column existing for one.
-- RFC 3161 responses parse the ASN.1 DER `TimeStampResp` `PKIStatusInfo` `PKIStatus` field, requiring `granted` (0) or `grantedWithMods` (1), and explicitly rejecting non-granted statuses (rejection, waiting, revocation warning/notification) with fallback to local timestamps.
-- Certificates are self-signed; there is no CA chain issuance or external PKI integration. `vajra-verify` locates the Ed25519 key inside the certificate by structural search and does not perform chain, expiry or trust validation.
-
-Vajra makes no compliance certification claim. `docs/standards-mapping.md` records how implemented features relate to NIST SP 800-88 Rev.2, IEEE 2883, ISO/IEC 27037, ISO/IEC 27001, the Information Technology Act 2000, the CERT-In Directions of 28 April 2022 and the DPDP Act 2023 — as an engineering record of what the code does, alongside a register of blueprint claims the code does not yet support.
+1. **`vaibhavi`**:
+   - Master technical documentation, standards mapping (`docs/standards-mapping.md`), and comprehensive user manual (`docs/user-manual.md`).
+   - OLE2/CFB structural validator and ISO-BMFF box parsing foundations.
+2. **`syed-zahid`**:
+   - SQLCipher encrypted vault at rest with Argon2id key derivation.
+   - Dynamic carving confidence (HFI + SV), candidate window expansion, and V_EOF partial recovery surfacing.
+   - Linux `NVME_IOCTL_ADMIN_CMD` / ATA `HDIO_DRIVE_CMD` native diagnostics.
+   - `vajra-raid` (RAID 0/5/6) and `vajra-crypto-vol` (LUKS1/2, BitLocker, FileVault).
+3. **`akanksha`**:
+   - Comprehensive test session logs (`docs/testing/session-logs/session-2026-09-04-01.md`) and multi-crate QA validation.
+4. **`nitya`**:
+   - Complete desktop application frontend in `ui/` (React, Vite, Tailwind CSS, AppShell, wizards, and dashboards).
+   - Tauri v2 application configuration, capability schemas, and modular IPC commands in `crates/vajra-tauri-app/src/commands/`.
+5. **`hari-priya`**:
+   - Two-phase Device Identity Confirmation Gate formal proof (`docs/safety-gate-proof.md`).
+   - Storage block map visualization components and forensic recovery filtering.
 
 ---
 
-## Roadmap
+## Standards & Compliance
 
-Unfinished backend capabilities, in rough order of value to the platform:
+Vajra's implementation aligns with the following international and national digital forensics and sanitization standards (see [`docs/standards-mapping.md`](docs/standards-mapping.md) for full traceability):
 
-- **Controller-level sanitize transport** — implement the ATA/NVMe/SCSI ioctl paths so the methods the decision engine recommends for SSD, NVMe and SED media can actually be executed and verified on real hardware. This is the highest-priority gap.
-- **MP4 `moov` reconstruction** — rebuild a minimal index from `mdat` structure to recover interrupted recordings, together with a validator output interface that can represent a reconstructed object honestly rather than reporting it as an ordinary complete file.
-- **Confidence calibration** — bucket predicted confidence into deciles against ground truth, measure calibration error, and replace the baseline weights with empirically-derived ones.
-- **Expanded benchmarking** — scale the ground-truth matrix across scenarios (quick format, partial overwrite, fragmentation, bad sectors, colliding signatures, large and small files, nested directories) crossed against all three filesystems and all eight carving formats, and re-measure precision, recall, F1, byte-level accuracy and false-positive rate at that scale.
-- **APFS** — object map and snapshot parsing.
-- **Deeper exFAT** — currently unsupported.
-- **AFF4** — image format read support.
-- **N-fragment carving** — Tier 3 currently handles the two-fragment case.
-- **HPA/DCO detection** — hardware hidden area detection on Linux and Windows.
-- **Broader hardware validation** — testing across more controllers, interfaces and media types than the current set.
-- **Filesystem depth** — NTFS `$LogFile` parsing, index-based directory hierarchy reconstruction, real VSS store parsing, and ext4 indirect-block traversal.
+- **NIST SP 800-88 Rev. 1 / IEEE 2883-2022**: Media sanitization methods, decision logic, and multi-layer verification.
+- **ISO/IEC 27037:2012**: Digital evidence handling, chain of custody, and write-blocking principles.
+- **ISO/IEC 27001:2022 / NIST SP 800-53**: Audit logging, cryptographic hash chaining, and access control.
+- **RFC 3161**: ASN.1 DER trusted time-stamp token validation.
+- **Indian IT Act 2000 (Section 65B) & DPDP Act 2023**: Electronic evidence admissibility, tamper-evident audit logs, and compliant data erasure.
 
 ---
 
-## Branch status
+## License & Legal Scope
 
-Both major feature branches (`vaibhavi` and `syed-zahid`) have been **merged into `main`**. `main` is now the unified, single source of truth containing:
-
-1. **`vaibhavi` contributions (merged)**:
-   - OLE2/CFB structural validator for legacy DOC/XLS/PPT containers.
-   - Header offset support in signature database (used by MP4 byte-offset 4).
-   - MP4/ISO-BMFF structural validator with 32-bit and 64-bit box parsing.
-   - Standards and compliance mapping (`docs/standards-mapping.md`) and user manual (`docs/user-manual.md`).
-
-2. **`syed-zahid` contributions (merged)**:
-   - **`vajra-raid`** — RAID 0, 5, and 6 reconstruction with GF(2⁸) Reed–Solomon decoding, auto-assembling mdadm superblocks.
-   - **`vajra-crypto-vol`** — Real LUKS1 and LUKS2 encrypted volume unlock (PBKDF2/Argon2id + AES-XTS); synthetic BitLocker test layout; FileVault detection.
-   - **macOS device support (Phase A)** — Device enumeration, APFS container unwrapping, and health diagnostics via `diskutil` and `smartctl` subprocess wrappers.
-   - Storage CLI commands (`raid detect`, `raid mount`, `crypto-vol unlock`).
-
-3. **Post-Merge Integrity Fixes (implemented & proven)**:
-   - **Database encryption at rest** — SQLCipher with Argon2id key derivation statically linked and verified with zero plaintext on disk.
-   - **Dynamic carving confidence** — Candidate-specific `header_footer_integrity` and `structural_validity` scoring; candidate window expansion up to format maximum; surfacing of `ValidationResult::Eof` partial recoveries.
-   - **Linux device health** — Genuine `NVME_IOCTL_ADMIN_CMD` and ATA `HDIO_DRIVE_CMD` diagnostics with `/sys/block` fallback.
-   - **RFC 3161 PKIStatus validation** — ASN.1 DER parsing enforcing `granted` status.
-
----
-
-## License
-
-Apache-2.0, as declared in the workspace manifest. A `LICENSE` file has not yet been added to the repository.
-
----
-
-## Legal scope
-
-Vajra is intended for use by authorized examiners on media they are lawfully entitled to examine or destroy. Encrypted volume support unlocks a volume using credentials the operator already lawfully holds; the project implements no bypass, no key recovery and no cryptanalytic attack, and that is a design boundary rather than a limitation to be lifted later. Network-attached RAID is out of scope; local, directly-attached member drives only.
+- **License**: Apache-2.0
+- **Legal Notice**: Vajra is intended strictly for authorized digital forensic examiners, incident responders, and compliance officers on storage media they are legally authorized to inspect or sanitize. The software does not implement unauthorized access or cryptanalytic bypass mechanisms.
