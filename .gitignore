@@ -43,3 +43,6 @@ node_modules/
 dist/
 ui/dist/
 crates/vajra-tauri-app/reports/
+*.timestamp-*.mjs
+.vite-temp/
+
