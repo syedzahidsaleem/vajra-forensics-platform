@@ -126,6 +126,9 @@ When physical macOS hardware becomes available, the following test matrix must b
 - [ ] **8. Hardware Write-Blocker Verification**:
   - Connect a physical forensic hardware write-blocker (Tableau, WiebeTech, or Coolgear) to the Mac.
   - Verify `vajra-cli list` detects `is_write_blocked: true` via `query_usb_vid_pid` matching or vendor keyword heuristic.
-- [ ] **9. Phase B Log Wrap-Up**:
+- [ ] **9. macOS Installer Packaging (.pkg / .dmg)**:
+  - Package native macOS installer bundle (.pkg / .dmg) and verify that standard installation into `/Applications` automatically adheres to the boot/sealed-system-volume constraint.
+- [ ] **10. Phase B Log Wrap-Up**:
   - Create `docs/agent-log/10-macos-device-support-phase-b.md` documenting the real terminal outputs, hardware serials, and test results from the native Mac run.
+
 

@@ -1,0 +1,39 @@
+================================================================================
+VAJRA DIGITAL FORENSICS & SECURE DATA SANITIZATION PLATFORM
+END USER LICENSE AGREEMENT & TERMS OF USE (PLACEHOLDER DRAFT)
+================================================================================
+
+IMPORTANT NOTICE:
+This software is designed for authorized digital forensic examiners, incident
+response personnel, and security professionals for the lawful extraction,
+recovery, analysis, and secure sanitization of digital storage media.
+
+1. GRANT OF LICENSE
+Subject to the terms of this Agreement, the Vajra Project Team grants you a
+non-exclusive, non-transferable license to use this software in accordance with
+all applicable national and international laws and forensic standards.
+
+2. LAWFUL FORENSIC USE
+You agree that you will only use this software on storage media and systems
+that you are lawfully authorized to examine, image, decrypt, or sanitize.
+Unauthorized interception, forensic acquisition, or destruction of digital
+evidence may constitute a violation of the Indian Information Technology Act
+2000, the Computer Fraud and Abuse Act, and related regional laws.
+
+3. HARDWARE SAFETY & DATA LOSS WARNING
+Vajra includes industrial-grade data sanitization capabilities (NIST SP 800-88
+and IEEE 2883 compliant erasure routines). Destructive operations will permanently
+destroy data on targeted storage devices. The authors disclaim all liability
+for unintentional data destruction resulting from improper operator target
+selection or misconfiguration.
+
+4. NO WARRANTY
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+================================================================================
+NOTE: This document is a placeholder terms and conditions document for the
+installer workflow. Final legal review and policy drafting is tracked in the
+project documentation suite (docs/standards-mapping.md).
+================================================================================

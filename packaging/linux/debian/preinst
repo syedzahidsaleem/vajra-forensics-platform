@@ -1,0 +1,22 @@
+#!/bin/sh
+set -e
+
+# ============================================================================
+# Hard Rule: Verify installation target is on the root (/) OS filesystem mount
+# ============================================================================
+ROOT_MOUNT=$(df -P / | tail -n1 | awk '{print $1}')
+TARGET_MOUNT=$(df -P /usr | tail -n1 | awk '{print $1}')
+
+if [ "$ROOT_MOUNT" != "$TARGET_MOUNT" ]; then
+    echo "======================================================================" >&2
+    echo "ERROR: Vajra Installation Location Restriction Violation" >&2
+    echo "======================================================================" >&2
+    echo "Vajra must be installed on the root OS filesystem (mount: $ROOT_MOUNT)." >&2
+    echo "Target directory /usr is located on a separate mount ($TARGET_MOUNT)." >&2
+    echo "This constraint ensures secondary evidence drives can be fully" >&2
+    echo "sanitized without in-use file locks from the forensic platform." >&2
+    echo "======================================================================" >&2
+    exit 1
+fi
+
+exit 0
