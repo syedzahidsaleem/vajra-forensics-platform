@@ -5,7 +5,6 @@
   "identifier": "com.vajra.forensics",
   "build": {
     "frontendDist": "../../ui/dist",
-    "devUrl": "http://localhost:1420",
     "beforeDevCommand": "npm --prefix ui run dev",
     "beforeBuildCommand": "npm --prefix ui run build"
   },
@@ -14,6 +13,7 @@
       {
         "label": "main",
         "title": "Vajra: Digital Forensics Platform",
+        "url": "index.html",
         "width": 1280,
         "height": 820,
         "minWidth": 1024,
