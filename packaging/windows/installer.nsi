@@ -17,6 +17,9 @@ RequestExecutionLevel admin
 InstallDir "$PROGRAMFILES64\Vajra"
 InstallDirRegKey HKLM "Software\Vajra" "InstallLocation"
 
+; --- Compression Settings ---
+SetCompressor /SOLID lzma
+
 ; --- Interface Settings ---
 !define MUI_ABORTWARNING
 !define MUI_ICON "..\..\crates\vajra-tauri-app\icons\icon.ico"
@@ -74,6 +77,7 @@ FunctionEnd
 Section "Vajra Core Application" SecCore
     SectionIn RO
 
+    SetShellVarContext all
     SetOutPath "$INSTDIR"
 
     ; Core Executables & Dynamic Runtime
@@ -152,33 +156,29 @@ SectionEnd
 ; Uninstaller Section
 ; ============================================================================
 Section "Uninstall"
-    ; Remove files
-    Delete "$INSTDIR\vajra-tauri-app.exe"
-    Delete "$INSTDIR\vajra-cli.exe"
-    Delete "$INSTDIR\vajra-verify.exe"
-    Delete "$INSTDIR\WebView2Loader.dll"
-    Delete "$INSTDIR\license.txt"
-    Delete "$INSTDIR\README.md"
-    Delete "$INSTDIR\config\signatures.json"
-    RMDir "$INSTDIR\config"
-    Delete "$INSTDIR\ml-models\file_type_classifier_trees.json"
-    Delete "$INSTDIR\ml-models\model_metadata.json"
-    RMDir "$INSTDIR\ml-models"
-    Delete "$INSTDIR\Uninstall.exe"
-    RMDir "$INSTDIR"
-
-    ; Remove Shortcuts
+    ; 1. Clean up Shortcuts across both All Users and Current User contexts
+    SetShellVarContext all
     Delete "$DESKTOP\Vajra Forensics Platform.lnk"
     Delete "$SMPROGRAMS\Vajra\Vajra Forensics Platform.lnk"
     Delete "$SMPROGRAMS\Vajra\Vajra CLI Shell.lnk"
     Delete "$SMPROGRAMS\Vajra\Uninstall Vajra.lnk"
-    RMDir "$SMPROGRAMS\Vajra"
+    RMDir /r "$SMPROGRAMS\Vajra"
 
-    ; Remove Add/Remove Programs registration
+    SetShellVarContext current
+    Delete "$DESKTOP\Vajra Forensics Platform.lnk"
+    Delete "$SMPROGRAMS\Vajra\Vajra Forensics Platform.lnk"
+    Delete "$SMPROGRAMS\Vajra\Vajra CLI Shell.lnk"
+    Delete "$SMPROGRAMS\Vajra\Uninstall Vajra.lnk"
+    RMDir /r "$SMPROGRAMS\Vajra"
+
+    ; 2. Recursively remove application directory and all runtime data
+    RMDir /r "$INSTDIR"
+
+    ; 3. Remove Add/Remove Programs registration
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vajra"
     DeleteRegKey HKLM "Software\Vajra"
 
-    ; Remove $INSTDIR from System PATH
+    ; 4. Remove $INSTDIR from System PATH
     ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" "Path"
     ${If} $0 != ""
         Push "$0"
