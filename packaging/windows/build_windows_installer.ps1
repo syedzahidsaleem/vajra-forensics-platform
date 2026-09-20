@@ -46,8 +46,9 @@ if ($LASTEXITCODE -ne 0) {
 
 $outputInstaller = "$rootDir\target\release\Vajra-0.1.0-Setup.exe"
 if (Test-Path $outputInstaller) {
-    $sizeMb = [math]::Round((Get-Item $outputInstaller).Length / 1MB, 2)
-    Write-Host "[✓] Windows Installer Successfully Generated: $outputInstaller ($sizeMb MB)" -ForegroundColor Green
+    $item = Get-Item $outputInstaller
+    $sizeMb = [math]::Round($item.Length / 1MB, 2)
+    Write-Host "[OK] Windows Installer Successfully Generated: $outputInstaller ($sizeMb MB)" -ForegroundColor Green
 } else {
     Write-Error "Expected installer output was not generated."
 }

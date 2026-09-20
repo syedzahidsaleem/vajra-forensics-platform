@@ -223,7 +223,7 @@ Official pre-built binaries and installer packages are available on the [**GitHu
 
 | Platform | Package File | Format | Target Arch | Included Components | SHA-256 Checksum |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Windows** | `Vajra-0.1.0-Setup.exe` | NSIS Setup | `x86_64` | Desktop UI (`vajra-tauri-app`), `vajra-cli`, `vajra-verify`, Signatures & ML Models | `8D774F32DC649BAC1D8B39858EEEAB6BD41443B26BE7AEE658768A896C7C8BB2` |
+| **Windows** | `Vajra-0.1.0-Setup.exe` | NSIS Setup | `x86_64` | Desktop UI (`vajra-tauri-app`), `WebView2Loader`, `vajra-cli`, `vajra-verify`, Signatures & ML Models | `E670CAA3BCA26C65FE147242DC917025E4ECCC1E9CAD3EC56AEF4929EDF473AF` |
 | **Linux** | `vajra_0.1.0_amd64.deb` | Debian Package | `amd64` | `vajra-cli`, `vajra-verify`, Signatures & ML Models, Doc Suite | `3DC7886B16CA187DD5BF81433E868CC9F10017E26BE46BCF557DF32B55EBC201` |
 | **macOS** | Native Installer | `.pkg` / `.dmg` | `Apple Silicon` / `x86_64` | Phase B Roadmap (targeting `/Applications`) | *Phase B* |
 
