@@ -12,6 +12,13 @@ use vajra_core::{
 use crate::error::ImageError;
 use crate::metadata::{ImageFormat, ImageMetadata, StoredHashes};
 
+/// Helper documenting future scope / returning unsupported error (§53).
+pub fn open_aff4_not_implemented() -> Result<(), ImageError> {
+    Err(ImageError::UnsupportedFormat(
+        "AFF4 format is deferred to future scope (§53)".to_string(),
+    ))
+}
+
 /// Metadata describing an AFF4 container volume (§19).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct AFF4VolumeInfo {
@@ -78,21 +85,18 @@ impl<R: Read + Seek + Send> AFF4ImageReader<R> {
 
     /// Extracted forensic metadata profile.
     pub fn metadata(&self) -> ImageMetadata {
+        let mut case_metadata = std::collections::HashMap::new();
+        case_metadata.insert("description".to_string(), "AFF4 Standard Forensic Container".to_string());
+        case_metadata.insert("container_urn".to_string(), self.info.container_urn.clone());
+        case_metadata.insert("image_stream_urn".to_string(), self.info.image_stream_urn.clone());
+
         ImageMetadata {
-            format: ImageFormat::AFF4,
-            total_bytes: self.info.size_bytes,
+            format: ImageFormat::Aff4,
+            capacity_bytes: self.info.size_bytes,
             block_size: self.block_size,
-            case_number: None,
-            evidence_number: None,
-            examiner: None,
-            description: Some("AFF4 Standard Forensic Container".to_string()),
-            notes: None,
-            acquisition_date: None,
-            stored_hashes: StoredHashes {
-                md5: None,
-                sha1: None,
-                sha256: None,
-            },
+            total_blocks: self.total_blocks,
+            case_metadata,
+            stored_hashes: StoredHashes::default(),
         }
     }
 }
@@ -106,7 +110,8 @@ impl<R: Read + Seek + Send> ReadOnlyBlockSource for AFF4ImageReader<R> {
             .seek(SeekFrom::Start(start_offset))
             .map_err(|e| IoError::ReadFailureAtLba {
                 lba,
-                reason: format!("Seek failure at LBA {}: {}", lba, e),
+                count,
+                details: format!("Seek failure at LBA {}: {}", lba, e),
             })?;
 
         let mut buffer = vec![0u8; requested_bytes];
@@ -115,7 +120,8 @@ impl<R: Read + Seek + Send> ReadOnlyBlockSource for AFF4ImageReader<R> {
             .read(&mut buffer)
             .map_err(|e| IoError::ReadFailureAtLba {
                 lba,
-                reason: format!("Read error at LBA {}: {}", lba, e),
+                count,
+                details: format!("Read error at LBA {}: {}", lba, e),
             })?;
 
         if bytes_read < requested_bytes {
@@ -146,12 +152,13 @@ impl<R: Read + Seek + Send> ReadOnlyBlockSource for AFF4ImageReader<R> {
     }
 
     fn device_fingerprint(&self) -> DeviceFingerprint {
-        DeviceFingerprint::from_raw_fields(
+        DeviceFingerprint::compute(
+            "AFF4 Container",
+            "AFF4 Volume",
             &self.info.container_urn,
-            "AFF4-CONTAINER",
             self.info.size_bytes,
+            "AFF4-Virtual",
             &[0u8; 512],
-            MediaType::ForensicImage,
         )
     }
 }
