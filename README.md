@@ -24,12 +24,13 @@ Both workflows execute entirely on the examiner's workstation with **zero networ
 10. [Supported Carving Formats](#supported-carving-formats)
 11. [Evidence Integrity & Audit Chains](#evidence-integrity--audit-chains)
 12. [Reporting & Standalone Verification](#reporting--standalone-verification)
-13. [Building & Running](#building--running)
-14. [Testing & Verification](#testing--verification)
-15. [Current Limitations](#current-limitations)
-16. [Branch Status & Team Contributions](#branch-status--team-contributions)
-17. [Standards & Compliance](#standards--compliance)
-18. [License & Legal Scope](#license--legal-scope)
+13. [Releases & Installation](#releases--installation)
+14. [Building & Running](#building--running)
+15. [Testing & Verification](#testing--verification)
+16. [Current Limitations](#current-limitations)
+17. [Branch Status & Team Contributions](#branch-status--team-contributions)
+18. [Standards & Compliance](#standards--compliance)
+19. [License & Legal Scope](#license--legal-scope)
 
 ---
 
@@ -211,6 +212,61 @@ $$\text{Confidence} = 0.25\,S_v + 0.20\,H_i + 0.20\,M_c + 0.15\,E_c + 0.15\,F_c 
 - $E_c$: Entropy consistency (Shannon profile or ML classifier score)
 - $F_c$: Fragmentation confidence (contiguous vs. bi-fragment provenance)
 - $O_p$: Overwrite probability (slack-byte uniformity check)
+
+---
+
+## Releases & Installation
+
+Official pre-built binaries and installer packages are available on the [**GitHub Releases**](https://github.com/syedzahidsaleem/vajra-forensics-platform/releases) page.
+
+### Pre-Built Packages (v0.1.0)
+
+| Platform | Package File | Format | Target Arch | Included Components | SHA-256 Checksum |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Windows** | `Vajra-0.1.0-Setup.exe` | NSIS Setup | `x86_64` | Desktop UI (`vajra-tauri-app`), `vajra-cli`, `vajra-verify`, Signatures & ML Models | `8D774F32DC649BAC1D8B39858EEEAB6BD41443B26BE7AEE658768A896C7C8BB2` |
+| **Linux** | `vajra_0.1.0_amd64.deb` | Debian Package | `amd64` | `vajra-cli`, `vajra-verify`, Signatures & ML Models, Doc Suite | `3DC7886B16CA187DD5BF81433E868CC9F10017E26BE46BCF557DF32B55EBC201` |
+| **macOS** | Native Installer | `.pkg` / `.dmg` | `Apple Silicon` / `x86_64` | Phase B Roadmap (targeting `/Applications`) | *Phase B* |
+
+> [!IMPORTANT]
+> **Operating System / Boot Drive Installation Restriction**:
+> By architectural design, Vajra must be installed strictly on the host operating system drive (`$WINDIR` / `C:\` on Windows, root `/` filesystem on Linux). Both the Windows NSIS installer and the Debian package actively validate the destination mount at install time and block installation onto secondary or removable drives. This guarantees that running binaries, dynamic libraries, and logs never create in-use OS file locks on secondary drives scheduled for sanitization or forensic acquisition.
+
+---
+
+### Windows Installation
+
+1. Download [`Vajra-0.1.0-Setup.exe`](https://github.com/syedzahidsaleem/vajra-forensics-platform/releases/download/v0.1.0/Vajra-0.1.0-Setup.exe) from GitHub Releases.
+2. Run the setup executable.
+3. Review and accept the Vajra Apache-2.0 End-User Forensic License Agreement.
+4. Keep the default installation directory on the OS drive (e.g., `C:\Program Files\Vajra`).
+5. Complete installation. The installer automatically registers Desktop and Start Menu shortcuts and appends Vajra binaries to the system `PATH`.
+
+To verify CLI availability from PowerShell or Command Prompt:
+```powershell
+vajra-cli --version
+vajra-verify --version
+```
+
+---
+
+### Linux Installation (Debian / Ubuntu)
+
+1. Download [`vajra_0.1.0_amd64.deb`](https://github.com/syedzahidsaleem/vajra-forensics-platform/releases/download/v0.1.0/vajra_0.1.0_amd64.deb) from GitHub Releases.
+2. Install the package using `dpkg` or `apt`:
+```bash
+sudo dpkg -i vajra_0.1.0_amd64.deb
+# or
+sudo apt-get install -f ./vajra_0.1.0_amd64.deb
+```
+3. *(Optional)* Grant raw block device inspection capabilities without requiring full root login:
+```bash
+sudo setcap cap_sys_rawio,cap_sys_admin+ep /usr/bin/vajra-cli
+```
+4. Verify installation:
+```bash
+vajra-cli --version
+vajra-verify --version
+```
 
 ---
 
