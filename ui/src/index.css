@@ -1,0 +1,195 @@
+@import './globals.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --onyx: #00120B;
+  --dark-slate: #35605A;
+  --light-green: #05664B;
+  --amethyst-smoke: #AA77A9;
+  --lavender: #D8E4FF;
+  --danger: #EF4444;
+  --danger-glow: rgba(239,68,68,0.35);
+  --green-glow: rgba(5,102,75,0.25);
+  --amethyst-glow: rgba(170,119,169,0.25);
+}
+
+.dark,
+[data-theme="dark"] {
+  --light-green: #38C193;
+  --green-glow: rgba(56,193,147,0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg, #00120B);
+  color: var(--text, #D8E4FF);
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* Scrollbars: functional, visible & themed */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) rgba(0, 0, 0, 0.15);
+}
+
+/* Cyber-Industrial Display Font (Inspired by NBD "RENDER" Industrial Spec) */
+.font-industrial {
+  font-family: 'Oxanium', 'Orbitron', 'JetBrains Mono', monospace, sans-serif;
+  letter-spacing: 0.06em;
+}
+
+/* Global monospace for technical data */
+.mono { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; }
+
+/* Green glow text for active/confirmed values */
+.glow-green {
+  color: var(--light-green);
+  text-shadow: 0 0 12px var(--green-glow);
+}
+
+/* Danger glow for destructive elements */
+.glow-red {
+  color: var(--danger);
+  text-shadow: 0 0 12px var(--danger-glow);
+}
+
+/* Glass surface */
+.glass {
+  background: rgba(53, 96, 90, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(56, 193, 147, 0.1);
+}
+
+/* Animated gradient background for the app shell */
+.app-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(53,96,90,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(56,193,147,0.06) 0%, transparent 50%),
+    var(--onyx);
+}
+
+/* Spacing overrides: more room to breathe */
+.vajra-page {
+  padding: 32px 36px;
+  max-width: 1100px;
+}
+
+/* Reduce visual noise on all borders */
+* {
+  border-color: rgba(56, 193, 147, 0.06);
+}
+.border-danger {
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Forensic Mode Scoped Layout Styling */
+.forensic-mode {
+  background: var(--forensic-page-bg, var(--bg));
+  color: var(--text);
+}
+
+.forensic-mode .glass {
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+/* Text hierarchy tightening */
+.label-muted {
+  font-size: 10px;
+  font-family: monospace;
+  color: var(--text);
+  opacity: 0.55;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.forensic-mode .label-muted {
+  color: var(--forensic-text-secondary);
+}
+
+.value-primary {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--text);
+}
+
+.forensic-mode .value-primary {
+  color: var(--forensic-text-primary);
+}
+
+.value-accent {
+  font-size: 12px;
+  font-family: monospace;
+  color: var(--primary);
+}
+
+.forensic-mode .value-accent {
+  color: var(--forensic-accent);
+}
+
+.forensic-mode .value-mono {
+  color: var(--forensic-text-mono);
+}
+
+/* Sanitize Mode Scoped Layout Styling */
+.sanitize-mode {
+  background: var(--sanitize-page-bg, var(--bg));
+  color: var(--text);
+}
+
+.sanitize-mode .glass {
+  background: var(--surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+.sanitize-mode .label-muted {
+  color: var(--sanitize-text-secondary);
+}
+
+.sanitize-mode .value-primary {
+  color: var(--sanitize-text-primary);
+}
+
+.sanitize-mode .value-accent {
+  color: var(--sanitize-accent);
+}
+
+.sanitize-mode .value-mono {
+  color: var(--sanitize-text-mono);
+}
+

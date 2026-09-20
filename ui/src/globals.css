@@ -1,0 +1,495 @@
+:root {
+  /* Sanitize mode: dark theme (muted deep maroon palette) */
+  --sanitize-bg-dark: #0D0304;
+  --sanitize-surface-dark: #1E070B;
+  --sanitize-text-dark: #F5E9E2;
+  --sanitize-primary-dark: #A8283A;
+  --sanitize-primary-hover-dark: #8F2E38;
+  --sanitize-border-dark: rgba(239, 68, 68, 0.25);
+  --sanitize-primary-text-dark: #FF6B7A;
+
+  /* Sanitize mode: light theme (high-contrast ruby & crimson family) */
+  --sanitize-bg-light: #FBF1EF;
+  --sanitize-surface-light: #F6E6E4;
+  --sanitize-text-light: #20050B;
+  --sanitize-primary-light: #EF4444;
+  --sanitize-primary-hover-light: #DC2626;
+  --sanitize-border-light: rgba(239, 68, 68, 0.25);
+  --sanitize-primary-text-light: #680E18;  /* deep rich crimson maroon, highly readable on light bg */
+
+  /* Forensic mode: dark theme (teal-tinted palette matching ombre gradient) */
+  --forensic-bg-dark: #071a20;
+  --forensic-surface-dark: #0b2832;
+  --forensic-text-dark: #EDE7EA;
+  --forensic-primary-dark: #4B8F8C;
+  --forensic-primary-hover-dark: #5FA8A4;
+  --forensic-border-dark: rgba(15, 174, 135, 0.25);
+  --forensic-primary-text-dark: #38C193;   /* muted emerald green on dark bg */
+
+  /* Forensic mode: light theme (high-contrast, deep forest green forensic palette) */
+  --forensic-bg-light: #F0F7F4;
+  --forensic-surface-light: #E1EFEA;
+  --forensic-text-light: #051A13;
+  --forensic-primary-light: #05664B;
+  --forensic-primary-hover-light: #034430;
+  --forensic-border-light: rgba(5, 150, 105, 0.35);
+  --forensic-primary-text-light: #044E38;  /* deep dark forest emerald, highly readable on light bg */
+  --button-ripple-color: oklch(0.145 0 0 / 0.3);
+}
+
+.dark,
+[data-theme="dark"] {
+  --button-ripple-color: oklch(0.985 0 0 / 0.5);
+}
+
+/* Scoped mode + theme custom properties */
+[data-mode="sanitize"],
+[data-mode="sanitize"][data-theme="dark"],
+[data-theme="dark"] [data-mode="sanitize"],
+[data-theme="dark"][data-mode="sanitize"] {
+  --bg: var(--sanitize-bg-dark);
+  --surface: var(--sanitize-surface-dark);
+  --text: var(--sanitize-text-dark);
+  --primary: var(--sanitize-primary-dark);
+  --primary-hover: var(--sanitize-primary-hover-dark);
+  --border: var(--sanitize-border-dark);
+  --primary-text: #FF7B88;
+  --sanitize-text-primary: #FDEDEC;
+  --sanitize-text-secondary: #E8A6A6;
+  --sanitize-text-mono: #FFD1D1;
+  --sanitize-accent: #FF7B88;
+  --sanitize-border: var(--sanitize-border-dark);
+  --sanitize-navbar-bg: #000000;
+  --sanitize-sidebar-bg: #000000;
+  --sanitize-bg-gradient: linear-gradient(
+    135deg,
+    #0D0304 0%,
+    #1F070B 20%,
+    #4A0F16 45%,
+    #7A1620 65%,
+    #A8283A 85%,
+    #C4707A 100%
+  );
+  --sanitize-page-bg: linear-gradient(
+    135deg,
+    rgba(13, 3, 4, 0.2) 0%,
+    rgba(31, 7, 11, 0.25) 20%,
+    rgba(13, 3, 4, 0.4) 45%,
+    rgba(13, 3, 4, 0.55) 65%,
+    rgba(13, 3, 4, 0.65) 85%,
+    rgba(13, 3, 4, 0.72) 100%
+  ), linear-gradient(
+    135deg,
+    #0D0304 0%,
+    #1F070B 20%,
+    #4A0F16 45%,
+    #7A1620 65%,
+    #A8283A 85%,
+    #C4707A 100%
+  );
+}
+
+[data-mode="sanitize"][data-theme="light"],
+[data-theme="light"] [data-mode="sanitize"],
+[data-theme="light"][data-mode="sanitize"] {
+  --bg: var(--sanitize-bg-light);
+  --surface: var(--sanitize-surface-light);
+  --text: var(--sanitize-text-light);
+  --primary: var(--sanitize-primary-light);
+  --primary-hover: var(--sanitize-primary-hover-light);
+  --border: var(--sanitize-border-light);
+  --primary-text: var(--sanitize-primary-text-light);
+  --sanitize-text-primary: var(--sanitize-text-light);
+  --sanitize-text-secondary: #7A222C;
+  --sanitize-text-mono: var(--sanitize-text-light);
+  --sanitize-accent: #680E18;
+  --sanitize-border: var(--sanitize-border-light);
+  --sanitize-navbar-bg: var(--sanitize-surface-light);
+  --sanitize-sidebar-bg: var(--sanitize-surface-light);
+  --sanitize-page-bg: var(--sanitize-bg-light);
+  --sanitize-bg-gradient: var(--sanitize-bg-light);
+}
+
+[data-mode="forensic"],
+[data-mode="forensic"][data-theme="dark"],
+[data-theme="dark"] [data-mode="forensic"],
+[data-theme="dark"][data-mode="forensic"] {
+  --bg: var(--forensic-bg-dark);
+  --surface: var(--forensic-surface-dark);
+  --text: var(--forensic-text-dark);
+  --primary: var(--forensic-primary-dark);
+  --primary-hover: var(--forensic-primary-hover-dark);
+  --border: var(--forensic-border-dark);
+  --primary-text: var(--forensic-primary-text-dark);
+  --forensic-text-primary: var(--forensic-text-dark);
+  --forensic-text-secondary: #A9C4D6;
+  --forensic-text-mono: var(--forensic-text-dark);
+  --forensic-accent: var(--forensic-primary-text-dark);
+  --forensic-border: var(--forensic-border-dark);
+  --forensic-navbar-bg: #000000;
+  --forensic-sidebar-bg: #000000;
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #03171D 0%,
+    #052D3A 20%,
+    #085466 45%,
+    #0A788A 65%,
+    #0D9B91 85%,
+    #12B3A1 100%
+  );
+  --forensic-page-bg: linear-gradient(
+    135deg,
+    rgba(3, 23, 29, 0.2) 0%,
+    rgba(5, 45, 58, 0.25) 20%,
+    rgba(3, 23, 29, 0.4) 45%,
+    rgba(3, 23, 29, 0.55) 65%,
+    rgba(3, 23, 29, 0.65) 85%,
+    rgba(3, 23, 29, 0.70) 100%
+  ), linear-gradient(
+    135deg,
+    #03171D 0%,
+    #052D3A 20%,
+    #085466 45%,
+    #0A788A 65%,
+    #0D9B91 85%,
+    #12B3A1 100%
+  );
+}
+
+[data-mode="forensic"][data-theme="light"],
+[data-theme="light"] [data-mode="forensic"],
+[data-theme="light"][data-mode="forensic"] {
+  --bg: var(--forensic-bg-light);
+  --surface: var(--forensic-surface-light);
+  --text: var(--forensic-text-light);
+  --primary: var(--forensic-primary-light);
+  --primary-hover: var(--forensic-primary-hover-light);
+  --border: var(--forensic-border-light);
+  --primary-text: var(--forensic-primary-text-light);
+  --forensic-text-primary: var(--forensic-text-light);
+  --forensic-text-secondary: #0D3B2E;
+  --forensic-text-mono: var(--forensic-text-light);
+  --forensic-accent: #044E38;
+  --forensic-border: var(--forensic-border-light);
+  --forensic-navbar-bg: var(--forensic-surface-light);
+  --forensic-sidebar-bg: var(--forensic-surface-light);
+  --forensic-page-bg: var(--forensic-bg-light);
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #F4FAF7 0%,
+    #EAF5F0 30%,
+    #E0EFE8 70%,
+    #D3E9DF 100%
+  );
+}
+
+/* Default fallback when theme is dark but mode isn't explicitly set */
+:root[data-theme="dark"]:not([data-mode="sanitize"]), html[data-theme="dark"]:not([data-mode="sanitize"]) {
+  --bg: var(--forensic-bg-dark);
+  --surface: var(--forensic-surface-dark);
+  --text: var(--forensic-text-dark);
+  --primary: var(--forensic-primary-dark);
+  --primary-hover: var(--forensic-primary-hover-dark);
+  --border: var(--forensic-border-dark);
+  --primary-text: var(--forensic-primary-text-dark);
+  --forensic-navbar-bg: #000000;
+  --forensic-sidebar-bg: #000000;
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #03171D 0%,
+    #052D3A 20%,
+    #085466 45%,
+    #0A788A 65%,
+    #0D9B91 85%,
+    #12B3A1 100%
+  );
+  --forensic-page-bg: linear-gradient(
+    135deg,
+    rgba(3, 23, 29, 0.2) 0%,
+    rgba(5, 45, 58, 0.25) 20%,
+    rgba(3, 23, 29, 0.4) 45%,
+    rgba(3, 23, 29, 0.55) 65%,
+    rgba(3, 23, 29, 0.65) 85%,
+    rgba(3, 23, 29, 0.70) 100%
+  ), linear-gradient(
+    135deg,
+    #03171D 0%,
+    #052D3A 20%,
+    #085466 45%,
+    #0A788A 65%,
+    #0D9B91 85%,
+    #12B3A1 100%
+  );
+}
+
+:root[data-theme="light"]:not([data-mode="sanitize"]), html[data-theme="light"]:not([data-mode="sanitize"]) {
+  --bg: var(--forensic-bg-light);
+  --surface: var(--forensic-surface-light);
+  --text: var(--forensic-text-light);
+  --primary: var(--forensic-primary-light);
+  --primary-hover: var(--forensic-primary-hover-light);
+  --border: var(--forensic-border-light);
+  --primary-text: var(--forensic-primary-text-light);
+  --forensic-text-primary: var(--forensic-text-light);
+  --forensic-text-secondary: #0D3B2E;
+  --forensic-text-mono: var(--forensic-text-light);
+  --forensic-accent: #044E38;
+  --forensic-border: var(--forensic-border-light);
+  --forensic-navbar-bg: var(--forensic-surface-light);
+  --forensic-sidebar-bg: var(--forensic-surface-light);
+  --forensic-page-bg: var(--forensic-bg-light);
+  --forensic-bg-gradient: linear-gradient(
+    135deg,
+    #F4FAF7 0%,
+    #EAF5F0 30%,
+    #E0EFE8 70%,
+    #D3E9DF 100%
+  );
+}
+
+/* Fallback mappings for legacy color variables */
+[data-theme="light"] {
+  --onyx: var(--bg);
+  --surface-base: var(--surface);
+  --lavender: var(--text);
+  --dark-slate: var(--border);
+  --light-green: var(--primary-text);
+}
+
+[data-theme="dark"] {
+  --onyx: var(--bg);
+  --surface-base: var(--surface);
+  --lavender: var(--text);
+  --dark-slate: var(--border);
+  --light-green: #38C193;
+}
+
+/* Page wrapper element styling - root html/body level */
+html[data-mode],
+body[data-mode] {
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ──────────────────────────────────────────────────
+   STEP 4: Gradient Button with @property support
+────────────────────────────────────────────────── */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --gradient-percent {
+  syntax: "<percentage>";
+  initial-value: 5%;
+  inherits: false;
+}
+
+@property --gradient-shine {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: false;
+}
+
+.gradient-button-sanitize {
+  --color-1: var(--primary);
+  --color-2: var(--surface);
+  --color-3: var(--primary-hover);
+  --color-4: var(--surface);
+  --color-5: var(--primary);
+  --border-color-1: var(--border);
+  --border-color-2: var(--primary-hover);
+}
+
+.gradient-button-forensic {
+  --color-1: var(--primary);
+  --color-2: var(--surface);
+  --color-3: var(--primary-hover);
+  --color-4: var(--surface);
+  --color-5: var(--primary);
+  --border-color-1: var(--border);
+  --border-color-2: var(--primary-hover);
+}
+
+.gradient-button-sanitize,
+.gradient-button-forensic {
+  position: relative;
+  isolation: isolate;
+  background: radial-gradient(
+    circle at 50% 0%,
+    var(--color-1) 0%,
+    var(--color-2) 40%,
+    var(--color-3) 70%,
+    var(--color-4) 100%
+  );
+  color: var(--text);
+  border: 1px solid transparent;
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gradient-button-sanitize::before,
+.gradient-button-forensic::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    var(--gradient-angle, 135deg),
+    var(--border-color-1),
+    var(--border-color-2),
+    var(--border-color-1)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.gradient-button-sanitize:hover,
+.gradient-button-forensic:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px -3px rgba(0, 0, 0, 0.5);
+}
+
+.gradient-button-sanitize:hover::before,
+.gradient-button-forensic:hover::before {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Themed Input, Select, and Textarea Elements
+   ========================================================================== */
+@layer base {
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text);
+    opacity: 0.5;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+
+  select option {
+    background: var(--surface);
+    color: var(--text);
+  }
+}
+
+/* ==========================================================================
+   Report Type, Case Card & Device Card Hover Pop-Up Lift (No Glow)
+   ========================================================================== */
+.report-type-card,
+.case-card,
+.device-card {
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.report-type-card:hover,
+.case-card:hover,
+.device-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  border-color: var(--primary) !important;
+}
+
+[data-mode="sanitize"] .report-type-card:hover,
+[data-mode="sanitize"] .case-card:hover,
+[data-mode="sanitize"] .device-card:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7), 0 2px 12px rgba(239, 68, 68, 0.15);
+  border-color: var(--primary) !important;
+}
+
+[data-theme="light"] .report-type-card:hover,
+[data-theme="light"] .case-card:hover,
+[data-theme="light"] .device-card:hover,
+[data-mode="sanitize"][data-theme="light"] .device-card:hover,
+[data-theme="light"] [data-mode="sanitize"] .device-card:hover {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-color: var(--primary) !important;
+}
+
+/* ==========================================================================
+   Primary Action / CTA Buttons - Scoped strictly to dark mode or explicit .btn-primary
+   (Never force white text onto buttons in light mode or tinted buttons like bg-[var(--primary)]/15)
+   ========================================================================== */
+.dark .btn-primary {
+  color: #ffffff !important;
+}
+
+/* ==========================================================================
+   Entering Sanitization Mode Modal - Decrypt Texture Background Effect
+   ========================================================================== */
+.modal-decrypt-card {
+  --mx: 50%;
+  --my: 50%;
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-decrypt-card .bg-texture-dim {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: rgba(210, 60, 70, 0.05);
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 15px;
+  letter-spacing: 3px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+.modal-decrypt-card .bg-texture-glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  color: rgba(224, 80, 90, 0.24);
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 15px;
+  letter-spacing: 3px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  mask-image: radial-gradient(circle 170px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 35%, transparent 72%);
+  -webkit-mask-image: radial-gradient(circle 170px at var(--mx, 50%) var(--my, 50%), #000 0%, #000 35%, transparent 72%);
+}
+
+.modal-decrypt-card:hover .bg-texture-glow,
+.modal-decrypt-card[data-hovered="true"] .bg-texture-glow {
+  opacity: 1;
+}
+
+

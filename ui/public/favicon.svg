@@ -1,0 +1,18 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="vajra-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14B8A6" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <linearGradient id="vajra-bolt" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#59EE99" />
+      <stop offset="100%" stop-color="#14B8A6" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#04161C" />
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="url(#vajra-grad)" stroke-width="1.2" opacity="0.6" />
+  <!-- Shield outline -->
+  <path d="M16 5 L25 8.5 V15 C25 21.5 16 26.5 16 26.5 C16 26.5 7 21.5 7 15 V8.5 Z" fill="#062B37" stroke="url(#vajra-grad)" stroke-width="1.5" stroke-linejoin="round" />
+  <!-- Vajra Lightning Bolt -->
+  <path d="M17.5 9 L11.5 16.5 H16 L14.5 23 L20.5 15.5 H16 Z" fill="url(#vajra-bolt)" />
+</svg>
